@@ -144,6 +144,76 @@ function Strip-VisualEffects {
     Write-Host "      [OK] All visual fluff stripped  --  GPU resources 100% for your game!" -ForegroundColor Green
 }
 
+function Set-CompactWindowMetrics {
+    <#
+    .SYNOPSIS
+        Applies compact, low-overhead WindowMetrics:
+        - 8px thin scrollbars (ScrollWidth = -120)
+        - 8px scrollbar button height (ScrollHeight = -120)
+        - 1px border width (BorderWidth = -15)
+        - 0px border padding (PaddedBorderWidth = 0, eliminates invisible bulky window drag margins)
+        - Compact title bar height (CaptionHeight = -150, SmCaptionHeight = -150)
+    #>
+    Write-Host "`n[*] Applying Compact Window Metrics & 8px Thin Scrollbars..." -ForegroundColor Yellow
+    $wmKey = 'HKCU:\Control Panel\Desktop\WindowMetrics'
+    if (-not (Test-Path $wmKey)) { New-Item -Path $wmKey -Force | Out-Null }
+
+    Set-ItemProperty -Path $wmKey -Name 'ScrollWidth' -Value '-120' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'ScrollHeight' -Value '-120' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'BorderWidth' -Value '-15' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'PaddedBorderWidth' -Value '0' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'CaptionHeight' -Value '-150' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'CaptionWidth' -Value '-330' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'SmCaptionHeight' -Value '-150' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'SmCaptionWidth' -Value '-330' -Type String
+    Set-ItemProperty -Path $wmKey -Name 'MinAnimate' -Value '0' -Type String
+
+    # Broadcast WM_SETTINGCHANGE (SPI_SETNONCLIENTMETRICS)
+    try {
+        $csharpSig = @'
+        using System;
+        using System.Runtime.InteropServices;
+        public class WinMetricsNative {
+            [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+            public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
+        }
+'@
+        if (-not ([System.Management.Automation.PSTypeName]'WinMetricsNative').Type) {
+            Add-Type -TypeDefinition $csharpSig -ErrorAction SilentlyContinue
+        }
+        if (([System.Management.Automation.PSTypeName]'WinMetricsNative').Type) {
+            $res = [UIntPtr]::Zero
+            [WinMetricsNative]::SendMessageTimeout([IntPtr]0xFFFF, 0x001A, [UIntPtr]::Zero, "WindowMetrics", 2, 1000, [ref]$res) | Out-Null
+        }
+    } catch {}
+
+    Write-Host "      [+] Scrollbars locked to 8px thin width & 8px button size" -ForegroundColor Green
+    Write-Host "      [+] Border width locked to 1px with 0px padding" -ForegroundColor Green
+    Write-Host "      [+] Window title bar height set to compact (-150 twips)" -ForegroundColor Green
+    Write-Host "      [OK] Compact WindowMetrics applied successfully!" -ForegroundColor Green
+}
+
+function Restore-CompactWindowMetrics {
+    <#
+    .SYNOPSIS
+        Reverts WindowMetrics to standard Windows defaults.
+    #>
+    Write-Host "`n[*] Restoring Default Windows WindowMetrics..." -ForegroundColor Yellow
+    $wmKey = 'HKCU:\Control Panel\Desktop\WindowMetrics'
+    if (Test-Path $wmKey) {
+        Set-ItemProperty -Path $wmKey -Name 'ScrollWidth' -Value '-255' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'ScrollHeight' -Value '-255' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'BorderWidth' -Value '-15' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'PaddedBorderWidth' -Value '-60' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'CaptionHeight' -Value '-330' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'CaptionWidth' -Value '-330' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'SmCaptionHeight' -Value '-330' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'SmCaptionWidth' -Value '-330' -Type String
+        Set-ItemProperty -Path $wmKey -Name 'MinAnimate' -Value '1' -Type String
+    }
+    Write-Host "      [+] WindowMetrics restored to Windows defaults (17px scrollbars, 4px padding, 22px caption)" -ForegroundColor Green
+}
+
 function Harden-PrivacyTelemetry {
     Write-Host "`n[*] Hardening Privacy & Disabling Telemetry..." -ForegroundColor Yellow
 

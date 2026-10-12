@@ -81,6 +81,11 @@ function Start-PumpkiNGui {
     $btnRunDiagnostics  = $window.FindName("BtnRunDiagnostics")
     $btnExitTop         = $window.FindName("BtnExitTop")
 
+    $btnInstallTrafficMonitor       = $window.FindName("BtnInstallTrafficMonitor")
+    $btnInstallMiSansFonts          = $window.FindName("BtnInstallMiSansFonts")
+    $btnApplyTrafficMonitorConfig   = $window.FindName("BtnApplyTrafficMonitorConfig")
+    $btnLaunchTrafficMonitor        = $window.FindName("BtnLaunchTrafficMonitor")
+
     $txtConsole         = $window.FindName("TxtConsole")
     $txtStatus          = $window.FindName("TxtStatus")
     $progressBar        = $window.FindName("MainProgressBar")
@@ -565,7 +570,7 @@ function Start-PumpkiNGui {
     $btnApplyGameHooks.Add_Click({
         & $script:LogToGui "[*] Installing IFEO High-Priority Hooks for esports titles..."
         Apply-GameHooks
-        & $script:LogToGui "[+] Esports Priority Hooks installed for CS2, Valorant, Apex, Fortnite, COD!"
+        & $script:LogToGui "[+] Esports Priority Hooks installed for CS2, Valorant, Apex, PUBG, Fortnite, COD!"
     })
 
     # Smart Game Booster Daemon Handlers
@@ -660,6 +665,8 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_StripVisual" "Strip Visual Animations" { Strip-VisualEffects }
     Register-QuickTweakButton "BtnApply_EndTask" "Taskbar End Task" { Enable-EndTaskRightClick }
     Register-QuickTweakButton "BtnApply_StickyKeys" "Disable Sticky Keys" { Disable-StickyKeysPrompt }
+    Register-QuickTweakButton "BtnApply_CompactMetrics" "Compact Window Metrics" { Set-CompactWindowMetrics }
+    Register-QuickTweakButton "BtnReset_CompactMetrics" "Default Window Metrics" { Restore-CompactWindowMetrics }
     Register-QuickTweakButton "BtnApply_DebloatServices" "Debloat Services" { Debloat-BackgroundServices }
     Register-QuickTweakButton "BtnApply_DiskIo" "Optimize Disk I/O" { Optimize-DiskIO }
     Register-QuickTweakButton "BtnApply_CompactOs" "CompactOS Compression" { Enable-CompactOS }
@@ -747,6 +754,10 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_ShowExtensions" "Show File Extensions" { Set-ShowFileExtensionsAndHidden }
     Register-QuickTweakButton "BtnApply_RecycleBinIcon" "Pop Cat Recycle Bin" { Set-RecycleBinCustomIcon }
     Register-QuickTweakButton "BtnReset_RecycleBinIcon" "Default Recycle Bin" { Restore-RecycleBinDefaultIcon }
+    Register-QuickTweakButton "BtnApply_DisableAds" "Disable Windows Ads" { Disable-WindowsAds }
+    Register-QuickTweakButton "BtnReset_DisableAds" "Restore Windows Ads" { Enable-WindowsAds }
+    Register-QuickTweakButton "BtnApply_NoShortcutArrows" "Remove Shortcut Arrows" { Disable-ShortcutArrow }
+    Register-QuickTweakButton "BtnReset_ShortcutArrows" "Restore Shortcut Arrows" { Restore-ShortcutArrow }
     Register-QuickTweakButton "BtnApply_EnableLongPaths" "Enable Long Paths" { Enable-LongPaths }
     Register-QuickTweakButton "BtnApply_DisableLockScreen" "Disable Lock Screen" { Disable-LockScreen }
     Register-QuickTweakButton "BtnApply_BsodVerbose" "Verbose BSOD" { Enable-BsodVerbose }
@@ -771,6 +782,45 @@ function Start-PumpkiNGui {
         & $script:LogToGui "[*] Running System Diagnostics..."
         Run-Diagnostics
     })
+
+    if ($btnInstallTrafficMonitor) {
+        $btnInstallTrafficMonitor.Add_Click({
+            & $script:LogToGui "[*] Starting TrafficMonitor (Latest x64) Download & Installation..."
+            & $script:SetProgress 20
+            [void](Install-TrafficMonitorLatest -LogCallback $script:LogToGui)
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
+
+    if ($btnInstallMiSansFonts) {
+        $btnInstallMiSansFonts.Add_Click({
+            & $script:LogToGui "[*] Starting MiSans Fonts Installation..."
+            & $script:SetProgress 20
+            [void](Install-MiSansFonts -LogCallback $script:LogToGui)
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
+
+    if ($btnApplyTrafficMonitorConfig) {
+        $btnApplyTrafficMonitorConfig.Add_Click({
+            & $script:LogToGui "[*] Applying Custom TrafficMonitor config.ini..."
+            & $script:SetProgress 20
+            [void](Apply-TrafficMonitorConfig -LogCallback $script:LogToGui)
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
+
+    if ($btnLaunchTrafficMonitor) {
+        $btnLaunchTrafficMonitor.Add_Click({
+            [void](Start-TrafficMonitorApp -LogCallback $script:LogToGui)
+        })
+    }
 
     # Initial Log Greeting & Status
     & $updateStandbyStatus

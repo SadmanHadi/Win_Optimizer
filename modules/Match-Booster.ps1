@@ -172,7 +172,9 @@ $Script:RecognizedEsportsGames = @(
     "dota2",
     "League of Legends", "LeagueClientUx",
     "RustClient",
-    "TslGame", "PUBG",
+    "TslGame", "PUBG", "PUBGLite", "PUBG-Win64-Shipping",
+    "Deadlock",
+    "AndroidEmulatorEn", "AndroidEmulator", "aow_exe",
     "RocketLeague",
     "EscapeFromTarkov"
 )

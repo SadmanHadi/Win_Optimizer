@@ -6,7 +6,7 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-           ULTIMATE GAMING & NETWORK OPTIMIZER v5.0
+           ULTIMATE GAMING & NETWORK OPTIMIZER v5.1.0
           Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
@@ -29,7 +29,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.0"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.1.0"
 
 # ==============================================================================
 # 2. MODULAR LOADER ENGINE (LOCAL + REMOTE GITHUB FALLBACK)
@@ -85,7 +85,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.0"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.1.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -109,7 +109,7 @@ function Show-PumpkiNBanner {
     Write-Host "  [7]  CPU, Kernel & Quantum Engine (Win32Priority 0x26, FTH Off, Core Unpark)"
     Write-Host "  [8]  Ultra-Low Latency, DPC & 8000Hz Input (StopHighDPC, Raw Mouse Curve)"
     Write-Host "  [9]  Competitive Match Booster (One-Time Purge & Background Auto-Scheduler)" -ForegroundColor Cyan
-    Write-Host "  [10] Game-Specific High Priority Hooks (Valorant, CS2, Apex, Fortnite, COD)"
+    Write-Host "  [10] Game-Specific High Priority Hooks (Valorant, CS2, Apex, PUBG, Fortnite, COD)"
     Write-Host "  [11] System Health, Live Diagnostics & Hardware Spec Sheet"
     Write-Host "  [12] Create Windows System Restore Point (Safety Backup)" -ForegroundColor Cyan
     Write-Host "  [13] Revert All Settings to Windows Defaults" -ForegroundColor DarkYellow
@@ -146,6 +146,11 @@ function Show-PumpkiNBanner {
     Write-Host "  [42] Low-Latency Audio & Anti-Popping (MMCSS Audio High Priority & MSI Mode)" -ForegroundColor Magenta
     Write-Host "  [43] USB xHCI Thread Priority & 8000Hz Buffers (ThreadPriority 31)" -ForegroundColor Yellow
     Write-Host "  [44] Inspect Hardware MSI & Interrupt Audit Report (GPU, USB, Audio, Net, NVMe)" -ForegroundColor Cyan
+    Write-Host "  [45] TrafficMonitor Suite (Latest x64 Release, MiSans Fonts, Custom Config)" -ForegroundColor Magenta
+    Write-Host "  [46] Compact Window Metrics (8px Scrollbars, 1px Border, 0 Padding, Compact Title Bar)" -ForegroundColor Cyan
+    Write-Host "  [47] Disable All Windows Ads (Lock Screen, Start, Explorer, Settings, Search)" -ForegroundColor Green
+    Write-Host "  [48] Remove Shortcut Arrow Overlays (Clean No-Arrow Desktop Icons)" -ForegroundColor Yellow
+    Write-Host "  [49] Restore Window Metrics, Windows Ads & Shortcut Arrows to Defaults" -ForegroundColor DarkYellow
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -153,7 +158,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-44]"
+        $choice = Read-Host "Select an option [0-49]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -452,6 +457,43 @@ function Show-ConsoleMenu {
                 $report = Get-HardwareInterruptReport
                 $report | Format-Table -AutoSize | Out-Host
                 Write-Host "[OK] Audited $($report.Count) total hardware controllers." -ForegroundColor Green
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "45" {
+                Write-Host "`n=== TRAFFICMONITOR SUITE & TELEMETRY SETUP ===" -ForegroundColor Magenta
+                Write-Host "  [1] Download & Install Latest Release (x64 from GitHub)"
+                Write-Host "  [2] Install MiSans Fonts (All 10 Weights)"
+                Write-Host "  [3] Apply Custom config.ini"
+                Write-Host "  [4] Full All-in-One Setup (Download + Fonts + Config + Launch)" -ForegroundColor Green
+                Write-Host "  [5] Launch TrafficMonitor" -ForegroundColor Cyan
+                Write-Host "  [0] Back to Main Menu"
+                $tmChoice = Read-Host "`nSelect option [0-5]"
+                switch ($tmChoice) {
+                    "1" { [void](Install-TrafficMonitorLatest) }
+                    "2" { [void](Install-MiSansFonts) }
+                    "3" { [void](Apply-TrafficMonitorConfig) }
+                    "4" { [void](Install-TrafficMonitorSuite) }
+                    "5" { [void](Start-TrafficMonitorApp) }
+                }
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "46" {
+                Set-CompactWindowMetrics
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "47" {
+                Disable-WindowsAds
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "48" {
+                Disable-ShortcutArrow
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "49" {
+                Write-Host "`n=== RESTORE VISUALS & SYSTEM DEFAULTS ===" -ForegroundColor Yellow
+                Restore-CompactWindowMetrics
+                Enable-WindowsAds
+                Restore-ShortcutArrow
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

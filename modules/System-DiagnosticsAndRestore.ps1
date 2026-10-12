@@ -15,6 +15,9 @@ function Apply-GameHooks {
         'RainbowSix.exe',
         'RainbowSix_Vulkan.exe',
         'Overwatch.exe',
+        'TslGame.exe',
+        'PUBG.exe',
+        'PUBGLite.exe',
         'PUBG-Win64-Shipping.exe',
         'Deadlock.exe',
         'AndroidEmulatorEn.exe',
@@ -90,8 +93,8 @@ function Run-Diagnostics {
 
 function Restore-Defaults {
     Write-Host "`n[*] Restoring Windows Default Network and System Settings..." -ForegroundColor Yellow
-    $hw = Get-HardwareProfile
-    $adapter = $hw.Adapter
+    $hw = if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) { Get-HardwareProfile } else { $null }
+    $adapter = if ($hw) { $hw.Adapter } else { $null }
     if ($adapter) {
         $guid = $adapter.InterfaceGuid
         $tcpKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$guid"
@@ -134,7 +137,8 @@ function Restore-Defaults {
 
     $games = @(
         'VALORANT-Win64-Shipping.exe','cs2.exe','r5apex.exe','FortniteClient-Win64-Shipping.exe',
-        'cod.exe','RainbowSix.exe','RainbowSix_Vulkan.exe','Overwatch.exe','PUBG-Win64-Shipping.exe',
+        'cod.exe','RainbowSix.exe','RainbowSix_Vulkan.exe','Overwatch.exe',
+        'TslGame.exe','PUBG.exe','PUBGLite.exe','PUBG-Win64-Shipping.exe',
         'Deadlock.exe','AndroidEmulatorEn.exe','AndroidEmulator.exe'
     )
     foreach ($g in $games) { Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$g\PerfOptions" -Recurse -Force -ErrorAction SilentlyContinue }
@@ -285,6 +289,15 @@ function Restore-Defaults {
     Remove-StandbyListScheduledTask
     if (Get-Command Restore-AudioDpcAndUsbLatency -ErrorAction SilentlyContinue) {
         Restore-AudioDpcAndUsbLatency
+    }
+    if (Get-Command Restore-CompactWindowMetrics -ErrorAction SilentlyContinue) {
+        Restore-CompactWindowMetrics
+    }
+    if (Get-Command Enable-WindowsAds -ErrorAction SilentlyContinue) {
+        Enable-WindowsAds
+    }
+    if (Get-Command Restore-ShortcutArrow -ErrorAction SilentlyContinue) {
+        Restore-ShortcutArrow
     }
     Write-Host "      [+] WinUtil hardening & Snappy OS tweaks reverted to Windows defaults" -ForegroundColor Green
 

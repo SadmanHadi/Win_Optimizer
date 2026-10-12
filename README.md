@@ -1,4 +1,4 @@
-# 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite v5.0
+# 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite v5.1.0
 
 > **The all-in-one low-latency Windows gaming engine and 100+ app package manager.**  
 > 100% Native PowerShell & WPF Architecture • Dark Cyberpunk Desktop GUI & CLI Fallback • Safe, transparent, and 100% reversible.  
@@ -28,7 +28,7 @@ PumpkiN's Ultimate Optimizer features a sleek, hardware-accelerated dark desktop
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
+│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.1.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ [📦 Software Downloader]  [🎮 Gaming Tweaks]  [🚀 Match Booster]  [🛡️ System & Tools] │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
@@ -55,9 +55,10 @@ PumpkiN's Ultimate Optimizer features a sleek, hardware-accelerated dark desktop
 3. **🚀 Match Booster:**
    - Real-time Standby List memory purger for stutter-free matches.
    - Wi-Fi ping spike shield (freezes background network auto-roaming).
-   - High-priority process hooks (IFEO) for Valorant, CS2, Apex, Fortnite, Call of Duty, Rainbow Six Siege, and Overwatch 2.
+   - High-priority process hooks (IFEO) for Valorant, CS2, Apex, PUBG, Fortnite, Call of Duty, Rainbow Six Siege, and Overwatch 2.
 4. **🛡️ System & Tools:**
    - Snappy OS & WinUtil security hardening (UEFI WPBT block, peripheral bloatware auto-install block, Windows AI purge, classic context menu).
+   - TrafficMonitor taskbar telemetry suite with MiSans typography engine and custom layout configuration.
    - 1-Click Microsoft Activation Scripts (MAS) integration.
    - 1-Click System Restore Point safety backup.
 
@@ -132,21 +133,33 @@ Win_Optimizer/
 - **Esports Process Priority Hooks:** Permanently sets High CPU Priority and High I/O Priority for:
   - *Counter-Strike 2* (`cs2.exe`)
   - *Valorant* (`VALORANT-Win64-Shipping.exe`)
+  - *PUBG: BATTLEGROUNDS* (`TslGame.exe` / `PUBG-Win64-Shipping.exe`)
   - *Apex Legends* (`r5apex.exe`)
   - *Fortnite* (`FortniteClient-Win64-Shipping.exe`)
   - *Call of Duty* (`cod.exe`)
   - *Rainbow Six Siege* (`RainbowSix.exe`)
   - *Overwatch 2* (`Overwatch.exe`)
 
+### 📊 6. TrafficMonitor Taskbar Telemetry & MiSans Fonts
+- **Direct GitHub Releases Grabber:** Automatically pulls and extracts the latest official x64 release of TrafficMonitor (`zhongyang219/TrafficMonitor`) into `Program Files`.
+- **MiSans Typography Engine:** Installs and registers all 10 MiSans TrueType font weights with real-time Windows font cache registration (`WM_FONTCHANGE`).
+- **Custom Config Preset:** 1-Click deployment of customized `config.ini` telemetry taskbar layout.
+
+### 🎨 7. Compact Window Metrics, Ad Killer & Clean Desktop
+- **Compact Window Metrics:** 8px thin scrollbars (`ScrollWidth = -120`, `ScrollHeight = -120`), 1px borders (`BorderWidth = -15`), 0px border padding (`PaddedBorderWidth = 0`), and 10px compact title bar (`CaptionHeight = -150`, `SmCaptionHeight = -150`) for a sleek, modern, distraction-free desktop layout.
+- **Disable All Windows Ads:** Eliminates Lock Screen ads & suggestions, Start Menu promoted app suggestions, File Explorer OneDrive sync ads, Settings app commercial tips, Bing Web Search telemetry, and consumer cloud bloatware.
+- **Remove Shortcut Arrow Overlays (No Arrow):** Uses bundled transparent icon asset (`blank.ico`) to cleanly strip shortcut arrow badges across Windows desktop and Explorer icons without black square glitches.
+- **100% Reversibility:** Full one-click default restoration for all WindowMetrics, commercial ad keys, and shortcut icons.
+
 ---
 
-## 📋 Interactive CLI Menu Overview [0-27]
+## 📋 Interactive CLI Menu Overview [0-49]
 
 When launched with the `-CLI` switch or in headless environments, the complete interactive menu is accessible:
 
 ```text
 ================================================================================
-           ULTIMATE GAMING & NETWORK OPTIMIZER v5.0
+           ULTIMATE GAMING & NETWORK OPTIMIZER v5.1.0
           Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
   [CPU] AMD Ryzen 7 5800X3D (8C / 16T)
@@ -162,11 +175,17 @@ When launched with the `-CLI` switch or in headless environments, the complete i
   [7]  CPU, Kernel & Quantum Engine (Win32Priority 0x26, FTH Off, Core Unpark)
   [8]  Ultra-Low Latency, DPC & 8000Hz Input (StopHighDPC, Raw Mouse Curve)
   [9]  Competitive Match Booster (Immediate RAM Flush + 5-Min Background Auto-Purge)
-  [10] Game-Specific High Priority Hooks (Valorant, CS2, Apex, Fortnite, COD)
+  [10] Game-Specific High Priority Hooks (Valorant, CS2, Apex, PUBG, Fortnite, COD)
   [11] System Health, Live Diagnostics & Hardware Spec Sheet
   [12] Create Windows System Restore Point (Safety Backup)
   [13] Revert All Settings to Windows Defaults
   [14] Activate Windows (Microsoft Activation Scripts - MAS)
+  ...
+  [45] TrafficMonitor Suite (Latest x64 Release, MiSans Fonts, Custom Config)
+  [46] Compact Window Metrics (8px Scrollbars, 1px Border, 0 Padding, Compact Title Bar)
+  [47] Disable All Windows Ads (Lock Screen, Start, Explorer, Settings, Search)
+  [48] Remove Shortcut Arrow Overlays (Clean No-Arrow Desktop Icons)
+  [49] Restore Window Metrics, Windows Ads & Shortcut Arrows to Defaults
   ---- BEAST MODE OPTIMIZATIONS ------------------------------------------------
   [15] Debloat & Disable Background Services (SysMain, Telemetry, Xbox, Cortana)
   [16] Ultimate Performance Power Plan + HPET/Timer Optimization

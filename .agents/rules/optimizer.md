@@ -4,7 +4,7 @@ trigger: always_on
 
 # AGENTS.md
 
-Operating instructions and development standards for coding agents working on **PumpkiN's Ultimate Windows Optimizer & Software Suite v5.0** (`Win_Optimizer`). Read this file before every task.
+Operating instructions and development standards for coding agents working on **PumpkiN's Ultimate Windows Optimizer & Software Suite v5.1.0** (`Win_Optimizer`). Read this file before every task.
 
 **Working code only. Finish the job. Plausibility is not correctness.**
 
@@ -27,6 +27,7 @@ These rules override everything else in this file when in conflict:
    ```
 7. **Never Fabricate**: Do not invent file paths, function names, test results, or API behavior. Test all changes with AST validation and functional test scripts.
 8. **Verify Before Saying Done**: Run AST parser checks and test suites before claiming completion. Evidence before assertions always.
+9. **Mandatory Version Bumping & Synchronization**: Whenever updating features, fixing bugs, or committing changes, increment and synchronously update the version number across all project locations (`optimizer.ps1`, `modules/Gui-Markup.ps1`, `README.md`, `agents.md`) and tag commit messages with the version. Never make updates or commits without updating the version number.
 
 ---
 
@@ -165,8 +166,9 @@ Verify that the WPF XAML parser accepts the UI definition:
 
 ---
 
-## 5. Git Hygiene & Commit Standards
+## 5. Git Hygiene, Versioning & Release Control
 
+### Commit Standards
 - Use Conventional Commits formatting:
   - `feat:` New features, tweaks, or application catalog additions
   - `fix:` Bug fixes, syntax corrections, or rollback repairs
@@ -176,9 +178,26 @@ Verify that the WPF XAML parser accepts the UI definition:
 - Run the full AST parser validation across all `.ps1` files before staging or committing.
 - Do not commit scratch scripts or local debug outputs.
 
+### Mandatory Version Bumping on Every Update / Commit
+Whenever updating features, fixing bugs, or preparing a commit, the version number MUST be bumped and synchronized so releases are easy to find, track, and control:
+1. **Semantic Versioning (SemVer) Rules**:
+   - **`PATCH` (e.g. `v5.0.0` -> `v5.0.1`)**: Small bug fixes, registry value corrections, rollback repairs, or app catalog updates.
+   - **`MINOR` (e.g. `v5.0.x` -> `v5.1.0`)**: New optimization features, new modules, new GUI tabs/cards, external tool integrations, or new CLI menu items.
+   - **`MAJOR` (e.g. `v5.x.x` -> `v6.0.0`)**: Breaking architectural changes, major framework rewrites, or fundamental overhaul.
+2. **Synchronized Files Checklist**:
+   Every version bump must be updated in unison across:
+   - **`optimizer.ps1`**: `$Host.UI.RawUI.WindowTitle` and `Show-PumpkiNBanner` ASCII banner.
+   - **`modules/Gui-Markup.ps1`**: Window `Title="..."` and the Top Bar Cyberpunk Header version badge (`<TextBlock Text="vX.Y.Z" .../>`).
+   - **`README.md`**: Top title heading, ASCII UI preview box, and CLI menu overview header.
+   - **`agents.md`**: Document header and operating contract version.
+   - **Git Commit Message**: Include the new version in the commit scope or title (e.g., `feat(v5.1.0): add TrafficMonitor and compact metrics`).
+
 ---
 
 ## 6. Project Learnings & Gotchas
 
 1. **Non-ASCII Characters Break PowerShell 5.1 AST Parser**: Non-ASCII characters (such as Unicode em dashes `--`, curly quotes, or fancy symbols) encoded without UTF-8 BOM cause byte-level truncation in Windows PowerShell 5.1 string literals, triggering fatal parser errors. All scripts must remain strictly ASCII or UTF-8 with standard ASCII hyphens `--`.
-2. **Regex.Replace Su
+2. **Regex.Replace Substitution Danger with `$`**: In .NET `[regex]::Replace()`, `$` characters inside the replacement string are evaluated as regex substitution tokens (`$'`, `$&`). When modifying code containing PowerShell variables (`$var`), use substring concatenation or scriptblock match evaluators: `[regex]::Replace($str, $pattern, [System.Text.RegularExpressions.MatchEvaluator]{ ... })`.
+3. **Dual Invocation Pattern for Standalone Modules**: Modules in `modules/` must check `$MyInvocation.InvocationName -ne '.'` so they export functions when dot-sourced into `optimizer.ps1`, but execute standalone with elevation check when invoked directly.
+4. **Asynchronous WinGet Execution**: Running `winget` synchronously on the WPF UI thread freezes the window. Always execute package manager commands through background Runspaces and stream stdout/stderr back via `Dispatcher.Invoke`.
+5. **Portable GitHub Raw Web Loader**: `optimizer.ps1` supports both local module dot-sourcing and remote raw GitHub streaming fallback, enabling single-command execution via `irm ... | iex` for users without git cloned locally.

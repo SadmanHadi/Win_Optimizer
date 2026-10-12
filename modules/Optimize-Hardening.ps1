@@ -328,6 +328,187 @@ function Restore-RecycleBinDefaultIcon {
     Write-Host "      [+] Default Windows Recycle Bin icons restored successfully!" -ForegroundColor Green
 }
 
+function Disable-WindowsAds {
+    <#
+    .SYNOPSIS
+        Comprehensively disables all advertising, promoted apps, and commercial suggestions across Windows 10/11.
+    #>
+    Write-Host "`n[*] Disabling All Advertising, Promoted Apps & Telemetry Commercials..." -ForegroundColor Yellow
+
+    # 1. Lock Screen Ads & Spotlight Commercials
+    $cdmKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'
+    if (-not (Test-Path $cdmKey)) { New-Item -Path $cdmKey -Force | Out-Null }
+    Set-ItemProperty -Path $cdmKey -Name 'RotatingLockScreenEnabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'RotatingLockScreenOverlayEnabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338387Enabled' -Value 0 -Type DWord
+    Write-Host "      [+] Lock screen ads, tips and rotating promotions disabled" -ForegroundColor Green
+
+    # 2. Start Menu Promoted Apps & Suggestions
+    Set-ItemProperty -Path $cdmKey -Name 'SystemPaneSuggestionsEnabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338388Enabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338389Enabled' -Value 0 -Type DWord
+    Write-Host "      [+] Start Menu promoted apps and suggestions blocked" -ForegroundColor Green
+
+    # 3. File Explorer Sync Provider Notifications (OneDrive Ads)
+    $advKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advKey)) { New-Item -Path $advKey -Force | Out-Null }
+    Set-ItemProperty -Path $advKey -Name 'ShowSyncProviderNotifications' -Value 0 -Type DWord
+    Write-Host "      [+] File Explorer OneDrive and sync provider promo banners disabled" -ForegroundColor Green
+
+    # 4. Settings App Suggested Content & Commercials
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338393Enabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-353694Enabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-353696Enabled' -Value 0 -Type DWord
+    Write-Host "      [+] Settings App suggested content and ads disabled" -ForegroundColor Green
+
+    # 5. Windows Welcome Experience & Soft Landing
+    Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-310093Enabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SoftLandingEnabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $cdmKey -Name 'SilentInstalledAppsEnabled' -Value 0 -Type DWord
+    Write-Host "      [+] Windows Welcome Experience tips and silent app installs blocked" -ForegroundColor Green
+
+    # 6. Tailored Experiences & Diagnostic Data Ads
+    $privKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Privacy'
+    if (-not (Test-Path $privKey)) { New-Item -Path $privKey -Force | Out-Null }
+    Set-ItemProperty -Path $privKey -Name 'TailoredExperiencesWithDiagnosticDataEnabled' -Value 0 -Type DWord
+
+    # 7. Advertising ID for Personalized Ads
+    $adKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo'
+    if (-not (Test-Path $adKey)) { New-Item -Path $adKey -Force | Out-Null }
+    Set-ItemProperty -Path $adKey -Name 'Id' -Value 0 -Type DWord
+    Set-ItemProperty -Path $adKey -Name 'Enabled' -Value 0 -Type DWord
+
+    $polAdKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo'
+    if (-not (Test-Path $polAdKey)) { New-Item -Path $polAdKey -Force | Out-Null }
+    Set-ItemProperty -Path $polAdKey -Name 'DisabledByGroupPolicy' -Value 1 -Type DWord
+    Write-Host "      [+] Windows Advertising ID and Tailored Experiences disabled" -ForegroundColor Green
+
+    # 8. Web Search Ads & Bing Integration in Windows Search
+    $searchKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search'
+    if (-not (Test-Path $searchKey)) { New-Item -Path $searchKey -Force | Out-Null }
+    Set-ItemProperty -Path $searchKey -Name 'BingSearchEnabled' -Value 0 -Type DWord
+    Set-ItemProperty -Path $searchKey -Name 'CortanaConsent' -Value 0 -Type DWord
+
+    $polSearchKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search'
+    if (-not (Test-Path $polSearchKey)) { New-Item -Path $polSearchKey -Force | Out-Null }
+    Set-ItemProperty -Path $polSearchKey -Name 'DisableWebSearch' -Value 1 -Type DWord
+    Set-ItemProperty -Path $polSearchKey -Name 'ConnectedSearchUseWeb' -Value 0 -Type DWord
+    Write-Host "      [+] Bing Web Search and sponsored search results disabled" -ForegroundColor Green
+
+    # 9. Notification Setup Prompts & Consumer Cloud Content
+    $userEngKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement'
+    if (-not (Test-Path $userEngKey)) { New-Item -Path $userEngKey -Force | Out-Null }
+    Set-ItemProperty -Path $userEngKey -Name 'ScoobeSystemSettingEnabled' -Value 0 -Type DWord
+
+    $cloudKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent'
+    if (-not (Test-Path $cloudKey)) { New-Item -Path $cloudKey -Force | Out-Null }
+    Set-ItemProperty -Path $cloudKey -Name 'DisableWindowsConsumerFeatures' -Value 1 -Type DWord
+    Write-Host "      [+] Consumer bloatware auto-provisioning and device setup prompts blocked" -ForegroundColor Green
+
+    Write-Host "      [OK] All Windows ads, suggestions, and promotional content disabled!" -ForegroundColor Green
+}
+
+function Enable-WindowsAds {
+    <#
+    .SYNOPSIS
+        Reverts ad-blocking settings back to standard Windows defaults.
+    #>
+    Write-Host "`n[*] Restoring Windows Default Commercial & Ad Settings..." -ForegroundColor Yellow
+    $cdmKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager'
+    if (Test-Path $cdmKey) {
+        Set-ItemProperty -Path $cdmKey -Name 'RotatingLockScreenEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'RotatingLockScreenOverlayEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338387Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SystemPaneSuggestionsEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338388Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338389Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-338393Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-353694Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-353696Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SubscribedContent-310093Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SoftLandingEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $cdmKey -Name 'SilentInstalledAppsEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    $advKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advKey) {
+        Set-ItemProperty -Path $advKey -Name 'ShowSyncProviderNotifications' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    $polAdKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo'
+    if (Test-Path $polAdKey) {
+        Remove-ItemProperty -Path $polAdKey -Name 'DisabledByGroupPolicy' -ErrorAction SilentlyContinue
+    }
+    $polSearchKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search'
+    if (Test-Path $polSearchKey) {
+        Remove-ItemProperty -Path $polSearchKey -Name 'DisableWebSearch' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $polSearchKey -Name 'ConnectedSearchUseWeb' -ErrorAction SilentlyContinue
+    }
+    $cloudKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent'
+    if (Test-Path $cloudKey) {
+        Remove-ItemProperty -Path $cloudKey -Name 'DisableWindowsConsumerFeatures' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Windows default suggestion and commercial settings restored." -ForegroundColor Green
+}
+
+function Disable-ShortcutArrow {
+    <#
+    .SYNOPSIS
+        Removes the shortcut arrow overlay from Windows desktop and Explorer shortcuts (No Arrow).
+    #>
+    Write-Host "`n[*] Removing Windows Desktop Shortcut Arrow Overlay (No Arrow)..." -ForegroundColor Yellow
+
+    # Target persistent directory for blank icon
+    $iconsDir = "$env:LOCALAPPDATA\PumpkiNOptimizer\Icons"
+    if (-not (Test-Path $iconsDir)) {
+        New-Item -ItemType Directory -Path $iconsDir -Force | Out-Null
+    }
+    $destIco = Join-Path $iconsDir "blank.ico"
+
+    # Locate source icon (bundled assets first, then fallback)
+    $candidateBlank = @(
+        (Join-Path $PSScriptRoot "..\assets\Icons\blank.ico"),
+        "C:\ProgramData\WinaeroTweaker\ShellIcons\blank.ico",
+        "e:\Projects\Win_Optimizer\assets\Icons\blank.ico"
+    )
+    $srcFound = $null
+    foreach ($c in $candidateBlank) {
+        if ($c -and (Test-Path $c)) {
+            $srcFound = (Resolve-Path $c).Path
+            break
+        }
+    }
+
+    if ($srcFound) {
+        Copy-Item -Path $srcFound -Destination $destIco -Force -ErrorAction SilentlyContinue
+    }
+
+    $shellIconsKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons'
+    if (-not (Test-Path $shellIconsKey)) { New-Item -Path $shellIconsKey -Force | Out-Null }
+
+    $iconVal = if (Test-Path $destIco) { $destIco } else { "%SystemRoot%\System32\shell32.dll,-50" }
+    Set-ItemProperty -Path $shellIconsKey -Name '29' -Value $iconVal -Type String -Force
+    Write-Host "      [+] Shell Icons key '29' set to transparent icon ($iconVal)" -ForegroundColor Green
+
+    # Refresh Windows Shell icon cache
+    Update-DesktopIconCache
+
+    Write-Host "      [OK] Desktop shortcut arrows removed (No arrow)!" -ForegroundColor Green
+}
+
+function Restore-ShortcutArrow {
+    <#
+    .SYNOPSIS
+        Restores default Windows shortcut arrow overlay.
+    #>
+    Write-Host "`n[*] Restoring Default Windows Shortcut Arrow Icon Overlay..." -ForegroundColor Yellow
+    $shellIconsKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons'
+    if (Test-Path $shellIconsKey) {
+        Remove-ItemProperty -Path $shellIconsKey -Name '29' -ErrorAction SilentlyContinue
+    }
+    Update-DesktopIconCache
+    Write-Host "      [+] Default Windows shortcut arrows restored." -ForegroundColor Green
+}
+
+
 
 
 # ==============================================================================

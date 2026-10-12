@@ -390,3 +390,326 @@ function Install-VcRedistAioDirect {
 }
 
 # ==============================================================================
+# TRAFFICMONITOR & MISANS FONTS CUSTOM INSTALLER ENGINE
+# ==============================================================================
+
+function Install-TrafficMonitorLatest {
+    [CmdletBinding()]
+    param(
+        [string]$TargetDir = "$env:ProgramFiles\TrafficMonitor",
+        [scriptblock]$LogCallback
+    )
+
+    $log = {
+        param([string]$Text, [string]$Color = "Cyan")
+        if ($LogCallback) { & $LogCallback $Text } else { Write-Host $Text -ForegroundColor $Color }
+    }
+
+    & $log "[*] Querying latest TrafficMonitor release from GitHub (zhongyang219/TrafficMonitor)..." "Cyan"
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+
+    try {
+        $headers = @{ "User-Agent" = "PumpkiN-WinOptimizer" }
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/zhongyang219/TrafficMonitor/releases/latest" -Headers $headers -ErrorAction Stop
+        $tag = $release.tag_name
+        & $log "[+] Found latest TrafficMonitor release: $tag" "Green"
+
+        # Match x64 zip package (prefer full over lite)
+        $asset = $release.assets | Where-Object { $_.name -match 'x64' -and $_.name -notmatch 'Lite' -and $_.name -match '\.zip$' } | Select-Object -First 1
+        if (-not $asset) {
+            $asset = $release.assets | Where-Object { $_.name -match 'x64' -and $_.name -match '\.zip$' } | Select-Object -First 1
+        }
+        if (-not $asset) {
+            & $log "[-] Could not find x64 release asset for TrafficMonitor." "Red"
+            return $false
+        }
+
+        $downloadUrl = $asset.browser_download_url
+        $tempZip = Join-Path $env:TEMP $asset.name
+        $sizeMb = [math]::Round($asset.size / 1MB, 2)
+        & $log "[*] Downloading $($asset.name) ($sizeMb MB)..." "Cyan"
+
+        $wc = New-Object System.Net.WebClient
+        $wc.Headers.Add("User-Agent", "PumpkiN-WinOptimizer")
+        $wc.DownloadFile($downloadUrl, $tempZip)
+        & $log "[+] Download complete: $tempZip" "Green"
+
+        # Check and gracefully stop running TrafficMonitor process before extraction
+        $running = Get-Process -Name "TrafficMonitor" -ErrorAction SilentlyContinue
+        if ($running) {
+            & $log "[*] Stopping active TrafficMonitor process for clean update..." "Yellow"
+            $running | Stop-Process -Force -ErrorAction SilentlyContinue
+            Start-Sleep -Milliseconds 800
+        }
+
+        if (-not (Test-Path $TargetDir)) {
+            New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
+        }
+
+        & $log "[*] Extracting package to $TargetDir..." "Yellow"
+        $tempExtract = Join-Path $env:TEMP ("TrafficMonitor_Extract_" + [System.Guid]::NewGuid().ToString("N"))
+        Expand-Archive -Path $tempZip -DestinationPath $tempExtract -Force
+        Copy-Item -Path "$tempExtract\*" -Destination $TargetDir -Recurse -Force
+        Remove-Item $tempZip -Force -ErrorAction SilentlyContinue
+        Remove-Item $tempExtract -Recurse -Force -ErrorAction SilentlyContinue
+
+        # Create Desktop and Common Programs Start Menu shortcuts
+        try {
+            $exePath = Join-Path $TargetDir "TrafficMonitor.exe"
+            if (Test-Path $exePath) {
+                $wsh = New-Object -ComObject WScript.Shell
+                $desktopDir = [Environment]::GetFolderPath('Desktop')
+                $deskShort = $wsh.CreateShortcut((Join-Path $desktopDir "TrafficMonitor.lnk"))
+                $deskShort.TargetPath = $exePath
+                $deskShort.WorkingDirectory = $TargetDir
+                $deskShort.Description = "TrafficMonitor Real-time System Monitor"
+                $deskShort.Save()
+
+                $startPrograms = [Environment]::GetFolderPath('CommonPrograms')
+                $startShort = $wsh.CreateShortcut((Join-Path $startPrograms "TrafficMonitor.lnk"))
+                $startShort.TargetPath = $exePath
+                $startShort.WorkingDirectory = $TargetDir
+                $startShort.Description = "TrafficMonitor Real-time System Monitor"
+                $startShort.Save()
+                & $log "[+] Created Desktop and Start Menu shortcuts." "Green"
+            }
+        } catch {}
+
+        & $log "[+] SUCCESS: TrafficMonitor ($tag) installed successfully to $TargetDir!" "Green"
+        return $true
+    } catch {
+        & $log "[-] Failed to download or install TrafficMonitor: $($_.Exception.Message)" "Red"
+        return $false
+    }
+}
+
+function Install-MiSansFonts {
+    [CmdletBinding()]
+    param(
+        [string]$SourceFolder = "",
+        [scriptblock]$LogCallback
+    )
+
+    $log = {
+        param([string]$Text, [string]$Color = "Cyan")
+        if ($LogCallback) { & $LogCallback $Text } else { Write-Host $Text -ForegroundColor $Color }
+    }
+
+    # Resolve fonts source directory: prioritize bundled assets, then local dev paths
+    $possibleDirs = @(
+        $SourceFolder,
+        (Join-Path $PSScriptRoot "..\assets\Fonts\MiSans"),
+        "D:\Editing\Fonts\MiSans",
+        (Join-Path $env:SystemDrive "Editing\Fonts\MiSans")
+    )
+    $fontDir = $null
+    foreach ($d in $possibleDirs) {
+        if ($d -and (Test-Path $d)) {
+            $files = Get-ChildItem -Path $d -Filter "*.ttf" -ErrorAction SilentlyContinue
+            if ($files -and $files.Count -gt 0) {
+                $fontDir = $d
+                break
+            }
+        }
+    }
+
+    if (-not $fontDir) {
+        & $log "[-] MiSans font files not found in assets or D:\Editing\Fonts\MiSans." "Red"
+        return $false
+    }
+
+    & $log "[*] Installing MiSans fonts from $fontDir..." "Cyan"
+    $fontsInstalled = 0
+    $fontDestDir = Join-Path $env:windir "Fonts"
+    $fontRegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
+
+    # AddFontResource signature for real-time font cache update without reboot
+    $csharpSig = @'
+    using System;
+    using System.Runtime.InteropServices;
+    public class FontNative {
+        [DllImport("gdi32.dll", EntryPoint="AddFontResourceW", SetLastError=true)]
+        public static extern int AddFontResource([MarshalAs(UnmanagedType.LPWStr)] string lpFileName);
+        [DllImport("user32.dll")]
+        public static extern int SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, IntPtr lParam, uint fuFlags, uint uTimeout, out UIntPtr lpdwResult);
+    }
+'@
+    if (-not ([System.Management.Automation.PSTypeName]'FontNative').Type) {
+        try { Add-Type -TypeDefinition $csharpSig -ErrorAction SilentlyContinue } catch {}
+    }
+
+    $ttfFiles = Get-ChildItem -Path $fontDir -Filter "*.ttf" -ErrorAction SilentlyContinue
+    foreach ($f in $ttfFiles) {
+        try {
+            $destFile = Join-Path $fontDestDir $f.Name
+            Copy-Item -Path $f.FullName -Destination $destFile -Force -ErrorAction Stop
+
+            # Font display name in registry
+            $cleanName = $f.BaseName -replace '^MiSans-?', 'MiSans '
+            $cleanName = $cleanName.Trim()
+            $regName = "$cleanName (TrueType)"
+
+            Set-ItemProperty -Path $fontRegPath -Name $regName -Value $f.Name -Type String -Force -ErrorAction SilentlyContinue
+
+            if (([System.Management.Automation.PSTypeName]'FontNative').Type) {
+                [FontNative]::AddFontResource($destFile) | Out-Null
+            }
+            $fontsInstalled++
+            & $log "      [+] Installed font: $regName" "Green"
+        } catch {
+            & $log "      [!] Warning copying $($f.Name): $($_.Exception.Message)" "Yellow"
+        }
+    }
+
+    # Broadcast WM_FONTCHANGE to refresh all top-level windows
+    if (([System.Management.Automation.PSTypeName]'FontNative').Type) {
+        $res = [UIntPtr]::Zero
+        [FontNative]::SendMessageTimeout([IntPtr]0xFFFF, 0x001D, [UIntPtr]::Zero, [IntPtr]::Zero, 2, 1000, [ref]$res) | Out-Null
+    }
+
+    if ($fontsInstalled -gt 0) {
+        & $log "[+] SUCCESS: $fontsInstalled MiSans font weights installed and registered with Windows!" "Green"
+        return $true
+    } else {
+        & $log "[-] No fonts could be installed." "Red"
+        return $false
+    }
+}
+
+function Apply-TrafficMonitorConfig {
+    [CmdletBinding()]
+    param(
+        [string]$TargetDir = "",
+        [string]$ConfigSource = "",
+        [scriptblock]$LogCallback
+    )
+
+    $log = {
+        param([string]$Text, [string]$Color = "Cyan")
+        if ($LogCallback) { & $LogCallback $Text } else { Write-Host $Text -ForegroundColor $Color }
+    }
+
+    # 1. Resolve source config.ini: check bundled assets first, then user's local path
+    $possibleConfigs = @(
+        $ConfigSource,
+        (Join-Path $PSScriptRoot "..\assets\TrafficMonitor\config.ini"),
+        "G:\Program Files\TrafficMonitor\config.ini",
+        "C:\Program Files\TrafficMonitor\config.ini"
+    )
+    $srcConfig = $null
+    foreach ($c in $possibleConfigs) {
+        if ($c -and (Test-Path $c)) {
+            $srcConfig = $c
+            break
+        }
+    }
+
+    if (-not $srcConfig) {
+        & $log "[-] Custom config.ini not found in assets or G:\Program Files\TrafficMonitor\config.ini." "Red"
+        return $false
+    }
+
+    # 2. Resolve destination directory
+    $possibleDests = @(
+        $TargetDir,
+        "$env:ProgramFiles\TrafficMonitor",
+        "G:\Program Files\TrafficMonitor",
+        "C:\Program Files (x86)\TrafficMonitor"
+    )
+    $destDir = $null
+    foreach ($d in $possibleDests) {
+        if ($d -and (Test-Path (Join-Path $d "TrafficMonitor.exe"))) {
+            $destDir = $d
+            break
+        } elseif ($d -and (Test-Path $d)) {
+            $destDir = $d
+            break
+        }
+    }
+    if (-not $destDir) {
+        $destDir = "$env:ProgramFiles\TrafficMonitor"
+        New-Item -ItemType Directory -Path $destDir -Force | Out-Null
+    }
+
+    & $log "[*] Applying TrafficMonitor config from $srcConfig to $destDir..." "Cyan"
+
+    # Close running TrafficMonitor before overwriting config.ini
+    $running = Get-Process -Name "TrafficMonitor" -ErrorAction SilentlyContinue
+    $wasRunning = $false
+    if ($running) {
+        $wasRunning = $true
+        & $log "[*] Stopping running TrafficMonitor process to apply config..." "Yellow"
+        $running | Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Milliseconds 800
+    }
+
+    $destFile = Join-Path $destDir "config.ini"
+    try {
+        Copy-Item -Path $srcConfig -Destination $destFile -Force -ErrorAction Stop
+        & $log "[+] SUCCESS: Custom config.ini applied to $destFile!" "Green"
+
+        if ($wasRunning) {
+            $exe = Join-Path $destDir "TrafficMonitor.exe"
+            if (Test-Path $exe) {
+                & $log "[*] Restarting TrafficMonitor with new configuration..." "Cyan"
+                Start-Process -FilePath $exe -WorkingDirectory $destDir
+            }
+        }
+        return $true
+    } catch {
+        & $log "[-] Failed to apply config.ini: $($_.Exception.Message)" "Red"
+        return $false
+    }
+}
+
+function Start-TrafficMonitorApp {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
+
+    $log = {
+        param([string]$Text, [string]$Color = "Cyan")
+        if ($LogCallback) { & $LogCallback $Text } else { Write-Host $Text -ForegroundColor $Color }
+    }
+
+    $possiblePaths = @(
+        "$env:ProgramFiles\TrafficMonitor\TrafficMonitor.exe",
+        "G:\Program Files\TrafficMonitor\TrafficMonitor.exe",
+        "C:\Program Files (x86)\TrafficMonitor\TrafficMonitor.exe"
+    )
+    $found = $null
+    foreach ($p in $possiblePaths) {
+        if (Test-Path $p) {
+            $found = $p
+            break
+        }
+    }
+
+    if ($found) {
+        & $log "[*] Launching TrafficMonitor ($found)..." "Cyan"
+        $dir = Split-Path $found -Parent
+        Start-Process -FilePath $found -WorkingDirectory $dir
+        & $log "[+] TrafficMonitor launched successfully!" "Green"
+        return $true
+    } else {
+        & $log "[-] TrafficMonitor.exe not found. Please install it first." "Yellow"
+        return $false
+    }
+}
+
+function Install-TrafficMonitorSuite {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
+
+    $ok1 = Install-TrafficMonitorLatest -LogCallback $LogCallback
+    $ok2 = Install-MiSansFonts -LogCallback $LogCallback
+    $ok3 = Apply-TrafficMonitorConfig -LogCallback $LogCallback
+    if ($ok1) { Start-TrafficMonitorApp -LogCallback $LogCallback }
+    return ($ok1 -and $ok2 -and $ok3)
+}
+
+
+# ==============================================================================
