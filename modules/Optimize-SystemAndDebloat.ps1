@@ -458,6 +458,108 @@ function Clear-WindowsUpdateCache {
     Write-Host "      [OK] Windows Update Cache cleared: ~$mbFreed MB freed! Update services restarted." -ForegroundColor Green
 }
 
+function Invoke-DeepCacheCleaner {
+    <#
+    .SYNOPSIS
+        Deep cache, Prefetch, spooler, and Windows Event Log cleaner inspired by 01 Cache Cleaner.bat.
+    .DESCRIPTION
+        Cleans System Temp, User Temp, Prefetch, Spooler printer queue, Explorer history,
+        recent items, legacy temporary caches, and wipes all Windows Event Logs via wevtutil.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Starting Deep Cache, Prefetch & Windows Event Log Cleaner..." -ForegroundColor Yellow
+
+    $totalFreed = 0
+    $deletedFiles = 0
+
+    # 1. Stop Printer Spooler service to unlock spooler files
+    $spooler = Get-Service -Name 'Spooler' -ErrorAction SilentlyContinue
+    if ($spooler -and $spooler.Status -eq 'Running') {
+        Stop-Service -Name 'Spooler' -Force -ErrorAction SilentlyContinue
+    }
+
+    # 2. Target Directories & Cache Locations (Faithful to 01 Cache Cleaner.bat)
+    $cleanTargets = @(
+        "$env:SystemRoot\Temp",
+        "$env:TEMP",
+        "$env:LOCALAPPDATA\Temp",
+        "$env:SystemRoot\Prefetch",
+        "$env:SystemRoot\System32\spool\PRINTERS",
+        "$env:SystemRoot\spool\printers",
+        "$env:SystemRoot\tempor~1",
+        "$env:SystemRoot\tmp",
+        "$env:SystemRoot\history",
+        "$env:SystemRoot\cookies",
+        "$env:SystemRoot\recent",
+        "$env:APPDATA\Microsoft\Windows\Recent",
+        "$env:LOCALAPPDATA\Microsoft\Windows\INetCache"
+    )
+
+    foreach ($target in $cleanTargets) {
+        if (Test-Path $target) {
+            try {
+                $items = Get-ChildItem -Path $target -Recurse -Force -ErrorAction SilentlyContinue
+                foreach ($item in $items) {
+                    if (-not $item.PSIsContainer) {
+                        $totalFreed += $item.Length
+                        $deletedFiles++
+                    }
+                }
+                Remove-Item -Path "$target\*" -Recurse -Force -ErrorAction SilentlyContinue
+            } catch {}
+
+            # Recreate base folder if it was deleted
+            if (-not (Test-Path $target)) {
+                New-Item -ItemType Directory -Path $target -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+        }
+    }
+
+    # 3. Clean pattern matches (ff*.tmp, WIN386.SWP, thumbnail caches)
+    $specificPatterns = @(
+        "$env:SystemRoot\ff*.tmp",
+        "$env:SystemDrive\WIN386.SWP",
+        "$env:LOCALAPPDATA\Microsoft\Windows\Explorer\thumbcache_*.db"
+    )
+    foreach ($pattern in $specificPatterns) {
+        $files = Get-Item -Path $pattern -Force -ErrorAction SilentlyContinue
+        foreach ($f in $files) {
+            $totalFreed += $f.Length
+            $deletedFiles++
+            Remove-Item -Path $f.FullName -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    # 4. Restart Spooler service
+    if ($spooler) {
+        Start-Service -Name 'Spooler' -ErrorAction SilentlyContinue
+    }
+
+    $mbFreed = [math]::Round($totalFreed / 1MB, 2)
+    Write-Host "      [+] Disk Cache Cleaned: ~$mbFreed MB freed across Temp, Prefetch, Spooler & Recent items." -ForegroundColor Green
+
+    # 5. Clear All Windows Event Logs (from 01 Cache Cleaner.bat)
+    Write-Host "      [*] Clearing all Windows Event Logs via wevtutil..." -ForegroundColor Yellow
+    $clearedLogs = 0
+    try {
+        $eventLogs = wevtutil.exe el 2>$null
+        foreach ($log in $eventLogs) {
+            $logName = $log.Trim()
+            if (-not [string]::IsNullOrWhiteSpace($logName)) {
+                wevtutil.exe cl "`"$logName`"" 2>$null
+                $clearedLogs++
+            }
+        }
+        Write-Host "      [+] Windows Event Logs purged: $clearedLogs event logs cleared!" -ForegroundColor Green
+    } catch {
+        Write-Host "      [~] Event log clearing skipped or limited ($($_.Exception.Message))" -ForegroundColor DarkYellow
+    }
+
+    Write-Host "      [OK] Deep Cache & Event Log Cleaner completed successfully!" -ForegroundColor Green
+}
+
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {

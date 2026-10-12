@@ -52,6 +52,7 @@ function Start-PumpkiNGui {
 
     $btnRunAllTweaks    = $window.FindName("BtnRunAllTweaks")
     $btnRevertDefaults  = $window.FindName("BtnRevertDefaults")
+    $btnClearDeepCacheBar = $window.FindName("BtnClearDeepCacheBar")
     $btnClearUpdateCache = $window.FindName("BtnClearUpdateCache")
     $btnInstallDirectXDirect = $window.FindName("BtnInstallDirectXDirect")
     $btnInstallVcRedistAio = $window.FindName("BtnInstallVcRedistAio")
@@ -420,6 +421,18 @@ function Start-PumpkiNGui {
         & $script:SetProgress 0
     })
 
+    if ($btnClearDeepCacheBar) {
+        $btnClearDeepCacheBar.Add_Click({
+            & $script:LogToGui "[*] Starting Deep Cache, Prefetch & Windows Event Log Cleaner..."
+            & $script:SetProgress 40
+            Invoke-DeepCacheCleaner
+            & $script:SetProgress 100
+            & $script:LogToGui "[+] Deep Cache & Event Cleaner completed successfully!"
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
+
     if ($btnClearUpdateCache) {
         $btnClearUpdateCache.Add_Click({
             & $script:LogToGui "[*] Purging Windows Update & Delivery Optimization cache..."
@@ -567,6 +580,7 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_TakeOwnership" "Take Ownership Menu" { Enable-TakeOwnershipMenu }
     Register-QuickTweakButton "BtnApply_JunkTasks" "Disable Junk Tasks" { Disable-ScheduledJunkTasks }
     Register-QuickTweakButton "BtnApply_Privacy" "Disable Telemetry" { Harden-PrivacyTelemetry }
+    Register-QuickTweakButton "BtnApply_DeepCache" "Deep Cache & Event Cleaner" { Invoke-DeepCacheCleaner }
 
     # 1-Click Tweak Activators: System & Hardening
     Register-QuickTweakButton "BtnApply_BlockWpbt" "Block WPBT Bloat" { Block-WpbtExecution }

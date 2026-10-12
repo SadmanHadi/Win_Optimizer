@@ -703,6 +703,19 @@ $Global:xamlContent = @'
                                                 <Button Name="BtnApply_Privacy" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="Deep Cache &amp; Event Cleaner" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Purges Windows Temp, Prefetch, spooler cache, and wipes all Windows Event Logs." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <Button Name="BtnApply_DeepCache" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -718,6 +731,7 @@ $Global:xamlContent = @'
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Click [Apply] next to any tweak to run it individually, or run all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="BtnClearDeepCacheBar" Content="Deep Cache Cleaner" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallVcRedistAio" Content="VC++ AIO (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
