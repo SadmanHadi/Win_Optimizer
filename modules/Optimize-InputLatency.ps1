@@ -1,4 +1,4 @@
-﻿<#
+<#
 ================================================================================
   PumpkiN's Modular Suite: 8000Hz Input Buffer & 1:1 Raw Mouse Curve Suite
 ================================================================================
@@ -42,6 +42,18 @@ function Optimize-LatencyAndInput {
     Set-ItemProperty -Path $mouseKey -Name 'SmoothMouseXCurve' -Value $smoothX -Type Binary
     Set-ItemProperty -Path $mouseKey -Name 'SmoothMouseYCurve' -Value $smoothY -Type Binary
     Write-Host "      [+] 8000Hz Mouse Buffer tuned + 100% Raw 1:1 Mouse Input Curve applied" -ForegroundColor Green
+
+    # CSRSS Realtime & Max I/O Priority
+    Optimize-CsrssPriority
+}
+
+function Optimize-CsrssPriority {
+    Write-Host "`n[*] Setting CSRSS to Realtime CPU Priority & Maximum I/O Priority..." -ForegroundColor Yellow
+    $csrssKey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions'
+    if (-not (Test-Path $csrssKey)) { New-Item -Path $csrssKey -Force | Out-Null }
+    Set-ItemProperty -Path $csrssKey -Name 'CpuPriorityClass' -Value 4 -Type DWord
+    Set-ItemProperty -Path $csrssKey -Name 'IoPriority' -Value 4 -Type DWord
+    Write-Host "      [+] CSRSS Hooked -> Realtime CPU Priority (4) & Max I/O Priority (4)" -ForegroundColor Green
 }
 
 # If run directly as standalone script (not dot-sourced)

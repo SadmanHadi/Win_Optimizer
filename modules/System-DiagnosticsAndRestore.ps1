@@ -1,4 +1,4 @@
-﻿<#
+<#
 ================================================================================
   PumpkiN's Modular Suite: Esports Game Hooks, Diagnostics & Restore Engine
 ================================================================================
@@ -138,6 +138,7 @@ function Restore-Defaults {
         'Deadlock.exe','AndroidEmulatorEn.exe','AndroidEmulator.exe'
     )
     foreach ($g in $games) { Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$g\PerfOptions" -Recurse -Force -ErrorAction SilentlyContinue }
+    Remove-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions" -Recurse -Force -ErrorAction SilentlyContinue
     
     bcdedit /deletevalue disabledynamictick 2>$null
     Unregister-ScheduledTask -TaskName 'PumpkiN_AutoEmptyStandbyList' -Confirm:$false -ErrorAction SilentlyContinue

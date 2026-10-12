@@ -346,6 +346,7 @@ $Global:xamlContent = @'
                                     <StackPanel>
                                         <TextBlock Text="INPUT &amp; TIMER RESOLUTION" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
                                         <CheckBox Name="ChkInputLatency" Content="8000Hz Polling Rate &amp; Keyboard Response Tuning" IsChecked="True"/>
+                                        <CheckBox Name="ChkCsrssPriority" Content="CSRSS Realtime Priority &amp; Max I/O (Thread &amp; Input Latency)" IsChecked="True"/>
                                         <CheckBox Name="ChkCpuSystem" Content="CPU Scheduling &amp; MMCSS Gaming Priority Threads" IsChecked="True"/>
                                         <CheckBox Name="ChkSvcHost" Content="Optimize SvcHost Process Splitting for Physical RAM" IsChecked="True"/>
                                     </StackPanel>

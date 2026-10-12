@@ -1,4 +1,4 @@
-﻿<#
+<#
 ================================================================================
   PumpkiN's Modular Suite: Desktop WPF GUI Event Controller & Async Engine
 ================================================================================
@@ -53,6 +53,7 @@ function Start-PumpkiNGui {
     $chkMpo             = $window.FindName("ChkMpo")
     $chkMouseCurve      = $window.FindName("ChkMouseCurve")
     $chkInputLatency    = $window.FindName("ChkInputLatency")
+    $chkCsrssPriority   = $window.FindName("ChkCsrssPriority")
     $chkCpuSystem       = $window.FindName("ChkCpuSystem")
     $chkSvcHost         = $window.FindName("ChkSvcHost")
     $chkNetwork         = $window.FindName("ChkNetwork")
@@ -353,6 +354,7 @@ function Start-PumpkiNGui {
         & $script:SetProgress 30
 
         if ($chkInputLatency.IsChecked) { & $script:LogToGui "[*] Optimizing 8000Hz Input & Timers..."; Optimize-LatencyAndInput }
+        if ($chkCsrssPriority -and $chkCsrssPriority.IsChecked) { & $script:LogToGui "[*] Setting CSRSS to Realtime & Max I/O Priority..."; Optimize-CsrssPriority }
         if ($chkCpuSystem.IsChecked) { & $script:LogToGui "[*] Optimizing CPU Scheduling & Quantum..."; Optimize-CpuAndSystem }
         if ($chkSvcHost.IsChecked) { & $script:LogToGui "[*] Tuning SvcHost Process Splitting..."; Optimize-SvcHostSplitting }
         & $script:SetProgress 55
