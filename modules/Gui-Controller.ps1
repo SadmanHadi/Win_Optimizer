@@ -435,7 +435,7 @@ function Start-PumpkiNGui {
     }
 
     $btnBeastMode.Add_Click({
-        & $script:LogToGui "ðŸ”¥ ENGAGING FULL BEAST MODE SUITE..."
+        & $script:LogToGui "[*] ENGAGING FULL BEAST MODE SUITE..."
         & $script:SetProgress 15
         Optimize-Network
         & $script:SetProgress 30
@@ -460,7 +460,7 @@ function Start-PumpkiNGui {
         Disable-StickyKeysPrompt
         & $script:SetProgress 100
         & $script:LogToGui "================================================================================"
-        & $script:LogToGui "ðŸ”¥ [OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
+        & $script:LogToGui "[OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
         & $script:LogToGui "================================================================================"
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0

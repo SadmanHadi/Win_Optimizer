@@ -189,7 +189,7 @@ $Global:xamlContent = @'
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="âš¡" FontSize="26" Foreground="#FF7700" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                    <Border Background="#FF7700" CornerRadius="4" Padding="6,2" Margin="0,0,12,0" VerticalAlignment="Center"><TextBlock Text="PKN" FontWeight="Bold" FontSize="16" Foreground="#0F141C"/></Border>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="PUMPKIN" FontSize="20" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center"/>
@@ -203,8 +203,8 @@ $Global:xamlContent = @'
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Name="BtnRestorePointTop" Content="ðŸ›¡ï¸ Create Restore Point" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                    <Button Name="BtnMasActivateTop" Content="ðŸ”‘ MAS Activation" Style="{StaticResource DarkOutlineButton}"/>
+                    <Button Name="BtnRestorePointTop" Content="Create Restore Point" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                    <Button Name="BtnMasActivateTop" Content="MAS Activation" Style="{StaticResource DarkOutlineButton}"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -213,7 +213,7 @@ $Global:xamlContent = @'
         <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="14,10,14,0">
 
             <!-- TAB 1: SOFTWARE DOWNLOADER -->
-            <TabItem Header="ðŸ“¦ Software Downloader">
+            <TabItem Header="Software Downloader">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -239,7 +239,7 @@ $Global:xamlContent = @'
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox Name="TxtSearch" Height="34" Background="#0F141C" Foreground="#FFFFFF" BorderBrush="#26354A" BorderThickness="1" Padding="10,6" FontSize="13" VerticalContentAlignment="Center"/>
-                                <TextBlock IsHitTestVisible="False" Text="ðŸ” Search 100+ applications (e.g. Brave, Discord, Steam, VS Code)..." VerticalAlignment="Center" Margin="12,0,0,0" Foreground="#64748B" FontSize="13">
+                                <TextBlock IsHitTestVisible="False" Text="Search 100+ applications (e.g. Brave, Discord, Steam, VS Code)..." VerticalAlignment="Center" Margin="12,0,0,0" Foreground="#64748B" FontSize="13">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -292,9 +292,9 @@ $Global:xamlContent = @'
 
                             <StackPanel Grid.Row="0">
                                 <TextBlock Text="ACTIONS" FontSize="12" FontWeight="Bold" Foreground="#94A3B8" Margin="0,0,0,10"/>
-                                <Button Name="BtnInstallSelected" Content="âš¡ Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,10"/>
-                                <Button Name="BtnUninstallSelected" Content="ðŸ—‘ï¸ Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
-                                <Button Name="BtnUpgradeAll" Content="ðŸ”„ Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,14"/>
+                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,10"/>
+                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
+                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,14"/>
                             </StackPanel>
 
                             <Separator Grid.Row="1" Background="#26354A" Margin="0,0,0,14"/>
@@ -307,7 +307,7 @@ $Global:xamlContent = @'
                             </StackPanel>
 
                             <Border Grid.Row="3" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10">
-                                <TextBlock Text="ðŸ’¡ WinGet installs directly from official vendor repositories with silent parameters." FontSize="11" Foreground="#64748B" TextWrapping="Wrap"/>
+                                <TextBlock Text="WinGet installs directly from official vendor repositories with silent parameters." FontSize="11" Foreground="#64748B" TextWrapping="Wrap"/>
                             </Border>
                         </Grid>
                     </Border>
@@ -315,7 +315,7 @@ $Global:xamlContent = @'
             </TabItem>
 
             <!-- TAB 2: GAMING TWEAKS -->
-            <TabItem Header="ðŸŽ® Gaming Tweaks">
+            <TabItem Header="Gaming Tweaks">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -398,7 +398,7 @@ $Global:xamlContent = @'
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
                                         <StackPanel Grid.Column="0">
-                                            <TextBlock Text="ðŸ”¥ FULL BEAST MODE" FontSize="14" FontWeight="Bold" Foreground="#FF7700"/>
+                                            <TextBlock Text="FULL BEAST MODE" FontSize="14" FontWeight="Bold" Foreground="#FF7700"/>
                                             <TextBlock Text="Applies all 20+ competitive low-latency optimizations simultaneously." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
                                         </StackPanel>
                                         <Button Name="BtnBeastMode" Grid.Column="1" Content="ENGAGE BEAST MODE" Style="{StaticResource OrangeButton}" VerticalAlignment="Center"/>
@@ -420,8 +420,8 @@ $Global:xamlContent = @'
                                 <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallVcRedistAio" Content="VC++ AIO (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnRevertDefaults" Content="âª Revert to Windows Defaults" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnRunAllTweaks" Content="âš¡ Apply Selected Tweaks" Style="{StaticResource CyanButton}"/>
+                                <Button Name="BtnRevertDefaults" Content="Revert to Windows Defaults" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnRunAllTweaks" Content="Apply Selected Tweaks" Style="{StaticResource CyanButton}"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -429,7 +429,7 @@ $Global:xamlContent = @'
             </TabItem>
 
             <!-- TAB 3: MATCH BOOSTER -->
-            <TabItem Header="ðŸš€ Match Booster">
+            <TabItem Header="Match Booster">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -447,7 +447,7 @@ $Global:xamlContent = @'
                             <StackPanel>
                                 <TextBlock Text="STANDBY MEMORY PURGER" FontWeight="Bold" FontSize="14" Foreground="#00D2FF" Margin="0,0,0,6"/>
                                 <TextBlock Text="Clears cached standby list RAM instantly, preventing stutter during gaming matches." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
-                                <Button Name="BtnPurgeStandby" Content="ðŸ§¹ Purge Standby Memory Now" Style="{StaticResource CyanButton}" Margin="0,0,0,10"/>
+                                <Button Name="BtnPurgeStandby" Content="Purge Standby Memory Now" Style="{StaticResource CyanButton}" Margin="0,0,0,10"/>
                                 <TextBlock Text="Uses Win32 memory management API with zero disk wear." FontSize="11" Foreground="#64748B"/>
                             </StackPanel>
                         </Border>
@@ -457,7 +457,7 @@ $Global:xamlContent = @'
                             <StackPanel>
                                 <TextBlock Text="WI-FI LATENCY SPIKE SHIELD" FontWeight="Bold" FontSize="14" Foreground="#FF7700" Margin="0,0,0,6"/>
                                 <TextBlock Text="Toggles WLAN AutoConfig to halt background network roaming scans." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
-                                <Button Name="BtnToggleWifiScan" Content="ðŸ“¶ Toggle Wi-Fi AutoConfig" Style="{StaticResource OrangeButton}" Margin="0,0,0,10"/>
+                                <Button Name="BtnToggleWifiScan" Content="Toggle Wi-Fi AutoConfig" Style="{StaticResource OrangeButton}" Margin="0,0,0,10"/>
                                 <TextBlock Text="Enable before entering matches to stop 60-second periodic 200ms ping spikes." FontSize="11" Foreground="#64748B"/>
                             </StackPanel>
                         </Border>
@@ -471,36 +471,36 @@ $Global:xamlContent = @'
 
                             <WrapPanel Margin="0,0,0,14">
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Counter-Strike 2 (cs2.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Counter-Strike 2 (cs2.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Valorant (VALORANT-Win64-Shipping.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Valorant (VALORANT-Win64-Shipping.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Apex Legends (r5apex.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Apex Legends (r5apex.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Fortnite (FortniteClient-Win64-Shipping.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Fortnite (FortniteClient-Win64-Shipping.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Call of Duty (cod.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Call of Duty (cod.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Rainbow Six Siege (RainbowSix.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Rainbow Six Siege (RainbowSix.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                                 <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="ðŸŽ¯ Overwatch 2 (Overwatch.exe)" Foreground="#FFFFFF" FontSize="12"/>
+                                    <TextBlock Text="[>] Overwatch 2 (Overwatch.exe)" Foreground="#FFFFFF" FontSize="12"/>
                                 </Border>
                             </WrapPanel>
 
-                            <Button Name="BtnApplyGameHooks" Content="âš¡ Install Esports Priority Hooks" Style="{StaticResource CyanButton}" HorizontalAlignment="Left"/>
+                            <Button Name="BtnApplyGameHooks" Content="Install Esports Priority Hooks" Style="{StaticResource CyanButton}" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </Border>
                 </Grid>
             </TabItem>
 
             <!-- TAB 4: SYSTEM & HARDENING TOOLS -->
-            <TabItem Header="ðŸ›¡ï¸ System &amp; Hardening">
+            <TabItem Header="System &amp; Hardening">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -552,9 +552,9 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="16" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="1-CLICK SYSTEM POWER TOOLS" FontWeight="Bold" FontSize="13" Foreground="#00FF88" Margin="0,0,0,10"/>
-                                        <Button Name="BtnMasActivate" Content="ðŸ”‘ Microsoft Activation Scripts (MAS 1-Click)" Style="{StaticResource OrangeButton}" Margin="0,0,0,8"/>
-                                        <Button Name="BtnRestorePoint" Content="ðŸ›¡ï¸ Create System Restore Point" Style="{StaticResource CyanButton}" Margin="0,0,0,8"/>
-                                        <Button Name="BtnRunDiagnostics" Content="ðŸ©º Run System Hardware &amp; Latency Diagnostics" Style="{StaticResource DarkOutlineButton}"/>
+                                        <Button Name="BtnMasActivate" Content="Microsoft Activation Scripts (MAS 1-Click)" Style="{StaticResource OrangeButton}" Margin="0,0,0,8"/>
+                                        <Button Name="BtnRestorePoint" Content="Create System Restore Point" Style="{StaticResource CyanButton}" Margin="0,0,0,8"/>
+                                        <Button Name="BtnRunDiagnostics" Content="Run System Hardware &amp; Latency Diagnostics" Style="{StaticResource DarkOutlineButton}"/>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
@@ -568,7 +568,7 @@ $Global:xamlContent = @'
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Hardening optimizations protect against OEM bloatware, telemetry, and background throttling." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            <Button Name="BtnApplyHardening" Grid.Column="1" Content="âš¡ Apply Hardening Tweaks" Style="{StaticResource CyanButton}"/>
+                            <Button Name="BtnApplyHardening" Grid.Column="1" Content="Apply Hardening Tweaks" Style="{StaticResource CyanButton}"/>
                         </Grid>
                     </Border>
                 </Grid>
