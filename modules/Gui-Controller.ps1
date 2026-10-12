@@ -30,6 +30,9 @@ function Start-PumpkiNGui {
 
     $btnRunAllTweaks    = $window.FindName("BtnRunAllTweaks")
     $btnRevertDefaults  = $window.FindName("BtnRevertDefaults")
+    $btnClearUpdateCache = $window.FindName("BtnClearUpdateCache")
+    $btnInstallDirectXDirect = $window.FindName("BtnInstallDirectXDirect")
+    $btnInstallVcRedistAio = $window.FindName("BtnInstallVcRedistAio")
     $btnBeastMode       = $window.FindName("BtnBeastMode")
 
     $btnPurgeStandby    = $window.FindName("BtnPurgeStandby")
@@ -66,6 +69,8 @@ function Start-PumpkiNGui {
     $chkStickyKeys      = $window.FindName("ChkStickyKeys")
     $chkDebloatServices = $window.FindName("ChkDebloatServices")
     $chkDiskIo          = $window.FindName("ChkDiskIo")
+    $chkCompactOs       = $window.FindName("ChkCompactOs")
+    $chkTakeOwnership   = $window.FindName("ChkTakeOwnership")
     $chkJunkTasks       = $window.FindName("ChkJunkTasks")
     $chkPrivacy         = $window.FindName("ChkPrivacy")
 
@@ -375,6 +380,8 @@ function Start-PumpkiNGui {
 
         if ($chkDebloatServices.IsChecked) { & $script:LogToGui "[*] Debloating Background Services..."; Debloat-BackgroundServices }
         if ($chkDiskIo.IsChecked) { & $script:LogToGui "[*] Optimizing Disk I/O..."; Optimize-DiskIO }
+        if ($chkCompactOs -and $chkCompactOs.IsChecked) { & $script:LogToGui "[*] Compacting Windows with LZX (CompactOS)..."; Enable-CompactOS }
+        if ($chkTakeOwnership -and $chkTakeOwnership.IsChecked) { & $script:LogToGui "[*] Adding Take Ownership context menu..."; Enable-TakeOwnershipMenu }
         if ($chkJunkTasks.IsChecked) { & $script:LogToGui "[*] Disabling Junk Scheduled Tasks..."; Disable-ScheduledJunkTasks }
         if ($chkPrivacy.IsChecked) { & $script:LogToGui "[*] Hardening Privacy & Disabling Telemetry..."; Harden-PrivacyTelemetry }
 
@@ -393,6 +400,39 @@ function Start-PumpkiNGui {
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0
     })
+
+    if ($btnClearUpdateCache) {
+        $btnClearUpdateCache.Add_Click({
+            & $script:LogToGui "[*] Purging Windows Update & Delivery Optimization cache..."
+            & $script:SetProgress 40
+            Clear-WindowsUpdateCache
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
+
+    if ($btnInstallDirectXDirect) {
+        $btnInstallDirectXDirect.Add_Click({
+            & $script:LogToGui "[*] Starting direct download and installation of DirectX Runtimes..."
+            & $script:SetProgress 20
+            Install-DirectXDirect -LogCallback $script:LogToGui
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
+
+    if ($btnInstallVcRedistAio) {
+        $btnInstallVcRedistAio.Add_Click({
+            & $script:LogToGui "[*] Starting direct download and installation of Visual C++ Redistributables..."
+            & $script:SetProgress 20
+            Install-VcRedistAioDirect -LogCallback $script:LogToGui
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
 
     $btnBeastMode.Add_Click({
         & $script:LogToGui "ðŸ”¥ ENGAGING FULL BEAST MODE SUITE..."

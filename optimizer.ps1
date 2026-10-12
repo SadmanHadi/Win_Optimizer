@@ -1,4 +1,4 @@
-﻿<#
+<#
 ================================================================================
    ____                       _    _       _   _ 
   |  _ \ _   _ _ __ ___  _ __| | _(_)_ __ | \ | |
@@ -129,6 +129,10 @@ function Show-PumpkiNBanner {
     Write-Host "  [25] Purge Windows AI Bloatware (Recall, Copilot, CoreAI)" -ForegroundColor Magenta
     Write-Host "  [26] Security-Only Updates (Defer Feature Builds 2 Years, Keep Quality Updates)" -ForegroundColor Green
     Write-Host "  [27] Restore Windows 10 Classic Right-Click Menu & File Visibility" -ForegroundColor Cyan
+    Write-Host "  [28] CompactOS LZX Compression (Reclaim 3-6GB on SSD/NVMe)" -ForegroundColor Green
+    Write-Host "  [29] Add 'Take Ownership' to Explorer Right-Click Menu" -ForegroundColor Cyan
+    Write-Host "  [30] Purge Windows Update & Delivery Optimization Cache" -ForegroundColor Yellow
+    Write-Host "  [31] Download & Install DirectX + Visual C++ AIO (Direct from Sites)" -ForegroundColor Magenta
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -136,7 +140,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-27]"
+        $choice = Read-Host "Select an option [0-31]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -156,6 +160,8 @@ function Show-ConsoleMenu {
                 Optimize-SvcHostSplitting
                 Enable-EndTaskRightClick
                 Disable-StickyKeysPrompt
+                Enable-TakeOwnershipMenu
+                Clear-WindowsUpdateCache
                 Write-Host "`n================================================================================" -ForegroundColor Green
                 Write-Host "  [OK] ALL OPTIMIZATIONS APPLIED SUCCESSFULLY  --  FULL BEAST MODE ENGAGED!" -ForegroundColor Green
                 Write-Host "================================================================================" -ForegroundColor Green
@@ -310,6 +316,23 @@ function Show-ConsoleMenu {
                 Enable-ClassicContextMenu
                 Set-ShowFileExtensionsAndHidden
                 Write-Host "`n[OK] Windows 10 classic context menu and file visibility restored!" -ForegroundColor Green
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "28" {
+                Enable-CompactOS
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "29" {
+                Enable-TakeOwnershipMenu
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "30" {
+                Clear-WindowsUpdateCache
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "31" {
+                Install-DirectXDirect
+                Install-VcRedistAioDirect
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

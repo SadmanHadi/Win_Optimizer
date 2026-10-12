@@ -1,4 +1,4 @@
-﻿<#
+<#
 ================================================================================
   PumpkiN's Modular Suite: 10-Category WinGet Software Catalog & Runner Engine
 ================================================================================
@@ -306,6 +306,87 @@ function Upgrade-AllWinGetPackages {
     }
 }
 
+function Install-DirectXDirect {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
 
+    $msg = "[*] Downloading official Microsoft DirectX End-User Runtime Web Installer..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $url = "https://download.microsoft.com/download/1/7/1/1718CCC4-6315-4D8E-9543-8E28A4E18C4C/dxwebsetup.exe"
+    $tempFile = Join-Path $env:TEMP "dxwebsetup.exe"
+
+    try {
+        [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+        (New-Object System.Net.WebClient).DownloadFile($url, $tempFile)
+        
+        $msg = "[*] Executing DirectX silent installation (/Q)..."
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+
+        $proc = Start-Process -FilePath $tempFile -ArgumentList "/Q" -Wait -PassThru
+        Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
+
+        if ($proc.ExitCode -eq 0) {
+            $msg = "[+] SUCCESS: DirectX Legacy Runtimes installed successfully!"
+            if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+            return $true
+        } else {
+            $msg = "[-] DirectX setup exited with code $($proc.ExitCode)"
+            if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor DarkYellow }
+            return $false
+        }
+    } catch {
+        $msg = "[-] Failed to download or install DirectX: $($_.Exception.Message)"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return $false
+    }
+}
+
+function Install-VcRedistAioDirect {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
+
+    $msg = "[*] Downloading official Microsoft Visual C++ 2015-2022 Redistributables..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor [System.Net.SecurityProtocolType]::Tls12
+    $wc = New-Object System.Net.WebClient
+
+    $urls = @(
+        @{ Name = "VC++ 2015-2022 x64"; Url = "https://aka.ms/vs/17/release/vc_redist.x64.exe"; File = Join-Path $env:TEMP "vc_redist.x64.exe" },
+        @{ Name = "VC++ 2015-2022 x86"; Url = "https://aka.ms/vs/17/release/vc_redist.x86.exe"; File = Join-Path $env:TEMP "vc_redist.x86.exe" }
+    )
+
+    $allSuccess = $true
+    foreach ($item in $urls) {
+        try {
+            $msg = "[*] Downloading $($item.Name)..."
+            if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+            $wc.DownloadFile($item.Url, $item.File)
+
+            $msg = "[*] Installing $($item.Name) silently..."
+            if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+            $proc = Start-Process -FilePath $item.File -ArgumentList "/install /quiet /norestart" -Wait -PassThru
+            Remove-Item $item.File -Force -ErrorAction SilentlyContinue
+
+            if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010) {
+                $msg = "[+] SUCCESS: $($item.Name) installed successfully!"
+                if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+            } else {
+                $msg = "[!] Warning: $($item.Name) exited with code $($proc.ExitCode)"
+                if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor DarkYellow }
+            }
+        } catch {
+            $msg = "[-] Failed to install $($item.Name): $($_.Exception.Message)"
+            if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+            $allSuccess = $false
+        }
+    }
+    return $allSuccess
+}
 
 # ==============================================================================

@@ -383,6 +383,8 @@ $Global:xamlContent = @'
                                         <TextBlock Text="SYSTEM DEBLOAT &amp; STORAGE" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
                                         <CheckBox Name="ChkDebloatServices" Content="Debloat Telemetry, Diagnostics &amp; Background Services" IsChecked="True"/>
                                         <CheckBox Name="ChkDiskIo" Content="Optimize Disk I/O &amp; Disable NTFS Last Access Timestamps" IsChecked="True"/>
+                                        <CheckBox Name="ChkCompactOs" Content="CompactOS LZX Compression (Reclaim 3-6GB on SSD/NVMe)" IsChecked="False"/>
+                                        <CheckBox Name="ChkTakeOwnership" Content="Add 'Take Ownership' to Explorer Right-Click Context Menu" IsChecked="True"/>
                                         <CheckBox Name="ChkJunkTasks" Content="Disable Telemetry &amp; CEIP Scheduled Tasks" IsChecked="True"/>
                                         <CheckBox Name="ChkPrivacy" Content="Harden Windows Privacy &amp; Disable Diagnostic Tracking" IsChecked="True"/>
                                     </StackPanel>
@@ -415,6 +417,9 @@ $Global:xamlContent = @'
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Select your desired optimizations above and click Apply. All tweaks are 100% reversible." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnInstallVcRedistAio" Content="VC++ AIO (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnRevertDefaults" Content="âª Revert to Windows Defaults" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnRunAllTweaks" Content="âš¡ Apply Selected Tweaks" Style="{StaticResource CyanButton}"/>
                             </StackPanel>
