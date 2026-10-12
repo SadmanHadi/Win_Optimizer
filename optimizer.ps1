@@ -45,6 +45,219 @@ function Get-HardwareProfile {
     }
 }
 
+# --- WINGET SOFTWARE CATALOG & MANAGER ENGINE ---
+
+$Global:AppCatalog = @(
+    # Browsers
+    @{ Key='brave'; Name='Brave'; Category='Browsers'; Winget='Brave.Brave'; Desc='Privacy-first high performance browser' },
+    @{ Key='chrome'; Name='Google Chrome'; Category='Browsers'; Winget='Google.Chrome'; Desc='Fast, popular Chromium browser' },
+    @{ Key='chromium'; Name='Chromium'; Category='Browsers'; Winget='Chromium.Chromium'; Desc='Open-source browser project behind Chrome' },
+    @{ Key='edge'; Name='Microsoft Edge'; Category='Browsers'; Winget='Microsoft.Edge'; Desc='Native Windows Chromium browser' },
+    @{ Key='firefox'; Name='Mozilla Firefox'; Category='Browsers'; Winget='Mozilla.Firefox'; Desc='Customizable, privacy-respecting browser' },
+    @{ Key='firefoxesr'; Name='Firefox ESR'; Category='Browsers'; Winget='Mozilla.Firefox.ESR'; Desc='Extended Support Release for rock-solid stability' },
+    @{ Key='floorp'; Name='Floorp'; Category='Browsers'; Winget='Ablaze.Floorp'; Desc='Feature-rich Japanese Firefox fork' },
+    @{ Key='librewolf'; Name='LibreWolf'; Category='Browsers'; Winget='LibreWolf.LibreWolf'; Desc='Hardened privacy and security Firefox build' },
+    @{ Key='tor'; Name='Tor Browser'; Category='Browsers'; Winget='TorProject.TorBrowser'; Desc='Onion routing anonymous browser' },
+    @{ Key='ungoogled'; Name='Ungoogled Chromium'; Category='Browsers'; Winget='eloston.ungoogled-chromium'; Desc='Chromium with Google services stripped' },
+    @{ Key='vivaldi'; Name='Vivaldi'; Category='Browsers'; Winget='VivaldiTechnologies.Vivaldi'; Desc='Power-user browser with deep customizability' },
+    @{ Key='waterfox'; Name='Waterfox'; Category='Browsers'; Winget='Waterfox.Waterfox'; Desc='Fast, legacy-compatible Firefox derivative' },
+    @{ Key='zen'; Name='Zen Browser'; Category='Browsers'; Winget='Zen-Team.Zen-Browser'; Desc='Modern tab-split Firefox-based browser' },
+
+    # Communications
+    @{ Key='discord'; Name='Discord'; Category='Communications'; Winget='Discord.Discord'; Desc='All-in-one voice and text chat for gamers' },
+    @{ Key='telegram'; Name='Telegram'; Category='Communications'; Winget='Telegram.TelegramDesktop'; Desc='Fast, cloud-based messaging app' },
+    @{ Key='signal'; Name='Signal'; Category='Communications'; Winget='OpenWhisperSystems.Signal'; Desc='End-to-end encrypted private messaging' },
+    @{ Key='slack'; Name='Slack'; Category='Communications'; Winget='SlackTechnologies.Slack'; Desc='Team collaboration and channel messaging' },
+    @{ Key='teams'; Name='Microsoft Teams'; Category='Communications'; Winget='Microsoft.Teams'; Desc='Workplace collaboration and video meetings' },
+    @{ Key='whatsapp'; Name='WhatsApp Desktop'; Category='Communications'; Winget='WhatsApp.WhatsApp'; Desc='Popular global mobile messaging on PC' },
+    @{ Key='zoom'; Name='Zoom'; Category='Communications'; Winget='Zoom.Zoom'; Desc='High-definition video calls and meetings' },
+    @{ Key='vesktop'; Name='Vesktop'; Category='Communications'; Winget='Vencord.Vesktop'; Desc='Custom Discord client with Vencord preloaded' },
+    @{ Key='teamspeak3'; Name='TeamSpeak 3'; Category='Communications'; Winget='TeamSpeakSystems.TeamSpeakClient'; Desc='Ultra-low latency crystal voice for gamers' },
+    @{ Key='element'; Name='Element'; Category='Communications'; Winget='Element.Element'; Desc='Secure decentralized Matrix chat client' },
+
+    # Development
+    @{ Key='vscode'; Name='VS Code'; Category='Development'; Winget='Microsoft.VisualStudioCode'; Desc='Microsoft modern code and script editor' },
+    @{ Key='cursor'; Name='Cursor'; Category='Development'; Winget='Anysphere.Cursor'; Desc='AI-powered code editor built on VS Code' },
+    @{ Key='git'; Name='Git'; Category='Development'; Winget='Git.Git'; Desc='Fast, scalable distributed version control' },
+    @{ Key='githubdesktop'; Name='GitHub Desktop'; Category='Development'; Winget='GitHub.GitHubDesktop'; Desc='Official GUI for GitHub repositories' },
+    @{ Key='githubcli'; Name='GitHub CLI'; Category='Development'; Winget='GitHub.cli'; Desc='Command-line tool for GitHub pull requests and issues' },
+    @{ Key='python3'; Name='Python 3'; Category='Development'; Winget='Python.Python.3.12'; Desc='Versatile programming language runtime' },
+    @{ Key='nodejs'; Name='NodeJS LTS'; Category='Development'; Winget='OpenJS.NodeJS.LTS'; Desc='JavaScript runtime built on Chrome V8' },
+    @{ Key='docker'; Name='Docker Desktop'; Category='Development'; Winget='Docker.DockerDesktop'; Desc='Container development and execution platform' },
+    @{ Key='neovim'; Name='Neovim'; Category='Development'; Winget='Neovim.Neovim'; Desc='Hyperextensible Vim-based terminal editor' },
+    @{ Key='sublime'; Name='Sublime Text'; Category='Development'; Winget='SublimeHQ.SublimeText.4'; Desc='Ultra-fast lightweight text and code editor' },
+    @{ Key='jetbrains'; Name='JetBrains Toolbox'; Category='Development'; Winget='JetBrains.Toolbox'; Desc='Manager for IntelliJ, PyCharm, and CLion' },
+    @{ Key='claudecode'; Name='Claude Code'; Category='Development'; Winget='Anthropic.ClaudeCode'; Desc='Agentic AI coding assistant from Anthropic' },
+    @{ Key='rust'; Name='Rustup'; Category='Development'; Winget='Rustlang.Rustup'; Desc='Rust toolchain installer and compiler' },
+    @{ Key='go'; Name='Go'; Category='Development'; Winget='GoLang.Go'; Desc='Fast, statically compiled programming language' },
+
+    # Document
+    @{ Key='acrobat'; Name='Adobe Acrobat Reader'; Category='Document'; Winget='Adobe.Acrobat.Reader.64-bit'; Desc='Industry standard PDF reader' },
+    @{ Key='obsidian'; Name='Obsidian'; Category='Document'; Winget='Obsidian.Obsidian'; Desc='Markdown-based personal knowledge base' },
+    @{ Key='libreoffice'; Name='LibreOffice'; Category='Document'; Winget='TheDocumentFoundation.LibreOffice'; Desc='Free and open source full office suite' },
+    @{ Key='pdf24'; Name='PDF24 Creator'; Category='Document'; Winget='geeksoftwareGmbH.PDF24'; Desc='Free Swiss Army knife for converting and merging PDFs' },
+    @{ Key='sumatrapdf'; Name='Sumatra PDF'; Category='Document'; Winget='SumatraPDF.SumatraPDF'; Desc='Featherweight, lightning-fast PDF viewer' },
+    @{ Key='joplin'; Name='Joplin'; Category='Document'; Winget='Joplin.Joplin'; Desc='Encrypted note-taking with sync capabilities' },
+    @{ Key='zotero'; Name='Zotero'; Category='Document'; Winget='DigitalScholar.Zotero'; Desc='Research tool and citation manager' },
+    @{ Key='foxit'; Name='Foxit PDF Reader'; Category='Document'; Winget='Foxit.FoxitReader'; Desc='Fast, feature-rich PDF reader' },
+
+    # Games
+    @{ Key='steam'; Name='Steam'; Category='Games'; Winget='Valve.Steam'; Desc='Premier PC gaming store and platform' },
+    @{ Key='epicgames'; Name='Epic Games Launcher'; Category='Games'; Winget='EpicGames.EpicGamesLauncher'; Desc='Home of Unreal Engine, Fortnite, and weekly free games' },
+    @{ Key='battlenet'; Name='Battle.net'; Category='Games'; Winget='Blizzard.BattleNet'; Desc='Blizzard launcher for COD, Overwatch, WoW' },
+    @{ Key='eaapp'; Name='EA App'; Category='Games'; Winget='ElectronicArts.EADesktop'; Desc='Electronic Arts gaming platform' },
+    @{ Key='gog'; Name='GOG Galaxy'; Category='Games'; Winget='GOG.Galaxy'; Desc='DRM-free PC game store and library manager' },
+    @{ Key='heroic'; Name='Heroic Games Launcher'; Category='Games'; Winget='HeroicGamesLauncher.HeroicGamesLauncher'; Desc='Open source launcher for Epic and GOG' },
+    @{ Key='roblox'; Name='Roblox'; Category='Games'; Winget='Roblox.RobloxPlayer'; Desc='Online game creation and player platform' },
+    @{ Key='curseforge'; Name='CurseForge'; Category='Games'; Winget='Overwolf.CurseForge'; Desc='Mod and addon manager for Minecraft and WoW' },
+    @{ Key='playnite'; Name='Playnite'; Category='Games'; Winget='Playnite.Playnite'; Desc='Universal open source video game library manager' },
+    @{ Key='ubisoft'; Name='Ubisoft Connect'; Category='Games'; Winget='Ubisoft.Connect'; Desc='Ubisoft official store and game hub' },
+    @{ Key='prismlauncher'; Name='Prism Launcher'; Category='Games'; Winget='PrismLauncher.PrismLauncher'; Desc='High-performance Minecraft instance launcher' },
+    @{ Key='cemu'; Name='Cemu'; Category='Games'; Winget='Cemu.Cemu'; Desc='High-performance Wii U emulator' },
+    @{ Key='geforcenow'; Name='GeForce NOW'; Category='Games'; Winget='Nvidia.GeForceNow'; Desc='NVIDIA cloud gaming client' },
+
+    # Microsoft Tools
+    @{ Key='powertoys'; Name='PowerToys'; Category='Microsoft Tools'; Winget='Microsoft.PowerToys'; Desc='System utilities for power users and window management' },
+    @{ Key='winterminal'; Name='Windows Terminal'; Category='Microsoft Tools'; Winget='Microsoft.WindowsTerminal'; Desc='Modern, tabbed command line for Windows' },
+    @{ Key='procexp'; Name='Process Explorer'; Category='Microsoft Tools'; Winget='Microsoft.Sysinternals.ProcessExplorer'; Desc='Advanced Task Manager replacement from Mark Russinovich' },
+    @{ Key='procmon'; Name='Process Monitor'; Category='Microsoft Tools'; Winget='Microsoft.Sysinternals.ProcessMonitor'; Desc='Real-time file system, registry, and process monitor' },
+    @{ Key='autoruns'; Name='Autoruns'; Category='Microsoft Tools'; Winget='Microsoft.Sysinternals.Autoruns'; Desc='Comprehensive startup and boot autostart inspector' },
+    @{ Key='tcpview'; Name='TCPView'; Category='Microsoft Tools'; Winget='Microsoft.Sysinternals.TCPView'; Desc='Real-time network socket connection viewer' },
+    @{ Key='pwsh'; Name='PowerShell 7'; Category='Microsoft Tools'; Winget='Microsoft.PowerShell'; Desc='Cross-platform, modern PowerShell core' },
+    @{ Key='dotnet8'; Name='.NET Desktop Runtime 8'; Category='Microsoft Tools'; Winget='Microsoft.DotNet.DesktopRuntime.8'; Desc='Microsoft .NET 8 desktop application runtime' },
+    @{ Key='vcredist'; Name='Visual C++ All-in-One'; Category='Microsoft Tools'; Winget='Microsoft.VCRedist.2015+.x64'; Desc='Essential runtime for PC games and programs' },
+
+    # Multimedia Tools
+    @{ Key='obs'; Name='OBS Studio'; Category='Multimedia Tools'; Winget='OBSProject.OBSStudio'; Desc='Live streaming and screen recording studio' },
+    @{ Key='vlc'; Name='VLC Media Player'; Category='Multimedia Tools'; Winget='VideoLAN.VLC'; Desc='Plays all video and audio formats flawlessly' },
+    @{ Key='handbrake'; Name='HandBrake'; Category='Multimedia Tools'; Winget='HandBrake.HandBrake'; Desc='Open-source video transcoder and converter' },
+    @{ Key='audacity'; Name='Audacity'; Category='Multimedia Tools'; Winget='Audacity.Audacity'; Desc='Multi-track audio editor and recorder' },
+    @{ Key='blender'; Name='Blender'; Category='Multimedia Tools'; Winget='BlenderFoundation.Blender'; Desc='Open-source 3D graphics and rendering suite' },
+    @{ Key='gimp'; Name='GIMP'; Category='Multimedia Tools'; Winget='GIMP.GIMP'; Desc='Free Photoshop alternative for photo manipulation' },
+    @{ Key='klite'; Name='K-Lite Codec Standard'; Category='Multimedia Tools'; Winget='CodecGuide.K-LiteCodecPack.Standard'; Desc='Comprehensive video codecs and MPC-HC player' },
+    @{ Key='sharex'; Name='ShareX'; Category='Multimedia Tools'; Winget='ShareX.ShareX'; Desc='Screen capture, file sharing, and productivity tool' },
+    @{ Key='mpv'; Name='mpv.net'; Category='Multimedia Tools'; Winget='mpv.net'; Desc='Minimalist, GPU-accelerated modern media player' },
+    @{ Key='eartrumpet'; Name='EarTrumpet'; Category='Multimedia Tools'; Winget='File-New-Project.EarTrumpet'; Desc='Powerful per-app audio volume control tray' },
+    @{ Key='paintnet'; Name='Paint.NET'; Category='Multimedia Tools'; Winget='dotPDN.PaintDotNet'; Desc='Intuitive image and photo editing software' },
+
+    # Pro Tools
+    @{ Key='ddu'; Name='Display Driver Uninstaller'; Category='Pro Tools'; Winget='Wagnardsoft.DisplayDriverUninstaller'; Desc='Cleanly strips GPU drivers for fresh install' },
+    @{ Key='cpuz'; Name='CPU-Z'; Category='Pro Tools'; Winget='CPUID.CPU-Z'; Desc='Detailed processor, cache, and motherboard specs' },
+    @{ Key='gpuz'; Name='GPU-Z'; Category='Pro Tools'; Winget='TechPowerUp.GPU-Z'; Desc='Graphics card hardware diagnostic utility' },
+    @{ Key='hwinfo'; Name='HWiNFO'; Category='Pro Tools'; Winget='REALiX.HWiNFO'; Desc='Hardware analysis, sensor monitoring, and telemetry' },
+    @{ Key='hwmonitor'; Name='HWMonitor'; Category='Pro Tools'; Winget='CPUID.HWMonitor'; Desc='Voltages, temperatures, and fan speed monitor' },
+    @{ Key='cinebench'; Name='Cinebench R23'; Category='Pro Tools'; Winget='Maxon.CinebenchR23'; Desc='Industry standard CPU rendering benchmark' },
+    @{ Key='wireshark'; Name='Wireshark'; Category='Pro Tools'; Winget='WiresharkFoundation.Wireshark'; Desc='Deep-packet network protocol analyzer' },
+    @{ Key='putty'; Name='PuTTY'; Category='Pro Tools'; Winget='PuTTY.PuTTY'; Desc='SSH and telnet terminal client' },
+    @{ Key='advipscan'; Name='Advanced IP Scanner'; Category='Pro Tools'; Winget='Famatech.AdvancedIPScanner'; Desc='Fast local network subnet scanner' },
+    @{ Key='nmap'; Name='Nmap'; Category='Pro Tools'; Winget='Insecure.Nmap'; Desc='Network discovery and vulnerability security scanner' },
+    @{ Key='protonvpn'; Name='Proton VPN'; Category='Pro Tools'; Winget='Proton.ProtonVPN'; Desc='Swiss encrypted zero-log virtual private network' },
+
+    # Selfhosted Tools
+    @{ Key='jellyfin'; Name='Jellyfin Media Player'; Category='Selfhosted Tools'; Winget='Jellyfin.JellyfinMediaPlayer'; Desc='Desktop client for self-hosted media server' },
+    @{ Key='plex'; Name='Plex Desktop'; Category='Selfhosted Tools'; Winget='Plex.Plex'; Desc='Personal media streaming client' },
+    @{ Key='moonlight'; Name='Moonlight'; Category='Selfhosted Tools'; Winget='MoonlightGameStreamingProject.Moonlight'; Desc='Ultra-low latency NVIDIA/Sunshine PC game streaming' },
+    @{ Key='sunshine'; Name='Sunshine'; Category='Selfhosted Tools'; Winget='LizardByte.Sunshine'; Desc='Self-hosted GameStream server for Moonlight clients' },
+    @{ Key='localsend'; Name='LocalSend'; Category='Selfhosted Tools'; Winget='LocalSend.LocalSend'; Desc='AirDrop alternative for local network file transfer' },
+    @{ Key='syncthing'; Name='Syncthing'; Category='Selfhosted Tools'; Winget='Syncthing.Syncthing'; Desc='Continuous peer-to-peer file synchronization' },
+    @{ Key='kodi'; Name='Kodi'; Category='Selfhosted Tools'; Winget='Kodi.Kodi'; Desc='Open source entertainment media center hub' },
+
+    # Utilities
+    @{ Key='afterburner'; Name='MSI Afterburner'; Category='Utilities'; Winget='Guru3D.Afterburner'; Desc='Gold standard GPU overclocking and fan curve tool' },
+    @{ Key='7zip'; Name='7-Zip'; Category='Utilities'; Winget='7zip.7zip'; Desc='High-compression file archiver' },
+    @{ Key='nanazip'; Name='NanaZip'; Category='Utilities'; Winget='M2Team.NanaZip'; Desc='7-Zip derivative integrated with Windows 11 context menu' },
+    @{ Key='revo'; Name='Revo Uninstaller'; Category='Utilities'; Winget='RevoUninstaller.RevoUninstaller'; Desc='Completely eradicates leftover files and registry keys' },
+    @{ Key='processlasso'; Name='Process Lasso'; Category='Utilities'; Winget='Bitsum.ProcessLasso'; Desc='CPU affinity and process priority optimization engine' },
+    @{ Key='bcuninstaller'; Name='Bulk Crap Uninstaller'; Category='Utilities'; Winget='Klocman.BulkCrapUninstaller'; Desc='Batch uninstaller for deep software cleaning' },
+    @{ Key='crystaldiskinfo'; Name='CrystalDiskInfo'; Category='Utilities'; Winget='CrystalDewWorld.CrystalDiskInfo'; Desc='SMART health and temperature monitor for SSDs/HDDs' },
+    @{ Key='crystaldiskmark'; Name='CrystalDiskMark'; Category='Utilities'; Winget='CrystalDewWorld.CrystalDiskMark'; Desc='Read/write storage speed benchmark' },
+    @{ Key='rufus'; Name='Rufus'; Category='Utilities'; Winget='Rufus.Rufus'; Desc='Bootable USB drive creator with Windows 11 bypasses' },
+    @{ Key='everything'; Name='Everything'; Category='Utilities'; Winget='voidtools.Everything'; Desc='Instantaneous desktop filename search engine' },
+    @{ Key='autohotkey'; Name='AutoHotkey'; Category='Utilities'; Winget='AutoHotkey.AutoHotkey'; Desc='Macro creation and desktop automation scripting' },
+    @{ Key='bitwarden'; Name='Bitwarden'; Category='Utilities'; Winget='Bitwarden.Bitwarden'; Desc='Open source secure password vault' },
+    @{ Key='1password'; Name='1Password'; Category='Utilities'; Winget='AgileBits.1Password'; Desc='Premium password manager and digital wallet' },
+    @{ Key='warp'; Name='Cloudflare WARP'; Category='Utilities'; Winget='Cloudflare.Warp'; Desc='Fast, private DNS and secure network proxy' },
+    @{ Key='nilesoft'; Name='Nilesoft Shell'; Category='Utilities'; Winget='Nilesoft.Shell'; Desc='Powerful context menu customizer for Windows' },
+    @{ Key='openrgb'; Name='OpenRGB'; Category='Utilities'; Winget='OpenRGB-org.OpenRGB'; Desc='Unified open source RGB lighting control' },
+    @{ Key='parsec'; Name='Parsec'; Category='Utilities'; Winget='Parsec.Parsec'; Desc='Ultra-low latency desktop and co-op remote streaming' },
+    @{ Key='snappydriver'; Name='Snappy Driver Installer'; Category='Utilities'; Winget='GlennDelahoy.SnappyDriverInstallerOrigin'; Desc='Driver updater and installer without bundled ads' },
+    @{ Key='winrar'; Name='WinRAR'; Category='Utilities'; Winget='RARLab.WinRAR'; Desc='Popular file archiver and RAR decompression utility' },
+    @{ Key='wiztree'; Name='WizTree'; Category='Utilities'; Winget='AntibodySoftware.WizTree'; Desc='High-speed MFT-reading disk space visualizer' }
+)
+
+function Get-WinGetCommand {
+    $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
+    if ($winget) { return $winget.Source }
+    
+    $localApps = "$Env:LocalAppData\Microsoft\WindowsApps\winget.exe"
+    if (Test-Path $localApps) { return $localApps }
+
+    return $null
+}
+
+function Install-WinGetPackage {
+    param(
+        [Parameter(Mandatory=$true)][string]$PackageId,
+        [scriptblock]$LogCallback
+    )
+    $cmd = Get-WinGetCommand
+    if (-not $cmd) {
+        if ($LogCallback) { & $LogCallback "[!] WinGet is not installed on this system. Please install the App Installer from Microsoft Store." "Red" }
+        return $false
+    }
+    
+    if ($LogCallback) { & $LogCallback "[*] Installing $PackageId via WinGet..." "Yellow" }
+    $proc = Start-Process -FilePath $cmd -ArgumentList "install --id `"$PackageId`" --silent --accept-package-agreements --accept-source-agreements --disable-interactivity" -NoNewWindow -PassThru -Wait
+    if ($proc.ExitCode -eq 0) {
+        if ($LogCallback) { & $LogCallback "[+] Successfully installed $PackageId!" "Green" }
+        return $true
+    } else {
+        if ($LogCallback) { & $LogCallback "[-] Installation failed or cancelled (Exit code: $($proc.ExitCode))" "Red" }
+        return $false
+    }
+}
+
+function Uninstall-WinGetPackage {
+    param(
+        [Parameter(Mandatory=$true)][string]$PackageId,
+        [scriptblock]$LogCallback
+    )
+    $cmd = Get-WinGetCommand
+    if (-not $cmd) {
+        if ($LogCallback) { & $LogCallback "[!] WinGet is not installed." "Red" }
+        return $false
+    }
+    
+    if ($LogCallback) { & $LogCallback "[*] Uninstalling $PackageId via WinGet..." "Yellow" }
+    $proc = Start-Process -FilePath $cmd -ArgumentList "uninstall --id `"$PackageId`" --silent" -NoNewWindow -PassThru -Wait
+    if ($proc.ExitCode -eq 0) {
+        if ($LogCallback) { & $LogCallback "[+] Successfully uninstalled $PackageId!" "Green" }
+        return $true
+    } else {
+        if ($LogCallback) { & $LogCallback "[-] Uninstall failed (Exit code: $($proc.ExitCode))" "Red" }
+        return $false
+    }
+}
+
+function Upgrade-AllWinGetPackages {
+    param([scriptblock]$LogCallback)
+    $cmd = Get-WinGetCommand
+    if (-not $cmd) {
+        if ($LogCallback) { & $LogCallback "[!] WinGet is not installed." "Red" }
+        return $false
+    }
+    
+    if ($LogCallback) { & $LogCallback "[*] Upgrading all applications via WinGet..." "Yellow" }
+    $proc = Start-Process -FilePath $cmd -ArgumentList "upgrade --all --silent --accept-package-agreements --accept-source-agreements" -NoNewWindow -PassThru -Wait
+    if ($proc.ExitCode -eq 0) {
+        if ($LogCallback) { & $LogCallback "[+] All applications upgraded successfully!" "Green" }
+        return $true
+    } else {
+        if ($LogCallback) { & $LogCallback "[~] Upgrade completed with exit code: $($proc.ExitCode)" "DarkYellow" }
+        return $false
+    }
+}
+
 function Show-PumpkiNBanner {
     Clear-Host
     $Host.UI.RawUI.ForegroundColor = 'Cyan'
@@ -1298,6 +1511,311 @@ function Set-SecurityUpdatesOnly {
     Set-ItemProperty -Path $wu -Name 'DeferFeatureUpdatesPeriodInDays' -Value 730 -Type DWord -ErrorAction SilentlyContinue
     Set-ItemProperty -Path $wu -Name 'DeferQualityUpdates' -Value 0 -Type DWord -ErrorAction SilentlyContinue
     Write-Host "      [+] Security-only update policy active  --  Feature builds deferred 2 years, drivers protected!" -ForegroundColor Green
+}
+
+
+
+# ==============================================================================
+# SECTION: WINGET APPLICATION CATALOG (10 CATEGORIES, 100+ PACKAGES)
+# ==============================================================================
+
+$Global:AppCatalog = @(
+    # --- BROWSERS ---
+    @{ Key = "brave"; Name = "Brave Browser"; Category = "Browsers"; WingetId = "Brave.Brave"; Description = "Privacy-oriented browser with built-in ad blocking" },
+    @{ Key = "chrome"; Name = "Google Chrome"; Category = "Browsers"; WingetId = "Google.Chrome"; Description = "Fast, standard Chromium browser" },
+    @{ Key = "chromium"; Name = "Chromium"; Category = "Browsers"; WingetId = "Hibbiki.Chromium"; Description = "Open-source foundation of Google Chrome" },
+    @{ Key = "edge"; Name = "Microsoft Edge"; Category = "Browsers"; WingetId = "Microsoft.Edge"; Description = "Modern Windows built-in browser" },
+    @{ Key = "firefox"; Name = "Mozilla Firefox"; Category = "Browsers"; WingetId = "Mozilla.Firefox"; Description = "Extensible open-source Gecko browser" },
+    @{ Key = "floorp"; Name = "Floorp Browser"; Category = "Browsers"; WingetId = "Ablaze.Floorp"; Description = "Customizable Firefox fork created in Japan" },
+    @{ Key = "librewolf"; Name = "LibreWolf"; Category = "Browsers"; WingetId = "LibreWolf.LibreWolf"; Description = "Hardened privacy-first Firefox fork" },
+    @{ Key = "tor"; Name = "Tor Browser"; Category = "Browsers"; WingetId = "TorProject.TorBrowser"; Description = "Anonymity-focused onion-routing browser" },
+    @{ Key = "vivaldi"; Name = "Vivaldi"; Category = "Browsers"; WingetId = "VivaldiTechnologies.Vivaldi"; Description = "Feature-packed browser with custom tabs" },
+    @{ Key = "waterfox"; Name = "Waterfox"; Category = "Browsers"; WingetId = "Waterfox.Waterfox"; Description = "Fast, ethical 64-bit Gecko browser" },
+    @{ Key = "zen"; Name = "Zen Browser"; Category = "Browsers"; WingetId = "Zen-Team.Zen-Browser"; Description = "Modern, beautiful Firefox-based vertical tabs browser" },
+    @{ Key = "operagx"; Name = "Opera GX"; Category = "Browsers"; WingetId = "Opera.OperaGX"; Description = "Gaming browser with CPU/RAM limiters" },
+
+    # --- COMMUNICATIONS ---
+    @{ Key = "discord"; Name = "Discord"; Category = "Communications"; WingetId = "Discord.Discord"; Description = "All-in-one voice and text chat for gamers" },
+    @{ Key = "telegram"; Name = "Telegram Desktop"; Category = "Communications"; WingetId = "Telegram.TelegramDesktop"; Description = "Fast, secure cloud messaging client" },
+    @{ Key = "signal"; Name = "Signal"; Category = "Communications"; WingetId = "OpenWhisperSystems.Signal"; Description = "End-to-end encrypted private messenger" },
+    @{ Key = "slack"; Name = "Slack"; Category = "Communications"; WingetId = "SlackTechnologies.Slack"; Description = "Team collaboration and workplace messaging" },
+    @{ Key = "teams"; Name = "Microsoft Teams"; Category = "Communications"; WingetId = "Microsoft.Teams"; Description = "Video conferencing and enterprise chat" },
+    @{ Key = "whatsapp"; Name = "WhatsApp"; Category = "Communications"; WingetId = "WhatsApp.WhatsApp"; Description = "Popular worldwide messaging desktop app" },
+    @{ Key = "zoom"; Name = "Zoom Workplace"; Category = "Communications"; WingetId = "Zoom.Zoom"; Description = "Video meetings and webinars" },
+    @{ Key = "vesktop"; Name = "Vesktop"; Category = "Communications"; WingetId = "Vencord.Vesktop"; Description = "Lightweight Discord desktop client with Vencord" },
+    @{ Key = "teamspeak"; Name = "TeamSpeak 3"; Category = "Communications"; WingetId = "TeamSpeak-Systems.TeamSpeakClient"; Description = "Low-latency VoIP client for esports teams" },
+    @{ Key = "element"; Name = "Element"; Category = "Communications"; WingetId = "Element.Element"; Description = "Decentralized, encrypted Matrix client" },
+
+    # --- DEVELOPMENT ---
+    @{ Key = "vscode"; Name = "Visual Studio Code"; Category = "Development"; WingetId = "Microsoft.VisualStudioCode"; Description = "Extensible source code editor by Microsoft" },
+    @{ Key = "cursor"; Name = "Cursor AI"; Category = "Development"; WingetId = "Anysphere.Cursor"; Description = "AI-first code editor built on VS Code" },
+    @{ Key = "git"; Name = "Git for Windows"; Category = "Development"; WingetId = "Git.Git"; Description = "Distributed version control system" },
+    @{ Key = "githubdesktop"; Name = "GitHub Desktop"; Category = "Development"; WingetId = "GitHub.GitHubDesktop"; Description = "GUI client for Git and GitHub workflows" },
+    @{ Key = "python"; Name = "Python 3.12"; Category = "Development"; WingetId = "Python.Python.3.12"; Description = "Interpreted high-level programming language" },
+    @{ Key = "nodejs"; Name = "Node.js (LTS)"; Category = "Development"; WingetId = "OpenJS.NodeJS.LTS"; Description = "JavaScript runtime environment built on V8" },
+    @{ Key = "docker"; Name = "Docker Desktop"; Category = "Development"; WingetId = "Docker.DockerDesktop"; Description = "Containerization platform for developers" },
+    @{ Key = "rust"; Name = "Rustup"; Category = "Development"; WingetId = "Rustlang.Rustup"; Description = "Rust toolchain installer and version manager" },
+    @{ Key = "golang"; Name = "Go Programming Language"; Category = "Development"; WingetId = "GoLang.Go"; Description = "Fast, concurrent compiled programming language" },
+    @{ Key = "neovim"; Name = "Neovim"; Category = "Development"; WingetId = "Neovim.Neovim"; Description = "Vim-fork focused on extensibility and usability" },
+    @{ Key = "winterminal"; Name = "Windows Terminal"; Category = "Development"; WingetId = "Microsoft.WindowsTerminal"; Description = "Modern, fast tabbed terminal emulator" },
+    @{ Key = "notepadplusplus"; Name = "Notepad++"; Category = "Development"; WingetId = "Notepad++.Notepad++"; Description = "Fast, lightweight tabbed text and code editor" },
+    @{ Key = "sublimetext"; Name = "Sublime Text"; Category = "Development"; WingetId = "SublimeHQ.SublimeText.4"; Description = "Sophisticated text editor for code and prose" },
+    @{ Key = "dbeaver"; Name = "DBeaver Community"; Category = "Development"; WingetId = "dbeaver.dbeaver"; Description = "Universal database tool and SQL client" },
+    @{ Key = "postman"; Name = "Postman"; Category = "Development"; WingetId = "Postman.Postman"; Description = "API design, testing, and documentation platform" },
+
+    # --- DOCUMENT ---
+    @{ Key = "acrobat"; Name = "Adobe Acrobat Reader"; Category = "Document"; WingetId = "Adobe.Acrobat.Reader.64-bit"; Description = "Standard PDF viewing and printing utility" },
+    @{ Key = "obsidian"; Name = "Obsidian"; Category = "Document"; WingetId = "Obsidian.Obsidian"; Description = "Knowledge base on local plain-text Markdown" },
+    @{ Key = "libreoffice"; Name = "LibreOffice"; Category = "Document"; WingetId = "TheDocumentFoundation.LibreOffice"; Description = "Open-source office suite (Writer, Calc, Impress)" },
+    @{ Key = "pdf24"; Name = "PDF24 Creator"; Category = "Document"; WingetId = "geeksoftwareGmbH.PDF24Creator"; Description = "Free all-in-one PDF tools and converter" },
+    @{ Key = "sumatrapdf"; Name = "Sumatra PDF"; Category = "Document"; WingetId = "SumatraPDF.SumatraPDF"; Description = "Ultra-fast, ultra-lightweight PDF and eBook viewer" },
+    @{ Key = "joplin"; Name = "Joplin"; Category = "Document"; WingetId = "Joplin.Joplin"; Description = "Secure, end-to-end encrypted note-taking app" },
+    @{ Key = "zotero"; Name = "Zotero"; Category = "Document"; WingetId = "DigitalScience.Zotero"; Description = "Research tool for collecting and citing references" },
+    @{ Key = "foxit"; Name = "Foxit PDF Reader"; Category = "Document"; WingetId = "Foxit.FoxitReader"; Description = "Feature-rich, fast PDF viewer and annotator" },
+    @{ Key = "calibre"; Name = "Calibre"; Category = "Document"; WingetId = "KovidGoyal.Calibre"; Description = "Complete eBook library manager and converter" },
+    @{ Key = "typora"; Name = "Typora"; Category = "Document"; WingetId = "Typora.Typora"; Description = "Seamless live-preview Markdown editor" },
+
+    # --- GAMES ---
+    @{ Key = "steam"; Name = "Steam"; Category = "Games"; WingetId = "Valve.Steam"; Description = "Valve digital gaming platform and store" },
+    @{ Key = "epicgames"; Name = "Epic Games Launcher"; Category = "Games"; WingetId = "EpicGames.EpicGamesLauncher"; Description = "Epic Games store, Unreal Engine, and Fortnite" },
+    @{ Key = "battlenet"; Name = "Battle.net"; Category = "Games"; WingetId = "Blizzard.BattleNet"; Description = "Blizzard Entertainment game launcher" },
+    @{ Key = "eaapp"; Name = "EA App"; Category = "Games"; WingetId = "ElectronicArts.EADesktop"; Description = "Electronic Arts gaming hub" },
+    @{ Key = "goggalaxy"; Name = "GOG Galaxy"; Category = "Games"; WingetId = "GOG.Galaxy"; Description = "DRM-free gaming hub with universal library" },
+    @{ Key = "heroic"; Name = "Heroic Games Launcher"; Category = "Games"; WingetId = "HeroicGamesLauncher.HeroicGamesLauncher"; Description = "Open-source Epic and GOG games launcher" },
+    @{ Key = "roblox"; Name = "Roblox Player"; Category = "Games"; WingetId = "Roblox.Roblox"; Description = "Online gaming platform and game creation system" },
+    @{ Key = "curseforge"; Name = "CurseForge"; Category = "Games"; WingetId = "Overwolf.CurseForge"; Description = "Modding and addon manager for Minecraft and WoW" },
+    @{ Key = "playnite"; Name = "Playnite"; Category = "Games"; WingetId = "Playnite.Playnite"; Description = "Open-source video game library manager" },
+    @{ Key = "ubisoft"; Name = "Ubisoft Connect"; Category = "Games"; WingetId = "Ubisoft.Connect"; Description = "Ubisoft digital store and ecosystem client" },
+    @{ Key = "prism"; Name = "Prism Launcher"; Category = "Games"; WingetId = "PrismLauncher.PrismLauncher"; Description = "Custom open-source Minecraft launcher" },
+    @{ Key = "moonlight"; Name = "Moonlight Game Streaming"; Category = "Games"; WingetId = "MoonlightGameStreamingProject.Moonlight"; Description = "NVIDIA GameStream and Sunshine open-source client" },
+
+    # --- MICROSOFT TOOLS ---
+    @{ Key = "powertoys"; Name = "Microsoft PowerToys"; Category = "Microsoft Tools"; WingetId = "Microsoft.PowerToys"; Description = "System utilities for power users (FancyZones, Run, OCR)" },
+    @{ Key = "sysinternals"; Name = "Sysinternals Suite"; Category = "Microsoft Tools"; WingetId = "Microsoft.Sysinternals.Suite"; Description = "Complete suite of advanced Windows diagnostic tools" },
+    @{ Key = "dotnet8"; Name = ".NET 8 Desktop Runtime"; Category = "Microsoft Tools"; WingetId = "Microsoft.DotNet.DesktopRuntime.8"; Description = "Runtime required for modern desktop .NET apps" },
+    @{ Key = "vcredist64"; Name = "Visual C++ 2015-2022 (x64)"; Category = "Microsoft Tools"; WingetId = "Microsoft.VCRedist.2015+.x64"; Description = "Essential 64-bit runtime for almost all Windows games" },
+    @{ Key = "vcredist86"; Name = "Visual C++ 2015-2022 (x86)"; Category = "Microsoft Tools"; WingetId = "Microsoft.VCRedist.2015+.x86"; Description = "Essential 32-bit runtime for legacy Windows games" },
+    @{ Key = "directx"; Name = "DirectX End-User Runtimes"; Category = "Microsoft Tools"; WingetId = "Microsoft.DirectX"; Description = "DirectX 9/10/11 legacy library runtimes for games" },
+    @{ Key = "procexp"; Name = "Process Explorer"; Category = "Microsoft Tools"; WingetId = "Microsoft.Sysinternals.ProcessExplorer"; Description = "Advanced Task Manager with DLL and handle inspection" },
+    @{ Key = "autoruns"; Name = "AutoRuns"; Category = "Microsoft Tools"; WingetId = "Microsoft.Sysinternals.Autoruns"; Description = "Most comprehensive startup and autostart monitor" },
+    @{ Key = "pwsh7"; Name = "PowerShell 7"; Category = "Microsoft Tools"; WingetId = "Microsoft.PowerShell"; Description = "Latest cross-platform PowerShell core engine" },
+
+    # --- MULTIMEDIA TOOLS ---
+    @{ Key = "obs"; Name = "OBS Studio"; Category = "Multimedia Tools"; WingetId = "OBSProject.OBSStudio"; Description = "Industry standard live streaming and video recording" },
+    @{ Key = "vlc"; Name = "VLC Media Player"; Category = "Multimedia Tools"; WingetId = "VideoLAN.VLC"; Description = "Universal multimedia player for all codecs" },
+    @{ Key = "handbrake"; Name = "HandBrake"; Category = "Multimedia Tools"; WingetId = "HandBrake.HandBrake"; Description = "Open-source video transcoder and compressor" },
+    @{ Key = "audacity"; Name = "Audacity"; Category = "Multimedia Tools"; WingetId = "Audacity.Audacity"; Description = "Multi-track audio editor and recorder" },
+    @{ Key = "blender"; Name = "Blender"; Category = "Multimedia Tools"; WingetId = "BlenderFoundation.Blender"; Description = "Professional 3D creation, modeling, and VFX suite" },
+    @{ Key = "gimp"; Name = "GIMP"; Category = "Multimedia Tools"; WingetId = "GIMP.GIMP"; Description = "GNU Image Manipulation Program (Photoshop alternative)" },
+    @{ Key = "klite"; Name = "K-Lite Codec Pack Mega"; Category = "Multimedia Tools"; WingetId = "CodecGuide.K-LiteCodecPack.Mega"; Description = "Comprehensive DirectShow filters and video codecs" },
+    @{ Key = "sharex"; Name = "ShareX"; Category = "Multimedia Tools"; WingetId = "ShareX.ShareX"; Description = "Screen capture, file sharing, and productivity tool" },
+    @{ Key = "mpv"; Name = "mpv.net"; Category = "Multimedia Tools"; WingetId = "mpv.net"; Description = "Modern, minimalist GPU-accelerated media player" },
+    @{ Key = "paintnet"; Name = "Paint.NET"; Category = "Multimedia Tools"; WingetId = "dotPDN.PaintDotNet"; Description = "Free image and photo editing software for Windows" },
+    @{ Key = "foobar2000"; Name = "Foobar2000"; Category = "Multimedia Tools"; WingetId = "PeterPawlowski.foobar2000"; Description = "Advanced lightweight freeware audio player" },
+    @{ Key = "spotify"; Name = "Spotify"; Category = "Multimedia Tools"; WingetId = "Spotify.Spotify"; Description = "Digital music streaming desktop client" },
+
+    # --- PRO TOOLS ---
+    @{ Key = "ddu"; Name = "Display Driver Uninstaller"; Category = "Pro Tools"; WingetId = "Wagnardsoft.DisplayDriverUninstaller"; Description = "Clean uninstall tool for NVIDIA, AMD, and Intel drivers" },
+    @{ Key = "cpuz"; Name = "CPU-Z"; Category = "Pro Tools"; WingetId = "CPUID.CPU-Z"; Description = "Processor, motherboard, and RAM hardware diagnostics" },
+    @{ Key = "gpuz"; Name = "GPU-Z"; Category = "Pro Tools"; WingetId = "TechPowerUp.GPU-Z"; Description = "Video card and graphics information utility" },
+    @{ Key = "hwinfo"; Name = "HWiNFO"; Category = "Pro Tools"; WingetId = "REALiX.HWiNFO"; Description = "Hardware analysis, monitoring, and thermal reporting" },
+    @{ Key = "hwmonitor"; Name = "HWMonitor"; Category = "Pro Tools"; WingetId = "CPUID.HWMonitor"; Description = "Hardware voltage, temperature, and fan speed monitor" },
+    @{ Key = "cinebench"; Name = "Cinebench R23"; Category = "Pro Tools"; WingetId = "Maxon.CinebenchR23"; Description = "Industry standard CPU rendering benchmark" },
+    @{ Key = "wireshark"; Name = "Wireshark"; Category = "Pro Tools"; WingetId = "WiresharkFoundation.Wireshark"; Description = "Network protocol analyzer and packet sniffer" },
+    @{ Key = "putty"; Name = "PuTTY"; Category = "Pro Tools"; WingetId = "PuTTY.PuTTY"; Description = "SSH, Telnet, and serial terminal client" },
+    @{ Key = "mullvadvpn"; Name = "Mullvad VPN"; Category = "Pro Tools"; WingetId = "MullvadVPN.MullvadVPN"; Description = "Privacy-focused WireGuard VPN client" },
+    @{ Key = "protonvpn"; Name = "Proton VPN"; Category = "Pro Tools"; WingetId = "Proton.ProtonVPN"; Description = "High-speed Swiss encrypted VPN service" },
+    @{ Key = "winscp"; Name = "WinSCP"; Category = "Pro Tools"; WingetId = "WinSCP.WinSCP"; Description = "Free SFTP, SCP, and FTP client for Windows" },
+    @{ Key = "filezilla"; Name = "FileZilla Client"; Category = "Pro Tools"; WingetId = "TimKosse.FileZilla.Client"; Description = "Fast and reliable cross-platform FTP client" },
+
+    # --- SELFHOSTED TOOLS ---
+    @{ Key = "jellyfin"; Name = "Jellyfin Media Player"; Category = "Selfhosted Tools"; WingetId = "Jellyfin.JellyfinMediaPlayer"; Description = "Free software media streaming client" },
+    @{ Key = "plex"; Name = "Plex Desktop"; Category = "Selfhosted Tools"; WingetId = "Plex.PlexDesktop"; Description = "Desktop player for personal Plex media libraries" },
+    @{ Key = "sunshine"; Name = "Sunshine"; Category = "Selfhosted Tools"; WingetId = "LizardByte.Sunshine"; Description = "Self-hosted low latency game stream host for Moonlight" },
+    @{ Key = "localsend"; Name = "LocalSend"; Category = "Selfhosted Tools"; WingetId = "LocalSend.LocalSend"; Description = "AirDrop alternative for local network file sharing" },
+    @{ Key = "syncthing"; Name = "Syncthing"; Category = "Selfhosted Tools"; WingetId = "Syncthing.Syncthing"; Description = "Continuous, decentralized peer-to-peer file sync" },
+    @{ Key = "tailscale"; Name = "Tailscale"; Category = "Selfhosted Tools"; WingetId = "Tailscale.Tailscale"; Description = "Zero-config mesh VPN powered by WireGuard" },
+    @{ Key = "wireguard"; Name = "WireGuard"; Category = "Selfhosted Tools"; WingetId = "WireGuard.WireGuard"; Description = "Extremely fast, modern cryptographic VPN tunnel" },
+    @{ Key = "rustdesk"; Name = "RustDesk"; Category = "Selfhosted Tools"; WingetId = "RustDesk.RustDesk"; Description = "Open-source remote desktop alternative to TeamViewer" },
+
+    # --- UTILITIES ---
+    @{ Key = "afterburner"; Name = "MSI Afterburner"; Category = "Utilities"; WingetId = "Guru3D.Afterburner"; Description = "GPU overclocking, undervolting, and RivaTuner OSD" },
+    @{ Key = "7zip"; Name = "7-Zip"; Category = "Utilities"; WingetId = "7zip.7zip"; Description = "High-compression file archiver" },
+    @{ Key = "nanazip"; Name = "NanaZip"; Category = "Utilities"; WingetId = "M2Team.NanaZip"; Description = "Modern 7-Zip fork with Windows 11 context menus" },
+    @{ Key = "revo"; Name = "Revo Uninstaller"; Category = "Utilities"; WingetId = "RevoUninstaller.RevoUninstaller"; Description = "Deep software removal and leftover registry cleanup" },
+    @{ Key = "processlasso"; Name = "Process Lasso"; Category = "Utilities"; WingetId = "Bitsum.ProcessLasso"; Description = "CPU affinity, ProBalance, and process rules manager" },
+    @{ Key = "bcu"; Name = "Bulk Crap Uninstaller"; Category = "Utilities"; WingetId = "Klocman.BulkCrapUninstaller"; Description = "Open-source bulk uninstaller with quiet uninstall" },
+    @{ Key = "crystaldiskinfo"; Name = "CrystalDiskInfo"; Category = "Utilities"; WingetId = "CrystalDewWorld.CrystalDiskInfo"; Description = "HDD and NVMe SSD health monitoring (S.M.A.R.T.)" },
+    @{ Key = "crystaldiskmark"; Name = "CrystalDiskMark"; Category = "Utilities"; WingetId = "CrystalDewWorld.CrystalDiskMark"; Description = "Storage drive read and write speed benchmark" },
+    @{ Key = "rufus"; Name = "Rufus"; Category = "Utilities"; WingetId = "Rufus.Rufus"; Description = "Fast bootable USB drive creator with bypass options" },
+    @{ Key = "everything"; Name = "Everything"; Category = "Utilities"; WingetId = "voidtools.Everything"; Description = "Instant desktop file search by voidtools" },
+    @{ Key = "treesize"; Name = "TreeSize Free"; Category = "Utilities"; WingetId = "JAMSoftware.TreeSizeFree"; Description = "Fast disk space analyzer and folder tree view" },
+    @{ Key = "bleachbit"; Name = "BleachBit"; Category = "Utilities"; WingetId = "BleachBit.BleachBit"; Description = "Open-source system disk cleaner and cache wiper" },
+    @{ Key = "windirstat"; Name = "WinDirStat"; Category = "Utilities"; WingetId = "WinDirStat.WinDirStat"; Description = "Disk usage statistics viewer and cleanup tool" },
+    @{ Key = "fastcopy"; Name = "FastCopy"; Category = "Utilities"; WingetId = "SHIRSystem.FastCopy"; Description = "Fastest copy and backup software on Windows" }
+)
+
+# ==============================================================================
+# SECTION: WINGET ENGINE & RUNNER FUNCTIONS
+# ==============================================================================
+
+function Get-WinGetCommand {
+    [CmdletBinding()]
+    param()
+
+    $cmd = Get-Command winget.exe -ErrorAction SilentlyContinue
+    if ($cmd) {
+        return $cmd.Source
+    }
+
+    $winAppsPath = "$env:LOCALAPPDATA\Microsoft\WindowsApps\winget.exe"
+    if (Test-Path $winAppsPath) {
+        return $winAppsPath
+    }
+
+    $progFilesPath = "$env:ProgramFiles\WindowsApps\Microsoft.DesktopAppInstaller_*_x64__8wekyb3d8bbwe\winget.exe"
+    $match = Get-Item $progFilesPath -ErrorAction SilentlyContinue | Select-Object -Last 1
+    if ($match) {
+        return $match.FullName
+    }
+
+    return $null
+}
+
+function Install-WinGetPackage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageId,
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return $false
+    }
+
+    $msg = "[*] Installing $PackageId via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "install --id `"$PackageId`" --exact --accept-package-agreements --accept-source-agreements --silent --disable-interactivity"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $proc = [System.Diagnostics.Process]::Start($psi)
+    while (-not $proc.HasExited) {
+        $out = $proc.StandardOutput.ReadLine()
+        if ($out -and $LogCallback) { & $LogCallback "    $out" }
+        Start-Sleep -Milliseconds 50
+    }
+    $rem = $proc.StandardOutput.ReadToEnd()
+    if ($rem -and $LogCallback) { & $LogCallback "    $rem" }
+
+    if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 2316632065) {
+        $msg = "[+] SUCCESS: $PackageId installed successfully!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+        return $true
+    } else {
+        $msg = "[-] WARNING: WinGet exited with code $($proc.ExitCode) for $PackageId"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+        return $false
+    }
+}
+
+function Uninstall-WinGetPackage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageId,
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return $false
+    }
+
+    $msg = "[*] Uninstalling $PackageId via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "uninstall --id `"$PackageId`" --exact --silent"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $proc = [System.Diagnostics.Process]::Start($psi)
+    while (-not $proc.HasExited) {
+        $out = $proc.StandardOutput.ReadLine()
+        if ($out -and $LogCallback) { & $LogCallback "    $out" }
+        Start-Sleep -Milliseconds 50
+    }
+    $rem = $proc.StandardOutput.ReadToEnd()
+    if ($rem -and $LogCallback) { & $LogCallback "    $rem" }
+
+    if ($proc.ExitCode -eq 0) {
+        $msg = "[+] SUCCESS: $PackageId uninstalled successfully!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+        return $true
+    } else {
+        $msg = "[-] WARNING: WinGet uninstall exited with code $($proc.ExitCode) for $PackageId"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+        return $false
+    }
+}
+
+function Upgrade-AllWinGetPackages {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return $false
+    }
+
+    $msg = "[*] Upgrading all eligible applications via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "upgrade --all --accept-package-agreements --accept-source-agreements --silent --disable-interactivity"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $proc = [System.Diagnostics.Process]::Start($psi)
+    while (-not $proc.HasExited) {
+        $out = $proc.StandardOutput.ReadLine()
+        if ($out -and $LogCallback) { & $LogCallback "    $out" }
+        Start-Sleep -Milliseconds 50
+    }
+    $rem = $proc.StandardOutput.ReadToEnd()
+    if ($rem -and $LogCallback) { & $LogCallback "    $rem" }
+
+    if ($proc.ExitCode -eq 0) {
+        $msg = "[+] SUCCESS: All applications upgraded to latest version!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+        return $true
+    } else {
+        $msg = "[*] WinGet upgrade completed with exit code $($proc.ExitCode)"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+        return $true
+    }
 }
 
 
