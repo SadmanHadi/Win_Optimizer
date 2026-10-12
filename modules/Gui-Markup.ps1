@@ -877,6 +877,8 @@ $Global:xamlContent = @'
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Click [Apply] next to any tweak to run it individually, or run all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="BtnScanSystemState" Content="Audit System State" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnApplyUnappliedOnly" Content="Apply Unapplied Only" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnClearDeepCacheBar" Content="Deep Cache Cleaner" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
@@ -1296,7 +1298,11 @@ $Global:xamlContent = @'
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Click [Apply] next to any hardening tweak, or apply all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            <Button Name="BtnApplyHardening" Grid.Column="1" Content="Apply All Hardening" Style="{StaticResource CyanButton}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="BtnScanSystemStateTab4" Content="Audit System State" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnApplyUnappliedHardening" Content="Apply Unapplied Hardening" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnApplyHardening" Content="Apply All Hardening" Style="{StaticResource CyanButton}"/>
+                            </StackPanel>
                         </Grid>
                     </Border>
                 </Grid>
