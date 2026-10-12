@@ -136,6 +136,9 @@ function Show-PumpkiNBanner {
     Write-Host "  [32] Deep Cache & Event Cleaner (Temp, Prefetch, Spooler, Wipes Event Logs)" -ForegroundColor Yellow
     Write-Host "  [33] Pop Cat Recycle Bin Icons (One-Click Pop Cat Empty & Full Desktop Icons)" -ForegroundColor Green
     Write-Host "  [34] Restore Default Windows Recycle Bin Icons" -ForegroundColor DarkYellow
+    Write-Host "  [35] GPU Shader, Discord & Browser Cache Cleaner (DirectX, NVIDIA, AMD, Chrome)" -ForegroundColor Yellow
+    Write-Host "  [36] Gaming DNS Benchmark & 1-Click Fast Switcher (Cloudflare, Google, Quad9, etc.)" -ForegroundColor Cyan
+    Write-Host "  [37] Reset DNS to Automatic (DHCP Defaults)" -ForegroundColor DarkYellow
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -143,7 +146,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-34]"
+        $choice = Read-Host "Select an option [0-37]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -372,6 +375,24 @@ function Show-ConsoleMenu {
             }
             "34" {
                 Restore-RecycleBinDefaultIcon
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "35" {
+                Invoke-ShaderAndBrowserCacheCleaner
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "36" {
+                $results = Test-GamingDnsBenchmark
+                if ($results -and $results.Count -gt 0) {
+                    $applyChoice = Read-Host "`nDo you want to apply the fastest provider ($($results[0].Name)) to your active adapters? (Y/N)"
+                    if ($applyChoice -eq 'Y' -or $applyChoice -eq 'y') {
+                        Set-GamingDnsProvider -PrimaryDns $results[0].Primary -SecondaryDns $results[0].Secondary -ProviderName $results[0].Name
+                    }
+                }
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "37" {
+                Reset-DnsToAutomatic
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

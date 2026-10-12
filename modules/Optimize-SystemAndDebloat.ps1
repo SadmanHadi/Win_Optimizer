@@ -560,6 +560,66 @@ function Invoke-DeepCacheCleaner {
     Write-Host "      [OK] Deep Cache & Event Log Cleaner completed successfully!" -ForegroundColor Green
 }
 
+function Invoke-ShaderAndBrowserCacheCleaner {
+    <#
+    .SYNOPSIS
+        Purges GPU DirectX/NVIDIA/AMD shader caches and Discord/Browser caches.
+    .DESCRIPTION
+        Cleans DirectX D3DSCache, NVIDIA GLCache/DXCache/ComputeCache, AMD DxCache/GLCache,
+        Discord cache/Code Cache/GPUCache, and Chrome/Brave/Edge browser caches to fix shader stutter
+        and reclaim gigabytes of disk space.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Purging GPU Shader Caches, Discord & Browser Caches..." -ForegroundColor Yellow
+
+    $cacheTargets = @(
+        "$env:LOCALAPPDATA\D3DSCache",
+        "$env:LOCALAPPDATA\NVIDIA\GLCache",
+        "$env:LOCALAPPDATA\NVIDIA\DXCache",
+        "$env:APPDATA\NVIDIA\ComputeCache",
+        "$env:LOCALAPPDATA\AMD\DxCache",
+        "$env:LOCALAPPDATA\AMD\GLCache",
+        "$env:LOCALAPPDATA\Intel\ShaderCache",
+        "$env:APPDATA\discord\Cache",
+        "$env:APPDATA\discord\Code Cache",
+        "$env:APPDATA\discord\GPUCache",
+        "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Cache",
+        "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\Code Cache",
+        "$env:LOCALAPPDATA\Google\Chrome\User Data\Default\GPUCache",
+        "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Cache",
+        "$env:LOCALAPPDATA\BraveSoftware\Brave-Browser\User Data\Default\Code Cache",
+        "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Cache",
+        "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Code Cache"
+    )
+
+    $totalFreed = 0
+    $cleanedCount = 0
+
+    foreach ($target in $cacheTargets) {
+        if (Test-Path $target) {
+            try {
+                $measure = Get-ChildItem -Path $target -Recurse -Force -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum
+                if ($measure -and $measure.Sum) {
+                    $totalFreed += $measure.Sum
+                }
+                Remove-Item -Path "$target\*" -Recurse -Force -ErrorAction SilentlyContinue
+                $cleanedCount++
+            } catch {}
+
+            # Recreate base folder if needed
+            if (-not (Test-Path $target)) {
+                New-Item -ItemType Directory -Path $target -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+        }
+    }
+
+    $mbFreed = [math]::Round($totalFreed / 1MB, 2)
+    Write-Host "      [+] GPU Shader & App Cache Purged: ~$mbFreed MB freed across $cleanedCount cache repositories!" -ForegroundColor Green
+    Write-Host "      [OK] DirectX/NVIDIA/AMD shader caches and Discord/Browser caches refreshed." -ForegroundColor Green
+}
+
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {

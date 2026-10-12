@@ -623,6 +623,51 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_JunkTasks" "Disable Junk Tasks" { Disable-ScheduledJunkTasks }
     Register-QuickTweakButton "BtnApply_Privacy" "Disable Telemetry" { Harden-PrivacyTelemetry }
     Register-QuickTweakButton "BtnApply_DeepCache" "Deep Cache & Event Cleaner" { Invoke-DeepCacheCleaner }
+    Register-QuickTweakButton "BtnApply_ShaderCache" "GPU Shader & Browser Cache Purge" { Invoke-ShaderAndBrowserCacheCleaner }
+    Register-QuickTweakButton "BtnResetDns" "Reset DNS to DHCP Defaults" { Reset-DnsToAutomatic }
+
+    # Gaming DNS Benchmark & Auto-Apply Winner
+    $btnBenchmarkDns = $window.FindName("BtnBenchmarkDns")
+    if ($btnBenchmarkDns) {
+        $btnBenchmarkDns.Add_Click({
+            $btnBenchmarkDns.IsEnabled = $false
+            & $script:LogToGui "[*] Starting Gaming DNS Benchmark across top providers..."
+            & $script:SetProgress 20
+            [System.Threading.ThreadPool]::QueueUserWorkItem({
+                try {
+                    $results = Test-GamingDnsBenchmark
+                    $window.Dispatcher.Invoke([action]{
+                        & $script:SetProgress 70
+                        if ($results -and $results.Count -gt 0) {
+                            $fastest = $results[0]
+                            & $script:LogToGui "`n--- DNS BENCHMARK LEADERBOARD ---"
+                            foreach ($r in $results) {
+                                $pingStr = if ($r.AvgPingMs -lt 999) { "$($r.AvgPingMs) ms" } else { "TIMEOUT" }
+                                & $script:LogToGui "  $($r.Name.PadRight(12)): $pingStr ($($r.Primary))"
+                            }
+                            & $script:LogToGui "[+] Fastest Provider: $($fastest.Name) ($($fastest.AvgPingMs) ms)"
+                            & $script:LogToGui "[*] Auto-applying $($fastest.Name) DNS to active network adapters..."
+                            Set-GamingDnsProvider -PrimaryDns $fastest.Primary -SecondaryDns $fastest.Secondary -ProviderName $fastest.Name
+                            & $script:LogToGui "[+] Gaming DNS successfully configured to $($fastest.Name)!"
+                        } else {
+                            & $script:LogToGui "[!] No DNS ping responses received. Keeping current settings."
+                        }
+                        & $script:SetProgress 100
+                        Start-Sleep -Milliseconds 200
+                        & $script:SetProgress 0
+                        $btnBenchmarkDns.IsEnabled = $true
+                    })
+                } catch {
+                    $exMsg = $_.Exception.Message
+                    $window.Dispatcher.Invoke([action]{
+                        & $script:LogToGui "[!] DNS benchmark error: $exMsg"
+                        & $script:SetProgress 0
+                        $btnBenchmarkDns.IsEnabled = $true
+                    })
+                }
+            })
+        })
+    }
 
     # 1-Click Tweak Activators: System & Hardening
     Register-QuickTweakButton "BtnApply_BlockWpbt" "Block WPBT Bloat" { Block-WpbtExecution }

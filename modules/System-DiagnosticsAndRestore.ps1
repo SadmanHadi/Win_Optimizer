@@ -238,12 +238,19 @@ function Restore-Defaults {
     Write-Host "      [+] Key scheduled tasks re-enabled" -ForegroundColor Green
 
     # Reset DNS to DHCP automatic
-    if ($adapter) {
-        Set-DnsClientServerAddress -InterfaceIndex $adapter.ifIndex -ResetServerAddresses -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name 'MaxCacheTtl' -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name 'MaxNegativeCacheTtl' -ErrorAction SilentlyContinue
-        Write-Host "      [+] DNS reset to automatic (DHCP)" -ForegroundColor Green
+    if (Get-Command Reset-DnsToAutomatic -ErrorAction SilentlyContinue) {
+        Reset-DnsToAutomatic
+    } else {
+        $activeAdapters = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' }
+        foreach ($ad in $activeAdapters) {
+            Set-DnsClientServerAddress -InterfaceIndex $ad.InterfaceIndex -ResetServerAddresses -ErrorAction SilentlyContinue
+        }
+        Clear-DnsClientCache
+        ipconfig /flushdns | Out-Null
     }
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name 'MaxCacheTtl' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name 'MaxNegativeCacheTtl' -ErrorAction SilentlyContinue
+    Write-Host "      [+] DNS reset to automatic (DHCP) across all active adapters" -ForegroundColor Green
 
     # Revert WinUtil & Snappy OS hardening
     Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Dwm' -Name 'OverlayTestMode' -ErrorAction SilentlyContinue

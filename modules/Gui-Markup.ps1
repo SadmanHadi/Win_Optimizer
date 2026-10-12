@@ -538,6 +538,39 @@ $Global:xamlContent = @'
                                         </Border>
                                     </StackPanel>
                                 </Border>
+
+                                <!-- Card: Gaming DNS Benchmark & Fast Switcher -->
+                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="GAMING DNS BENCHMARK &amp; FAST SWITCHER" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="Benchmark &amp; Auto-Apply Fastest DNS" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Pings Cloudflare, Google, Quad9, AdGuard, OpenDNS (3-sample avg) and applies lowest latency provider." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <Button Name="BtnBenchmarkDns" Grid.Column="1" Content="Benchmark" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="Reset DNS to DHCP Defaults" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Restores automatic router DHCP DNS server addresses across all adapters." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <Button Name="BtnResetDns" Grid.Column="1" Content="Reset" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
 
                             <!-- COLUMN 2: SYSTEM OPTIMIZATIONS & PRO DEBLOAT -->
@@ -714,6 +747,19 @@ $Global:xamlContent = @'
                                                     <TextBlock Text="Purges Windows Temp, Prefetch, spooler cache, and wipes all Windows Event Logs." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <Button Name="BtnApply_DeepCache" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="GPU Shader &amp; Browser Cache Purge" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Wipes DirectX D3DSCache, NVIDIA DX/GL, AMD DxCache, Discord, and Chrome/Edge caches." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <Button Name="BtnApply_ShaderCache" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
