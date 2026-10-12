@@ -4,24 +4,63 @@
 ================================================================================
 #>
 
+# Persistent hardware profile cache to avoid redundant expensive CIM queries
+$Script:CachedHardwareProfile = $null
+
 function Get-HardwareProfile {
     [CmdletBinding()]
-    param()
+    param(
+        [switch]$ForceRefresh
+    )
 
-    $cpu = Get-CimInstance Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1
-    $gpus = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue
-    $adapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
-    if (-not $adapter) {
-        $adapter = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notlike '*Virtual*' -and $_.InterfaceDescription -notlike '*VPN*' -and $_.InterfaceDescription -notlike '*Tunnel*' } | Select-Object -First 1
+    if ($Script:CachedHardwareProfile -and (-not $ForceRefresh)) {
+        return $Script:CachedHardwareProfile
     }
-    $ram = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue | Measure-Object -Property Capacity -Sum
-    $totalRamGb = [math]::Round($ram.Sum / 1GB, 1)
 
-    return [PSCustomObject]@{
-        CpuName     = $cpu.Name
-        CpuCores    = "$($cpu.NumberOfCores)C / $($cpu.NumberOfLogicalProcessors)T"
-        IsAmdCpu    = ($cpu.Name -match 'AMD|Ryzen')
-        IsIntelCpu  = ($cpu.Name -match 'Intel' -and $cpu.Name -notmatch 'AMD|Ryzen')
+    $cpuName = $null
+    $cpuCores = $null
+    try {
+        $cpuReg = Get-ItemProperty 'HKLM:\HARDWARE\DESCRIPTION\System\CentralProcessor\0' -ErrorAction SilentlyContinue
+        if ($cpuReg -and $cpuReg.ProcessorNameString) {
+            $cpuName = ($cpuReg.ProcessorNameString).Trim()
+        }
+    } catch {}
+
+    $logicalCount = [System.Environment]::ProcessorCount
+    $cpuCores = "$logicalCount Threads"
+    try {
+        $cpu = Get-CimInstance Win32_Processor -Property Name, NumberOfCores, NumberOfLogicalProcessors -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($cpu) {
+            if (-not $cpuName) { $cpuName = $cpu.Name }
+            if ($cpu.NumberOfCores) {
+                $cpuCores = "$($cpu.NumberOfCores)C / $($cpu.NumberOfLogicalProcessors)T"
+            }
+        }
+    } catch {}
+    if (-not $cpuName) { $cpuName = "Unknown CPU" }
+
+    $gpus = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue
+
+    $adapter = $null
+    try {
+        $adapter = Get-CimInstance -Namespace root\StandardCimv2 -ClassName MSFT_NetAdapter -ErrorAction SilentlyContinue | 
+                   Where-Object { $_.InterfaceOperationalStatus -eq 1 -and -not $_.Virtual } | Select-Object -First 1
+    } catch {}
+    if (-not $adapter) {
+        $adapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
+        if (-not $adapter) {
+            $adapter = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notlike '*Virtual*' -and $_.InterfaceDescription -notlike '*VPN*' -and $_.InterfaceDescription -notlike '*Tunnel*' } | Select-Object -First 1
+        }
+    }
+
+    $ram = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue | Measure-Object -Property Capacity -Sum
+    $totalRamGb = if ($ram.Sum) { [math]::Round($ram.Sum / 1GB, 1) } else { 0 }
+
+    $Script:CachedHardwareProfile = [PSCustomObject]@{
+        CpuName     = $cpuName
+        CpuCores    = $cpuCores
+        IsAmdCpu    = ($cpuName -match 'AMD|Ryzen')
+        IsIntelCpu  = ($cpuName -match 'Intel' -and $cpuName -notmatch 'AMD|Ryzen')
         Gpus        = $gpus
         HasNvidia   = ($gpus | Where-Object { $_.Name -match 'NVIDIA|GeForce' }) -ne $null
         HasAmdGpu   = ($gpus | Where-Object { $_.Name -match 'AMD|Radeon' }) -ne $null
@@ -30,6 +69,8 @@ function Get-HardwareProfile {
         RamGb       = $totalRamGb
         TotalRamGb  = $totalRamGb
     }
+
+    return $Script:CachedHardwareProfile
 }
 
 # Persistent cache for ultra-fast zero-allocation telemetry
