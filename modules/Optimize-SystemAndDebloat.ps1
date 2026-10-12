@@ -53,6 +53,14 @@ function Debloat-BackgroundServices {
     Set-ItemProperty -Path $doKey -Name 'DODownloadMode' -Value 0 -Type DWord
     Write-Host "      [+] Delivery Optimization P2P disabled (No upload bandwidth stolen)" -ForegroundColor Green
 
+    # Enforce Superfetch (SysMain) and Prefetcher permanently disabled in registry
+    $prefetchKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters'
+    if (Test-Path $prefetchKey) {
+        Set-ItemProperty -Path $prefetchKey -Name 'EnableSuperfetch' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $prefetchKey -Name 'EnablePrefetcher' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\SysMain' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+
     Write-Host "      [OK] Background Services Debloated  --  Maximum CPU/IO freed for gaming!" -ForegroundColor Green
 }
 
@@ -689,6 +697,162 @@ function Invoke-ShaderAndBrowserCacheCleaner {
     Write-Host "      [+] GPU Shader & App Cache Purged: ~$mbFreed MB freed across $cleanedCount cache repositories!" -ForegroundColor Green
     Write-Host "      [OK] DirectX/NVIDIA/AMD shader caches and Discord/Browser caches refreshed." -ForegroundColor Green
 }
+
+function Restore-BackgroundServices {
+    Write-Host "`n[*] Restoring Background Services to Manual Startup..." -ForegroundColor Yellow
+    # Exclude SysMain (Superfetch) and WSearch (Windows Search) -- permanently kept disabled
+    $servicesToRestore = @('DiagTrack', 'dmwappushservice', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'XboxGipSvc', 'MapsBroker', 'lfsvc', 'WerSvc')
+    foreach ($svcName in $servicesToRestore) {
+        $svc = Get-Service -Name $svcName -ErrorAction SilentlyContinue
+        if ($svc) {
+            Set-Service -Name $svcName -StartupType Manual -ErrorAction SilentlyContinue
+        }
+    }
+    # Enforce Superfetch / SysMain stays disabled
+    Set-Service -Name 'SysMain' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'SysMain' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\SysMain' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    $prefetchKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters'
+    if (Test-Path $prefetchKey) {
+        Set-ItemProperty -Path $prefetchKey -Name 'EnableSuperfetch' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $prefetchKey -Name 'EnablePrefetcher' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    # Enforce Windows Search (WSearch) stays permanently disabled & stopped
+    Set-Service -Name 'WSearch' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'WSearch' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WSearch' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'AllowCortana' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'DisableWebSearch' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'ConnectedSearchUseWeb' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Background services set to Manual startup (Superfetch & WSearch remain Disabled)." -ForegroundColor Green
+}
+
+function Restore-VisualEffects {
+    Write-Host "`n[*] Restoring Windows Visual Effects & Animations Defaults..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects' -Name 'VisualFXSetting' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'MenuShowDelay' -Value '400' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'DragFullWindows' -Value '1' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'TaskbarAnimations' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\DWM' -Name 'EnableAeroPeek' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Visual animations restored to Windows defaults." -ForegroundColor Green
+}
+
+function Restore-EndTaskRightClick {
+    Write-Host "`n[*] Restoring Taskbar Right-Click End Task Default..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'AutoEndTasks' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Taskbar right-click End Task removed." -ForegroundColor Green
+}
+
+function Restore-StickyKeysPrompt {
+    Write-Host "`n[*] Restoring Sticky Keys Prompt Default..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Accessibility\StickyKeys' -Name 'Flags' -Value '510' -Type String -ErrorAction SilentlyContinue
+    Write-Host "      [+] Sticky Keys prompt restored." -ForegroundColor Green
+}
+
+function Restore-DiskIO {
+    Write-Host "`n[*] Restoring Disk I/O Timestamps..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'NtfsDisableLastAccessUpdate' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'NtfsDisable8dot3NameCreation' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Disk I/O timestamps restored to default." -ForegroundColor Green
+}
+
+function Restore-PrivacyTelemetry {
+    Write-Host "`n[*] Restoring Windows Telemetry Policies..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection' -Name 'AllowTelemetry' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Telemetry policy restored." -ForegroundColor Green
+}
+
+function Restore-ScheduledJunkTasks {
+    Write-Host "`n[*] Restoring Scheduled Maintenance Tasks..." -ForegroundColor Yellow
+    Enable-ScheduledTask -TaskPath '\Microsoft\Windows\Customer Experience Improvement Program\' -TaskName 'Consolidator' -ErrorAction SilentlyContinue
+    Enable-ScheduledTask -TaskPath '\Microsoft\Windows\Customer Experience Improvement Program\' -TaskName 'UsbCeip' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Scheduled maintenance tasks re-enabled." -ForegroundColor Green
+}
+
+function Restore-BalancedPowerPlan {
+    Write-Host "`n[*] Restoring Balanced Power Scheme..." -ForegroundColor Yellow
+    if (Get-Command Restore-CpuCoreParking -ErrorAction SilentlyContinue) {
+        Restore-CpuCoreParking
+    }
+    $balanced = powercfg /list | Select-String "Balanced"
+    if ($balanced) {
+        $guid = ($balanced -replace '.*GUID:\s*', '' -replace '\s*\(.*', '').Trim()
+        powercfg /setactive $guid
+        Write-Host "      [+] Balanced power plan restored (GUID: $guid)" -ForegroundColor Green
+    }
+    # Enforce Hibernate stays permanently disabled (frees disk space & prevents sleep interrupts)
+    powercfg /hibernate off 2>$null
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power' -Name 'HiberbootEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    bcdedit /deletevalue useplatformtick 2>$null
+    bcdedit /deletevalue tscsyncpolicy 2>$null
+    Write-Host "      [+] Balanced power restored (Hibernate remains Disabled)." -ForegroundColor Green
+}
+
+function Disable-BitLockerPermanently {
+    <#
+    .SYNOPSIS
+        Permanently turns off BitLocker and Windows Automatic Device Encryption,
+        decrypts active volumes, and disables the BDESVC service to prevent background encryption.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Permanently Disabling BitLocker & Automatic Device Encryption..." -ForegroundColor Yellow
+
+    # 1. Prevent Automatic Device Encryption in Registry
+    $bKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker'
+    if (-not (Test-Path $bKey)) { New-Item -Path $bKey -Force | Out-Null }
+    Set-ItemProperty -Path $bKey -Name 'PreventDeviceEncryption' -Value 1 -Type DWord
+    Write-Host "      [+] PreventDeviceEncryption = 1 (Blocked automatic device encryption on all drives)" -ForegroundColor Green
+
+    # 2. Disable BitLocker Policies in FVE
+    $fveKey = 'HKLM:\SOFTWARE\Policies\Microsoft\FVE'
+    if (-not (Test-Path $fveKey)) { New-Item -Path $fveKey -Force | Out-Null }
+    Set-ItemProperty -Path $fveKey -Name 'EnableBDEWithNoTPM' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    # 3. Decrypt active BitLocker volumes if any are encrypted
+    try {
+        $volumes = Get-BitLockerVolume -ErrorAction SilentlyContinue
+        if ($volumes) {
+            foreach ($vol in $volumes) {
+                if ($vol.VolumeStatus -ne 'FullyDecrypted' -or $vol.ProtectionStatus -eq 'On') {
+                    Write-Host "      [*] Decrypting volume $($vol.MountPoint)..." -ForegroundColor Yellow
+                    Disable-BitLocker -MountPoint $vol.MountPoint -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    } catch {
+        manage-bde -off C: 2>$null
+    }
+
+    # 4. Stop and Disable BitLocker Drive Encryption Service (BDESVC)
+    Set-Service -Name 'BDESVC' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'BDESVC' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\BDESVC' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] BDESVC service permanently stopped and disabled (Start = 4)" -ForegroundColor Green
+
+    Write-Host "      [OK] BitLocker & Device Encryption permanently turned off." -ForegroundColor Green
+    return $true
+}
+
+function Restore-BitLockerDefaults {
+    <#
+    .SYNOPSIS
+        Restores BitLocker service to default (Manual startup) and removes automatic encryption block.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Restoring BitLocker / Device Encryption Defaults..." -ForegroundColor Yellow
+
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker' -Name 'PreventDeviceEncryption' -ErrorAction SilentlyContinue
+    Set-Service -Name 'BDESVC' -StartupType Manual -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\BDESVC' -Name 'Start' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [OK] BitLocker defaults restored (Service set to Manual startup)." -ForegroundColor Green
+    return $true
+}
+
 
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {

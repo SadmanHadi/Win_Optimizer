@@ -508,7 +508,96 @@ function Restore-ShortcutArrow {
     Write-Host "      [+] Default Windows shortcut arrows restored." -ForegroundColor Green
 }
 
+function Restore-WpbtExecution {
+    Write-Host "`n[*] Restoring WPBT Execution Default..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'DisableWpbtExecution' -ErrorAction SilentlyContinue
+    Write-Host "      [+] WPBT execution restored to default." -ForegroundColor Green
+}
 
+function Restore-PeripheralBloat {
+    Write-Host "`n[*] Restoring Peripheral Software Installer Policies..." -ForegroundColor Yellow
+    Remove-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers' -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] Peripheral policies restored to default." -ForegroundColor Green
+}
 
+function Restore-WindowsAI {
+    Write-Host "`n[*] Restoring Windows AI & Copilot Components..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI' -Name 'DisableAIDataAnalysis' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI' -Name 'TurnOffRecall' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Windows AI & Copilot restored to default." -ForegroundColor Green
+}
+
+function Restore-SecurityUpdatesOnly {
+    Write-Host "`n[*] Restoring Windows Update Policy (Default cadence)..." -ForegroundColor Yellow
+    $wu = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate'
+    if (Test-Path $wu) {
+        Remove-ItemProperty -Path $wu -Name 'DeferFeatureUpdates' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $wu -Name 'DeferFeatureUpdatesPeriodInDays' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $wu -Name 'DeferQualityUpdates' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Windows Update feature deferral restored to default." -ForegroundColor Green
+}
+
+function Restore-ClassicContextMenu {
+    Write-Host "`n[*] Restoring Windows 11 Modern Context Menu..." -ForegroundColor Yellow
+    $clsid = 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}'
+    if (Test-Path $clsid) {
+        Remove-Item -Path $clsid -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Modern Windows 11 context menu restored." -ForegroundColor Green
+}
+
+function Restore-StartMenuBing {
+    Write-Host "`n[*] Restoring Bing Search in Start Menu..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKCU:\Software\Policies\Microsoft\Windows\Explorer' -Name 'DisableSearchBoxSuggestions' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' -Name 'BingSearchEnabled' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Bing Web Search in Start Menu restored." -ForegroundColor Green
+}
+
+function Restore-ExplorerAutoDiscovery {
+    Write-Host "`n[*] Restoring File Explorer Folder Auto-Discovery..." -ForegroundColor Yellow
+    $allFolders = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell'
+    if (Test-Path $allFolders) {
+        Remove-Item -Path $allFolders -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Explorer folder auto-discovery restored to default." -ForegroundColor Green
+}
+
+function Restore-ShowFileExtensionsAndHidden {
+    Write-Host "`n[*] Restoring Default File Extensions & Hidden Files visibility..." -ForegroundColor Yellow
+    $adv = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    Set-ItemProperty -Path $adv -Name 'HideFileExt' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $adv -Name 'Hidden' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] File extensions hidden and hidden files concealed." -ForegroundColor Green
+}
+
+function Restore-LongPaths {
+    Write-Host "`n[*] Restoring Win32 Long Paths Limit (260 chars)..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Long paths limit restored to Windows default." -ForegroundColor Green
+}
+
+function Restore-LockScreen {
+    Write-Host "`n[*] Restoring Windows Lock Screen..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Name 'NoLockScreen' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Lock screen enabled." -ForegroundColor Green
+}
+
+function Restore-BsodVerbose {
+    Write-Host "`n[*] Restoring Default BSoD Display..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Default BSoD display restored." -ForegroundColor Green
+}
+
+function Restore-ReservedStorage {
+    Write-Host "`n[*] Restoring Windows Reserved Storage..." -ForegroundColor Yellow
+    try {
+        Set-WindowsReservedStorageState -State Enabled -ErrorAction SilentlyContinue | Out-Null
+    } catch {}
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -Name 'ShippedWithReserves' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Reserved storage enabled." -ForegroundColor Green
+}
 
 # ==============================================================================

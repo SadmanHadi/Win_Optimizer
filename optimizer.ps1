@@ -6,7 +6,7 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-            ULTIMATE GAMING & NETWORK OPTIMIZER v5.2.0
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.3.0
            Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
@@ -29,7 +29,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.2.0"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.4.0"
 
 # ==============================================================================
 # 2. MODULAR LOADER ENGINE (LOCAL + REMOTE GITHUB FALLBACK)
@@ -50,6 +50,8 @@ $ModuleList = @(
     "Match-Booster",
     "Optimize-Hardening",
     "Optimize-SystemAndDebloat",
+    "Optimize-Windows11AndShell",
+    "Optimize-PrivacyAndTelemetry",
     "System-DiagnosticsAndRestore"
 )
 
@@ -105,7 +107,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.2.0"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.4.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -119,6 +121,11 @@ function Show-PumpkiNBanner {
         $netType = if ($hw.IsWifi) { "Wi-Fi (Wireless)" } else { "Ethernet (Wired)" }
         Write-Host "  [NET] $($hw.Adapter.Name) [$netType]" -ForegroundColor DarkCyan
     }
+    try {
+        $audit = Get-SystemAuditState
+        $scCol = if ($audit.ScorePercent -ge 80) { 'Green' } elseif ($audit.ScorePercent -ge 50) { 'Yellow' } else { 'Cyan' }
+        Write-Host "  [SCORE] System Tuning Score: $($audit.ScoreGrade) ($($audit.ScoreApplied)/$($audit.ScoreTotal) Active)" -ForegroundColor $scCol
+    } catch {}
     Write-Host "--------------------------------------------------------------------------------"
     Write-Host "  [1]  FULL ALL-IN-ONE OPTIMIZATION (Hardware Auto-Detect + All Tweaks) [BEST]" -ForegroundColor Green
     Write-Host "  [2]  Auto-Detect & Optimize Active GPU (NVIDIA / AMD Radeon)"
@@ -171,6 +178,11 @@ function Show-PumpkiNBanner {
     Write-Host "  [47] Disable All Windows Ads (Lock Screen, Start, Explorer, Settings, Search)" -ForegroundColor Green
     Write-Host "  [48] Remove Shortcut Arrow Overlays (Clean No-Arrow Desktop Icons)" -ForegroundColor Yellow
     Write-Host "  [49] Restore Window Metrics, Windows Ads & Shortcut Arrows to Defaults" -ForegroundColor DarkYellow
+    Write-Host "  [50] Apply Unapplied Tweaks Only (Fast Catch-up to 100% Score)" -ForegroundColor Green
+    Write-Host "  [51] Windows 11 Exclusives & Shell Usability Suite" -ForegroundColor Cyan
+    Write-Host "  [52] Advanced Privacy & Third-Party App Telemetry Suite" -ForegroundColor Magenta
+    Write-Host "  [53] Device Manager Tuning (Disable HPET, SMBus, System Speaker & Legacy Timers)" -ForegroundColor Yellow
+    Write-Host "  [54] Turn Off BitLocker Permanently (Disable Encryption, BDESVC & Decrypt Drives)" -ForegroundColor Red
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -178,7 +190,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-49]"
+        $choice = Read-Host "Select an option [0-54]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -204,6 +216,8 @@ function Show-ConsoleMenu {
                 Enable-TakeOwnershipMenu
                 Clear-WindowsUpdateCache
                 Invoke-DeepCacheCleaner
+                Optimize-DeviceManager
+                Disable-BitLockerPermanently
                 Write-Host "`n================================================================================" -ForegroundColor Green
                 Write-Host "  [OK] ALL OPTIMIZATIONS APPLIED SUCCESSFULLY  --  FULL BEAST MODE ENGAGED!" -ForegroundColor Green
                 Write-Host "================================================================================" -ForegroundColor Green
@@ -514,6 +528,81 @@ function Show-ConsoleMenu {
                 Restore-CompactWindowMetrics
                 Enable-WindowsAds
                 Restore-ShortcutArrow
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "50" {
+                Write-Host "`n=== APPLYING UNAPPLIED TWEAKS ONLY ===" -ForegroundColor Yellow
+                $audit = Get-SystemAuditState
+                Write-Host "Current Score: $($audit.ScoreGrade) ($($audit.ScoreApplied)/$($audit.ScoreTotal) Active)" -ForegroundColor Cyan
+                if (-not $audit.State['VbsSecurity']) { Disable-VbsSecurity }
+                if (-not $audit.State['TaskbarLeft']) { Set-TaskbarLeftAlign }
+                if (-not $audit.State['RecommendedStart']) { Disable-RecommendedStartSection }
+                if (-not $audit.State['AppTelemetry']) { Disable-ThirdPartyAppTelemetry }
+                if (-not $audit.State['BluetoothAdvertising']) { Disable-BluetoothAdvertising }
+                if (-not $audit.State['CloudContent']) { Disable-CloudOptimizedContent }
+                if (-not $audit.State['CdpServices']) { Disable-CdpUserServices }
+                if (-not $audit.State['OnlineSpeech']) { Disable-OnlineSpeechPrivacy }
+                if (-not $audit.State['Arso']) { Disable-RestartAppsAfterReboot }
+                if (-not $audit.State['TextInputCollection']) { Disable-HandwritingTypingCollection }
+                if (-not $audit.State['ClipboardSync']) { Disable-ClipboardCloudSync }
+                if (-not $audit.State['SettingsMessageSync']) { Disable-SettingsAndMessageSync }
+                if (-not $audit.State['FindMyDevice']) { Disable-FindMyDevice }
+                if (-not $audit.State['SafeSearch']) { Disable-SafeSearchFiltering }
+                if (-not $audit.State['RemoteAssistanceRegistry']) { Disable-RemoteAssistanceAndRegistry }
+                if (-not $audit.State['DriverUpdatesExcluded']) { Exclude-DriverUpdatesInWindowsUpdate }
+                if (-not $audit.State['StoreAutoUpdates']) { Disable-WindowsStoreAutoUpdates }
+                if (-not $audit.State['SmartScreen']) { Disable-SmartScreenProtection }
+                if (-not $audit.State['CrashDumps']) { Disable-SystemCrashDumps }
+                if (-not $audit.State['SystemTimeouts']) { Optimize-SystemTimeouts }
+                if (-not $audit.State['Mpo']) { Disable-MultiplaneOverlay }
+                if (-not $audit.State['MouseCurve']) { Set-MouseLinearCurve }
+                if (-not $audit.State['CsrssPriority']) { Optimize-CsrssPriority }
+                if (-not $audit.State['CpuSystem']) { Optimize-CpuAndSystem }
+                if (-not $audit.State['AudioDpc']) { Optimize-AudioDpcLatency }
+                if (-not $audit.State['UsbxHci']) { Optimize-UsbLatencyAndBuffers }
+                if (-not $audit.State['Network']) { Optimize-Network }
+                if (-not $audit.State['UltimatePower']) { Invoke-PumpkiNEsportsPowerPlan }
+                if (-not $audit.State['CoreUnpark']) { Invoke-CpuCoreUnparking }
+                if (-not $audit.State['StripVisual']) { Strip-VisualEffects }
+                if (-not $audit.State['EndTask']) { Enable-EndTaskRightClick }
+                if (-not $audit.State['StickyKeys']) { Disable-StickyKeysPrompt }
+                if (-not $audit.State['DebloatServices']) { Debloat-BackgroundServices }
+                if (-not $audit.State['DiskIo']) { Optimize-DiskIO }
+                if (-not $audit.State['JunkTasks']) { Disable-ScheduledJunkTasks }
+                if (-not $audit.State['Privacy']) { Harden-PrivacyTelemetry }
+                if (-not $audit.State['BlockWpbt']) { Block-WpbtExecution }
+                if (-not $audit.State['BlockPeripheral']) { Block-PeripheralBloat }
+                if (-not $audit.State['RemoveAi']) { Remove-WindowsAI }
+                if (-not $audit.State['SecurityUpdatesOnly']) { Set-SecurityUpdatesOnly }
+                if (-not $audit.State['ClassicContext']) { Enable-ClassicContextMenu }
+                if (-not $audit.State['DisableBing']) { Disable-StartMenuBing }
+                if (-not $audit.State['DisableAutoDiscovery']) { Disable-ExplorerAutoDiscovery }
+                if (-not $audit.State['ShowExtensions']) { Set-ShowFileExtensionsAndHidden }
+                if (-not $audit.State['DisableAds']) { Disable-WindowsAds }
+                if (-not $audit.State['EnableLongPaths']) { Enable-LongPaths }
+                if (-not $audit.State['DisableLockScreen']) { Disable-LockScreen }
+                if (-not $audit.State['BsodVerbose']) { Enable-BsodVerbose }
+                if (-not $audit.State['DisableReservedStorage']) { Disable-ReservedStorage }
+                if (-not $audit.State['DeviceManager']) { Optimize-DeviceManager }
+                if (-not $audit.State['BitLocker']) { Disable-BitLockerPermanently }
+                $newAudit = Get-SystemAuditState
+                Write-Host "`n[OK] Unapplied tweaks executed! New Score: $($newAudit.ScoreGrade) ($($newAudit.ScoreApplied)/$($newAudit.ScoreTotal) Active)" -ForegroundColor Green
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "51" {
+                Optimize-Windows11AndShell
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "52" {
+                Optimize-PrivacyAndTelemetry
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "53" {
+                Optimize-DeviceManager
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "54" {
+                Disable-BitLockerPermanently
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

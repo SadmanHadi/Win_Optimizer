@@ -225,8 +225,9 @@ function Restore-CpuCoreParking {
     powercfg -setacvalueindex scheme_current sub_processor 0602446d-d8e3-4e29-9e6f-ddde3669f87f 60 2>$null
     powercfg -setacvalueindex scheme_current sub_processor 12a0ab44-fe16-4661-bd10-eef3298d1945 40 2>$null
     powercfg -setactive scheme_current
+    powercfg /hibernate off 2>$null
 
-    Write-Host "      [OK] Windows Core Parking & Balanced power defaults restored." -ForegroundColor Green
+    Write-Host "      [OK] Windows Core Parking & Balanced power defaults restored (Hibernate remains Off)." -ForegroundColor Green
     return $true
 }
 
@@ -256,6 +257,167 @@ function Get-CpuCoreParkingStatus {
         DisplayText      = "$activeName $(if ($isUnparked) { '(100% Cores Active)' } else { '(Core Parking Default)' })"
     }
 }
+
+function Restore-MultiplaneOverlay {
+    Write-Host "`n[*] Restoring Windows Multiplane Overlay (MPO) Default..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Dwm' -Name 'OverlayTestMode' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Multiplane Overlay restored to default." -ForegroundColor Green
+}
+
+function Restore-CsrssPriority {
+    Write-Host "`n[*] Restoring Default CSRSS Process Priority..." -ForegroundColor Yellow
+    Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions' -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] Default CSRSS process priority restored." -ForegroundColor Green
+}
+
+function Restore-CpuAndSystem {
+    Write-Host "`n[*] Restoring Default CPU Quantum & Memory Management..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -Name 'Win32PrioritySeparation' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -Name 'DisablePagingExecutive' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\FTH' -Name 'Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'EnergyEstimationEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -Name 'ThreadDpcEnable' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -Name 'SplitLargeCaches' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Executive' -Name 'AdditionalCriticalWorkerThreads' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Executive' -Name 'AdditionalDelayedWorkerThreads' -ErrorAction SilentlyContinue
+    Write-Host "      [+] CPU Quantum and Memory Management restored to Windows defaults." -ForegroundColor Green
+}
+
+function Restore-SvcHostSplitting {
+    Write-Host "`n[*] Restoring Default SvcHost Process Threshold..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'SvcHostSplitThresholdInKB' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Default SvcHost memory threshold restored." -ForegroundColor Green
+}
+
+function Optimize-DeviceManager {
+    <#
+    .SYNOPSIS
+        Disables high-latency devices in Device Manager (HPET, SMBus, System Speaker, Kernel Debugger,
+        Composite Bus, DMA, and Legacy Timers) to minimize DPC latency and CPU timer interrupt overhead.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Disabling High-Latency Devices in Device Manager..." -ForegroundColor Yellow
+
+    $targetDeviceNames = @(
+        'High precision event timer',
+        'Microsoft Kernel Debug Network Adapter',
+        'System speaker',
+        'Composite Bus Enumerator',
+        'Direct memory access controller',
+        'System timer',
+        'System CMOS/real time clock',
+        'Motherboard resources'
+    )
+
+    $disabledCount = 0
+
+    foreach ($name in $targetDeviceNames) {
+        $devs = Get-PnpDevice -FriendlyName $name -ErrorAction SilentlyContinue
+        foreach ($d in $devs) {
+            try {
+                if ($d.ConfigManagerErrorCode -ne 22 -and $d.Status -ne 'Error') {
+                    Disable-PnpDevice -InstanceId $d.InstanceId -Confirm:$false -ErrorAction Stop
+                    Write-Host "      [+] Disabled: $($d.FriendlyName)" -ForegroundColor Green
+                    $disabledCount++
+                } else {
+                    Write-Host "      [+] Already Disabled: $($d.FriendlyName)" -ForegroundColor DarkCyan
+                }
+            } catch {
+                Write-Host "      [~] Skipped: $($d.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+            }
+        }
+    }
+
+    # Also check AMD & Intel SMBus controllers
+    $smbus = Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.FriendlyName -match 'SMBus' }
+    foreach ($sb in $smbus) {
+        try {
+            if ($sb.ConfigManagerErrorCode -ne 22 -and $sb.Status -ne 'Error') {
+                Disable-PnpDevice -InstanceId $sb.InstanceId -Confirm:$false -ErrorAction Stop
+                Write-Host "      [+] Disabled: $($sb.FriendlyName)" -ForegroundColor Green
+                $disabledCount++
+            } else {
+                Write-Host "      [+] Already Disabled: $($sb.FriendlyName)" -ForegroundColor DarkCyan
+            }
+        } catch {
+            Write-Host "      [~] Skipped: $($sb.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+        }
+    }
+
+    Write-Host "      [OK] Device Manager Latency Optimization Applied ($disabledCount new devices disabled)." -ForegroundColor Green
+    return $true
+}
+
+function Restore-DeviceManager {
+    <#
+    .SYNOPSIS
+        Re-enables devices previously disabled in Device Manager for 100% reversibility.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Restoring Device Manager Devices to Enabled..." -ForegroundColor Yellow
+
+    $targetDeviceNames = @(
+        'High precision event timer',
+        'Microsoft Kernel Debug Network Adapter',
+        'System speaker',
+        'Composite Bus Enumerator',
+        'Direct memory access controller',
+        'System timer',
+        'System CMOS/real time clock',
+        'Motherboard resources'
+    )
+
+    $enabledCount = 0
+
+    foreach ($name in $targetDeviceNames) {
+        $devs = Get-PnpDevice -FriendlyName $name -ErrorAction SilentlyContinue
+        foreach ($d in $devs) {
+            try {
+                if ($d.ConfigManagerErrorCode -eq 22 -or $d.Status -eq 'Error') {
+                    Enable-PnpDevice -InstanceId $d.InstanceId -Confirm:$false -ErrorAction Stop
+                    Write-Host "      [+] Re-enabled: $($d.FriendlyName)" -ForegroundColor Green
+                    $enabledCount++
+                }
+            } catch {
+                Write-Host "      [~] Skipped: $($d.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+            }
+        }
+    }
+
+    # Also check AMD & Intel SMBus controllers
+    $smbus = Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.FriendlyName -match 'SMBus' }
+    foreach ($sb in $smbus) {
+        try {
+            if ($sb.ConfigManagerErrorCode -eq 22 -or $sb.Status -eq 'Error') {
+                Enable-PnpDevice -InstanceId $sb.InstanceId -Confirm:$false -ErrorAction Stop
+                Write-Host "      [+] Re-enabled: $($sb.FriendlyName)" -ForegroundColor Green
+                $enabledCount++
+            }
+        } catch {
+            Write-Host "      [~] Skipped: $($sb.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+        }
+    }
+
+    Write-Host "      [OK] Device Manager Defaults Restored ($enabledCount devices re-enabled)." -ForegroundColor Green
+    return $true
+}
+
+function Get-DeviceManagerOptimizationStatus {
+    $hpet = Get-PnpDevice -FriendlyName 'High precision event timer' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or $hpet.Status -eq 'Error')) {
+        return $true
+    }
+    $kd = Get-PnpDevice -FriendlyName 'Microsoft Kernel Debug Network Adapter' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($kd -and ($kd.ConfigManagerErrorCode -eq 22 -or $kd.Status -eq 'Error')) {
+        return $true
+    }
+    return $false
+}
+
 
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {

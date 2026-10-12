@@ -1,7 +1,7 @@
 <#
 ================================================================================
   PumpkiN's Modular Suite: Production Release Bundler
-  Combines orchestrator and all 15 modules into a single, high-performance
+  Combines orchestrator and all 17 modules into a single, high-performance
   distribution file (dist/optimizer.ps1) for instant local and web streaming.
 ================================================================================
 #>
@@ -37,6 +37,8 @@ $ModuleList = @(
     "Match-Booster",
     "Optimize-Hardening",
     "Optimize-SystemAndDebloat",
+    "Optimize-Windows11AndShell",
+    "Optimize-PrivacyAndTelemetry",
     "System-DiagnosticsAndRestore"
 )
 

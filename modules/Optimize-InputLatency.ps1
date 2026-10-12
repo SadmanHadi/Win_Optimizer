@@ -305,6 +305,16 @@ function Restore-AudioDpcAndUsbLatency {
     return $true
 }
 
+function Restore-MouseLinearCurve {
+    Write-Host "`n[*] Restoring Windows Default Mouse Acceleration Curve..." -ForegroundColor Yellow
+    $defaultX = [byte[]](0,0,0,0,0,0,0,0,15,10,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,70,0,0,0,0,0,0)
+    $defaultY = [byte[]](0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Mouse' -Name 'SmoothMouseXCurve' -Value $defaultX -Type Binary -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Mouse' -Name 'SmoothMouseYCurve' -Value $defaultY -Type Binary -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Mouse' -Name 'MouseSensitivity' -Value '10' -Type String -ErrorAction SilentlyContinue
+    Write-Host "      [+] Windows default mouse curve restored." -ForegroundColor Green
+}
+
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {

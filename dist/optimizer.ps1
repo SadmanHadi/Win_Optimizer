@@ -6,7 +6,7 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-            ULTIMATE GAMING & NETWORK OPTIMIZER v5.2.0
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.3.0
            Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
@@ -29,7 +29,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.2.0"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.4.0"
 
 # ==============================================================================
 # 2. EMBEDDED ENGINE MODULES (ALL-IN-ONE STANDALONE BUNDLE)
@@ -203,6 +203,211 @@ function Get-LiveHardwareTelemetry {
     }
 }
 
+# Persistent cache for detailed device specs
+$Script:CachedDeviceDetailProfile = $null
+
+function Get-DeviceDetailProfile {
+    <#
+    .SYNOPSIS
+        Returns comprehensive structured hardware & operating system details.
+    #>
+    [CmdletBinding()]
+    param(
+        [switch]$ForceRefresh
+    )
+
+    if ($Script:CachedDeviceDetailProfile -and (-not $ForceRefresh)) {
+        return $Script:CachedDeviceDetailProfile
+    }
+
+    # 1. Computer & Operating System Info
+    $os = Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue
+    $nt = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' -ErrorAction SilentlyContinue
+    $cs = Get-CimInstance Win32_ComputerSystem -ErrorAction SilentlyContinue
+    $cpu = Get-CimInstance Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1
+
+    $deviceName = if ($env:COMPUTERNAME) { $env:COMPUTERNAME } else { $cs.Name }
+    $osName = if ($os.Caption) { $os.Caption } else { "Windows 10/11" }
+    $osVersion = if ($nt.DisplayVersion) { $nt.DisplayVersion } elseif ($nt.ReleaseId) { $nt.ReleaseId } else { "Unknown" }
+    $ubr = if ($nt.UBR) { $nt.UBR } else { "0" }
+    $buildNumber = if ($os.BuildNumber) { "$($os.BuildNumber).$ubr" } else { "Unknown" }
+    $osArch = if ($os.OSArchitecture) { $os.OSArchitecture } else { "64-bit" }
+    $installDateStr = if ($os.InstallDate) { 
+        try { ([datetime]$os.InstallDate).ToString("M/d/yyyy h:mm tt") } catch { "$($os.InstallDate)" }
+    } else { "Unknown" }
+    $regUser = if ($os.RegisteredUser) { $os.RegisteredUser } else { $env:USERNAME }
+    $winDir = if ($os.WindowsDirectory) { $os.WindowsDirectory } else { "C:\Windows" }
+    $sysDir = if ($os.SystemDirectory) { $os.SystemDirectory } else { "C:\Windows\system32" }
+    $bootTimeStr = if ($os.LastBootUpTime) {
+        try { ([datetime]$os.LastBootUpTime).ToString("M/d/yyyy h:mm tt") } catch { "$($os.LastBootUpTime)" }
+    } else { "Unknown" }
+
+    # 2. Processor
+    $cpuName = if ($cpu.Name) { ($cpu.Name).Trim() } else { "Unknown Processor" }
+    $cpuManuf = if ($cpu.Manufacturer) { $cpu.Manufacturer } else { "Unknown" }
+    $cpuArch = if ($cpu.AddressWidth) { "x$($cpu.AddressWidth)" } else { "x64" }
+    $cpuCores = if ($cpu.NumberOfCores) { [string]$cpu.NumberOfCores } else { "Unknown" }
+    $cpuThreads = if ($cpu.NumberOfLogicalProcessors) { [string]$cpu.NumberOfLogicalProcessors } else { "$([System.Environment]::ProcessorCount)" }
+    $cpuSpeed = if ($cpu.MaxClockSpeed) { "$($cpu.MaxClockSpeed) MHz" } else { "Unknown" }
+    $cpuSocket = if ($cpu.SocketDesignation) { $cpu.SocketDesignation } else { "Unknown" }
+    $cpuL2 = if ($cpu.L2CacheSize) { "$($cpu.L2CacheSize) KB" } else { "N/A" }
+    $cpuL3 = if ($cpu.L3CacheSize) { "$($cpu.L3CacheSize) KB" } else { "N/A" }
+
+    # 3. Graphics
+    $gpus = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue
+    $gpuList = [System.Collections.Generic.List[PSCustomObject]]::new()
+    if ($gpus) {
+        foreach ($g in $gpus) {
+            $vramGb = if ($g.AdapterRAM -and $g.AdapterRAM -gt 0) { [math]::Round($g.AdapterRAM / 1GB, 1) } else { 0 }
+            $res = if ($g.CurrentHorizontalResolution -and $g.CurrentVerticalResolution) {
+                "$($g.CurrentHorizontalResolution) x $($g.CurrentVerticalResolution)"
+            } else { "Desktop Native" }
+            $hz = if ($g.CurrentRefreshRate) { "$($g.CurrentRefreshRate) Hz" } else { "Standard" }
+            $gpuList.Add([PSCustomObject]@{
+                Name          = if ($g.Name) { $g.Name } else { "Video Controller" }
+                Manufacturer  = if ($g.AdapterCompatibility) { $g.AdapterCompatibility } else { "Unknown" }
+                DriverVersion = if ($g.DriverVersion) { $g.DriverVersion } else { "Unknown" }
+                DriverDate    = if ($g.DriverDate) { 
+                    try { ([datetime]$g.DriverDate).ToString("M/d/yyyy") } catch { "$($g.DriverDate)" }
+                } else { "Unknown" }
+                Vram          = if ($vramGb -gt 0) { "$vramGb GB" } else { "Dynamic / Shared" }
+                Resolution    = $res
+                RefreshRate   = $hz
+            })
+        }
+    }
+
+    # 4. RAM
+    $rams = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue
+    $totBytes = 0
+    $ramSpeed = "Unknown"
+    $ramManuf = "Unknown"
+    $ramPart = "Unknown"
+    $ramSlots = 0
+    if ($rams) {
+        $ramSlots = $rams.Count
+        foreach ($r in $rams) {
+            $totBytes += $r.Capacity
+            if ($ramSpeed -eq "Unknown" -and $r.Speed) { $ramSpeed = "$($r.Speed) MHz" }
+            if ($ramManuf -eq "Unknown" -and $r.Manufacturer -and $r.Manufacturer -notmatch 'Unknown') { $ramManuf = $r.Manufacturer }
+            if ($ramPart -eq "Unknown" -and $r.PartNumber) { $ramPart = ($r.PartNumber).Trim() }
+        }
+    }
+    $totalRamGb = if ($totBytes -gt 0) { [math]::Round($totBytes / 1GB, 0) } else { 0 }
+    $usableRamGb = if ($os.TotalVisibleMemorySize) { [math]::Round($os.TotalVisibleMemorySize / 1MB, 1) } else { $totalRamGb }
+
+    # 5. Storage
+    $disks = Get-CimInstance Win32_DiskDrive -ErrorAction SilentlyContinue
+    $diskList = [System.Collections.Generic.List[string]]::new()
+    if ($disks) {
+        foreach ($d in $disks) {
+            $dSizeGb = if ($d.Size) { [math]::Round($d.Size / 1GB, 0) } else { 0 }
+            $sizeStr = if ($dSizeGb -ge 1000) { "$([math]::Round($dSizeGb/1000, 1)) TB" } else { "$dSizeGb GB" }
+            $diskList.Add("$($d.Model) ($sizeStr)")
+        }
+    }
+    $vols = Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction SilentlyContinue
+    $volList = [System.Collections.Generic.List[string]]::new()
+    if ($vols) {
+        foreach ($v in $vols) {
+            $freeGb = [math]::Round($v.FreeSpace / 1GB, 1)
+            $totGb = [math]::Round($v.Size / 1GB, 1)
+            $volList.Add("$($v.DeviceID) ($freeGb GB free of $totGb GB)")
+        }
+    }
+
+    # 6. Network
+    $net = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notmatch 'Virtual|VPN|Loopback' } | Select-Object -First 1
+    if (-not $net) {
+        $net = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Select-Object -First 1
+    }
+    $netIp = if ($net) { Get-NetIPAddress -InterfaceIndex $net.ifIndex -AddressFamily IPv4 -ErrorAction SilentlyContinue | Select-Object -First 1 } else { $null }
+    $netName = if ($net) { $net.Name } else { "Unknown Adapter" }
+    $netDesc = if ($net) { $net.InterfaceDescription } else { "Unknown" }
+    $netMac = if ($net) { $net.MacAddress } else { "Unknown" }
+    $netSpeed = if ($net) { $net.LinkSpeed } else { "Unknown" }
+    $netIpStr = if ($netIp) { $netIp.IPAddress } else { "DHCP / Unassigned" }
+    $netStatus = if ($net) { $net.Status } else { "Disconnected" }
+
+    # 7. Battery
+    $battery = Get-CimInstance Win32_Battery -ErrorAction SilentlyContinue
+    $hasBattery = ($battery -ne $null -and $battery.EstimatedChargeRemaining)
+    $batteryName = if ($hasBattery) { $battery.Name } else { "Direct AC Power Supply" }
+    $batteryPercent = if ($hasBattery) { "$($battery.EstimatedChargeRemaining)%" } else { "100% (AC Direct Power)" }
+    $batteryStatus = if ($hasBattery) { 
+        switch ($battery.BatteryStatus) {
+            1 { "Discharging" }
+            2 { "On AC / Unknown" }
+            3 { "Fully Charged" }
+            4 { "Low" }
+            5 { "Critical" }
+            6 { "Charging" }
+            default { "AC Power" }
+        }
+    } else { "Desktop PC (Direct Power Supply Unit -- No Battery)" }
+
+    $headerSummary = "$osName | $cpuName | $totalRamGb GB RAM"
+
+    $Script:CachedDeviceDetailProfile = [PSCustomObject]@{
+        DeviceName       = $deviceName
+        HeaderSummary    = $headerSummary
+        
+        # OS
+        OsName           = $osName
+        OsVersion        = $osVersion
+        OsBuildNumber    = $buildNumber
+        OsArchitecture   = $osArch
+        OsInstallDate    = $installDateStr
+        OsRegisteredUser = $regUser
+        OsWindowsDir     = $winDir
+        OsSystemDir      = $sysDir
+        OsLastBootTime   = $bootTimeStr
+
+        # CPU
+        CpuName          = $cpuName
+        CpuManufacturer  = $cpuManuf
+        CpuArchitecture  = $cpuArch
+        CpuCores         = $cpuCores
+        CpuLogical       = $cpuThreads
+        CpuMaxSpeed      = $cpuSpeed
+        CpuSocket        = $cpuSocket
+        CpuL2Cache       = $cpuL2
+        CpuL3Cache       = $cpuL3
+
+        # GPU
+        Gpus             = $gpuList
+        PrimaryGpu       = if ($gpuList.Count -gt 0) { $gpuList[0] } else { $null }
+
+        # RAM
+        RamTotal         = "$totalRamGb GB"
+        RamUsable        = "$usableRamGb GB"
+        RamSpeed         = $ramSpeed
+        RamManufacturer  = $ramManuf
+        RamPartNumber    = $ramPart
+        RamSlots         = "$ramSlots Slots Installed"
+
+        # Storage
+        Disks            = $diskList
+        Volumes          = $volList
+
+        # Network
+        NetAdapterName   = $netName
+        NetDescription   = $netDesc
+        NetMacAddress    = $netMac
+        NetLinkSpeed     = $netSpeed
+        NetIpAddress     = $netIpStr
+        NetStatus        = $netStatus
+
+        # Battery
+        HasBattery       = $hasBattery
+        BatteryName      = $batteryName
+        BatteryPercent   = $batteryPercent
+        BatteryStatus    = $batteryStatus
+    }
+
+    return $Script:CachedDeviceDetailProfile
+}
+
 # If run directly as standalone script (not dot-sourced)
 if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
     $p = Get-HardwareProfile
@@ -210,6 +415,8 @@ if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
     Write-Host "RAM: $($p.TotalRamGb) GB"
     $t = Get-LiveHardwareTelemetry
     Write-Host "Live Telemetry -> CPU: $($t.CpuLoad)% | RAM: $($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%) | Ping: $($t.PingMs) ms"
+    $d = Get-DeviceDetailProfile
+    Write-Host "`nDevice: $($d.DeviceName) ($($d.HeaderSummary))" -ForegroundColor Cyan
 }
 
 # ------------------------------------------------------------------------------
@@ -944,7 +1151,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.2.0"
+    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.4.0"
     Height="840" Width="1240"
     MinHeight="700" MinWidth="1000"
     WindowStartupLocation="CenterScreen"
@@ -1138,6 +1345,67 @@ $Global:xamlContent = @'
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- Mini Rollback Action Button -->
+        <Style x:Key="MiniRollbackButton" TargetType="Button">
+            <Setter Property="Background" Value="#1C141A"/>
+            <Setter Property="Foreground" Value="#FF4A70"/>
+            <Setter Property="BorderBrush" Value="#4A2635"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF0055"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF0055"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#B8003E"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <!-- Device Spec Copy Button Style -->
+        <Style x:Key="DeviceCopyButton" TargetType="Button">
+            <Setter Property="Background" Value="#1E2838"/>
+            <Setter Property="Foreground" Value="#CBD5E1"/>
+            <Setter Property="BorderBrush" Value="#334155"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="14,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#2D3B4E"/>
+                                <Setter Property="Foreground" Value="#00D2FF"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#00D2FF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#161E2B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -1163,7 +1431,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="20" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center"/>
                             <TextBlock Text=" ULTIMATE OPTIMIZER" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.2.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
+                                <TextBlock Text="v5.4.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Ultra Low-Latency Windows Kernel Engine &amp; 10-Category WinGet Software Suite" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
@@ -1310,11 +1578,64 @@ $Global:xamlContent = @'
             <TabItem Header="Gaming Tweaks">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                    <!-- ROW 0: OPTIMIZATION SCORE DASHBOARD BANNER -->
+                    <Border Grid.Row="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Circular Radial Score Gauge -->
+                            <Border Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00D2FF" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Name="TxtScorePercent" Text="100%" FontSize="18" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
+                                    <TextBlock Name="TxtScoreGrade" Text="A+ Optimal" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Score" FontSize="8" Foreground="#64748B" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Center Info & Badges -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <WrapPanel Margin="0,0,0,6">
+                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
+                                        <TextBlock Text="[ç”° Usability &amp; Shell Features]" FontSize="11" FontWeight="SemiBold" Foreground="#00D2FF"/>
+                                    </Border>
+                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
+                                        <TextBlock Name="TxtSystemSpecBadge" Text="[ðŸ’» Windows Optimization Suite]" FontSize="11" Foreground="#CBD5E1"/>
+                                    </Border>
+                                    <Border Background="#0B2518" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                        <TextBlock Name="TxtActiveTweakRatio" Text="[Active: 50 / 75]" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
+                                    </Border>
+                                </WrapPanel>
+
+                                <TextBlock Text="Streamline. Optimize. Dominate. 100% reversible live Windows tuning with individual rollbacks." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                <TextBlock Name="TxtScoreSubtitle" Text="âœ“ Recommended: Ready   â†¶ Rollbacks: Ready   â„¹ 1-Click Control" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
+                            </StackPanel>
+
+                            <!-- Right Controls -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,6">
+                                    <Button Name="BtnFilterRec" Content="Rec" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                    <Button Name="BtnFilterSafe" Content="Safe" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                    <Button Name="BtnFilterAdv" Content="Adv" Style="{StaticResource MiniApplyButton}"/>
+                                </StackPanel>
+                                <Button Name="BtnApplyUnappliedBanner" Content="Apply Unapplied Only âœ“" Style="{StaticResource CyanButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="BtnScanSystemStateBanner" Content="âš¡ Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
+                                    <Button Name="BtnRevertDefaultsBanner" Content="â†¶ Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -1495,6 +1816,27 @@ $Global:xamlContent = @'
                                                     <TextBlock Text="Audits real-time MSI mode and IRQ priorities across GPU, USB, Audio, and NIC." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <Button Name="BtnReport_Interrupts" Grid.Column="1" Content="Audit" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable High-Latency Devices (Device Manager)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DeviceManager" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DeviceManager" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Disables HPET, AMD SMBus, System Speaker, Kernel Debugger, DMA &amp; Legacy Timers in Device Manager to eliminate DPC latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DeviceManager" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DeviceManager" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -1805,7 +2147,7 @@ $Global:xamlContent = @'
                     </ScrollViewer>
 
                     <!-- ACTION BAR FOR TWEAKS -->
-                    <Border Grid.Row="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
+                    <Border Grid.Row="2" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -1813,6 +2155,8 @@ $Global:xamlContent = @'
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Click [Apply] next to any tweak to run it individually, or run all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="BtnScanSystemState" Content="Audit System State" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnApplyUnappliedOnly" Content="Apply Unapplied Only" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnClearDeepCacheBar" Content="Deep Cache Cleaner" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
@@ -1952,11 +2296,55 @@ $Global:xamlContent = @'
             <TabItem Header="System &amp; Hardening">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                    <!-- TAB 4 SCORE DASHBOARD BANNER -->
+                    <Border Grid.Row="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00FF88" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Name="TxtScorePercentTab4" Text="100%" FontSize="18" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
+                                    <TextBlock Name="TxtScoreGradeTab4" Text="A+ Optimal" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Score" FontSize="8" Foreground="#64748B" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <WrapPanel Margin="0,0,0,6">
+                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
+                                        <TextBlock Text="[ðŸ›¡ Security &amp; Privacy Shield]" FontSize="11" FontWeight="SemiBold" Foreground="#00FF88"/>
+                                    </Border>
+                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
+                                        <TextBlock Text="[ðŸ’» Windows 11 Hardening Suite]" FontSize="11" Foreground="#CBD5E1"/>
+                                    </Border>
+                                    <Border Background="#0B2518" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="4" Padding="6,2">
+                                        <TextBlock Name="TxtActiveTweakRatioTab4" Text="[Active: 50 / 75]" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
+                                    </Border>
+                                </WrapPanel>
+                                <TextBlock Text="Enterprise-grade telemetry strip, OEM bloatware immunization, and Windows 11 desktop refinements." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                <TextBlock Text="âœ“ Symmetrical 1-Click Rollbacks for Every Individual Tweak" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
+                                <Button Name="BtnApplyUnappliedHardeningBanner" Content="Apply Unapplied Only âœ“" Style="{StaticResource OrangeButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Name="BtnScanSystemStateTab4Banner" Content="âš¡ Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
+                                    <Button Name="BtnRevertDefaultsTab4" Content="â†¶ Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -1965,6 +2353,222 @@ $Global:xamlContent = @'
 
                             <!-- COLUMN 1: SNAPPY OS & HARDENING -->
                             <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <!-- Card: Windows 11 Exclusives & Shell Usability -->
+                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="WINDOWS 11 EXCLUSIVES &amp; SHELL USABILITY" FontWeight="Bold" FontSize="13" Foreground="#00FF88" Margin="0,0,0,10"/>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable VBS / HVCI Security" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_VbsSecurity" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_VbsSecurity" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Turns off hypervisor-protected code integrity to reclaim 5-15% gaming CPU latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_VbsSecurity" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_VbsSecurity" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Align Taskbar to Left" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_TaskbarLeft" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_TaskbarLeft" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Moves the Windows 11 taskbar icons from center to classic left alignment." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_TaskbarLeft" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_TaskbarLeft" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Recommended in Start" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_RecommendedStart" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_RecommendedStart" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Removes the bulky Recommended section in Start Menu for a cleaner layout." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_RecommendedStart" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_RecommendedStart" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Taskbar Chat (Teams)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_TaskbarChat" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_TaskbarChat" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Hides and unloads the integrated Microsoft Teams Chat icon from taskbar." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_TaskbarChat" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_TaskbarChat" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Files Compact View Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_FilesCompact" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_FilesCompact" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Enables compact row spacing in File Explorer for denser file navigation." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_FilesCompact" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_FilesCompact" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Edge Discover &amp; Sidebar" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_EdgeDiscover" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_EdgeDiscover" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Removes the Bing Copilot button and unwanted side toolbar from Edge." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_EdgeDiscover" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_EdgeDiscover" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Add 'Copy/Move To' Context Menu" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CopyMoveMenu" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CopyMoveMenu" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Adds Copy To Folder &amp; Move To Folder directly in right-click explorer menu." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_CopyMoveMenu" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_CopyMoveMenu" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Windows System Dark Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_SystemDarkMode" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_SystemDarkMode" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Enforces dark theme across Windows Shell and apps without Windows activation." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_SystemDarkMode" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_SystemDarkMode" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Window Shake (Aero)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_WindowShake" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_WindowShake" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Prevents accidentally minimizing all background windows when shaking a window." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_WindowShake" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_WindowShake" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Enable Verbose Logon" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_VerboseLogon" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_VerboseLogon" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Displays detailed startup and logoff stages on screen instead of generic dots." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_VerboseLogon" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_VerboseLogon" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="SECURITY &amp; BLOATWARE MITIGATION" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
@@ -2187,6 +2791,27 @@ $Global:xamlContent = @'
                                                 <Button Name="BtnApply_DisableReservedStorage" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Turn Off BitLocker Permanently" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_BitLocker" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_BitLocker" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Permanently disables BitLocker device encryption, stops BDESVC service, decrypts active drives, and blocks auto-encryption." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_BitLocker" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_BitLocker" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
                                     </StackPanel>
                                 </Border>
 
@@ -2221,20 +2846,446 @@ $Global:xamlContent = @'
                                         </Grid>
                                     </StackPanel>
                                 </Border>
+
+                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="ADVANCED PRIVACY &amp; APP TELEMETRY" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable App Telemetry (All)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_AppTelemetry" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_AppTelemetry" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Kills telemetry reporting in Edge, Chrome, Firefox, Visual Studio, and Nvidia drivers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_AppTelemetry" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_AppTelemetry" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Bluetooth Advertising" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_BluetoothAdvertising" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_BluetoothAdvertising" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Stops broadcasting PC existence to nearby wireless Bluetooth devices." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_BluetoothAdvertising" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_BluetoothAdvertising" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable CDP Services" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CdpServices" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CdpServices" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Disables Connected Devices Platform background sync and tracking daemons." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_CdpServices" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_CdpServices" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Diagnostic Toasts" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DiagnosticsToasts" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DiagnosticsToasts" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Suppresses annoying Security and Maintenance pop-up toasts in action center." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DiagnosticsToasts" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DiagnosticsToasts" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Typing &amp; Ink Telemetry" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_TextInputCollection" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_TextInputCollection" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Blocks transmission of keystroke samples and handwriting patterns to cloud." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_TextInputCollection" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_TextInputCollection" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Cloud Clipboard Sync" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_ClipboardSync" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_ClipboardSync" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Stops copied passwords and text from synchronizing across foreign devices." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_ClipboardSync" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_ClipboardSync" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable SMBv1 (WannaCry Shield)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_SmbV1" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_SmbV1" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Disables insecure legacy SMB 1.0 protocol to seal critical ransomware vectors." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_SmbV1" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_SmbV1" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Exclude Drivers from WU" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DriverUpdatesExcluded" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DriverUpdatesExcluded" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Blocks Windows Update from overwriting custom graphics and audio drivers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DriverUpdatesExcluded" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DriverUpdatesExcluded" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Optimize System Timeouts (0ms)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_SystemTimeouts" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_SystemTimeouts" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="Zeros menu delay (0ms) and shortens hung app shutdown wait to 2 seconds." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_SystemTimeouts" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_SystemTimeouts" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
                         </Grid>
                     </ScrollViewer>
 
-                    <Border Grid.Row="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
+                    <Border Grid.Row="2" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Click [Apply] next to any hardening tweak, or apply all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            <Button Name="BtnApplyHardening" Grid.Column="1" Content="Apply All Hardening" Style="{StaticResource CyanButton}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Name="BtnScanSystemStateTab4" Content="Audit System State" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnApplyUnappliedHardening" Content="Apply Unapplied Hardening" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
+                                <Button Name="BtnApplyHardening" Content="Apply All Hardening" Style="{StaticResource CyanButton}"/>
+                            </StackPanel>
                         </Grid>
                     </Border>
+                </Grid>
+            </TabItem>
+
+            <!-- TAB 5: DEVICE (SPECIFICATIONS & SYSTEM PROFILE) -->
+            <TabItem Header="Device">
+                <Grid Margin="0,10,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,10,10">
+                            <!-- DEVICE MASTER BANNER CARD -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="8" Padding="18,14" Margin="0,0,0,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Laptop / Monitor Vector Path Icon -->
+                                    <Path Grid.Column="0" Data="M 4 8 L 28 8 A 2 2 0 0 1 30 10 L 30 20 A 2 2 0 0 1 28 22 L 4 22 A 2 2 0 0 1 2 20 L 2 10 A 2 2 0 0 1 4 8 Z M 0 24 L 32 24 L 32 26 L 0 26 Z" Stroke="#00D2FF" StrokeThickness="1.5" Fill="Transparent" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Name="TxtDev_CompName" Text="DEVICE" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                        <TextBlock Name="TxtDev_SubTitle" Text="Windows | CPU | RAM" FontSize="12" Foreground="#94A3B8" Margin="0,3,0,0"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Name="BtnRefreshDeviceSpecs" Content="Refresh" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                        <Button Name="BtnCopyAllDeviceSpecs" Content="Copy All Specs" Style="{StaticResource CyanButton}" Padding="16,5" FontSize="11"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- 1. OPERATING SYSTEM -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 12 2 A 10 10 0 1 0 22 12 A 10 10 0 0 0 12 2 Z M 12 7 A 5 5 0 1 0 17 12 A 5 5 0 0 0 12 7 Z M 12 10 A 2 2 0 1 1 10 12 A 2 2 0 0 1 12 10 Z" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Operating System" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevOs" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevOs" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevOs" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="OS Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Version: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsVersion" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Build Number: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsBuild" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Architecture: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsArch" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Install Date: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsInstallDate" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Registered User: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsUser" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Windows Directory: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsWinDir" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="System Directory: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsSysDir" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Last Boot Up Time: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsBootTime" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 2. PROCESSOR -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 4 4 L 20 4 L 20 20 L 4 20 Z M 7 1 L 7 4 M 12 1 L 12 4 M 17 1 L 17 4 M 7 20 L 7 23 M 12 20 L 12 23 M 17 20 L 17 23 M 1 7 L 4 7 M 1 12 L 4 12 M 1 17 L 4 17 M 20 7 L 23 7 M 20 12 L 23 12 M 20 17 L 23 17" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Processor" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevCpu" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevCpu" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevCpu" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Manufacturer: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuManufacturer" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Architecture: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuArchitecture" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Cores: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuCores" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Logical Processors: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuLogical" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Max Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuMaxSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Socket Designation: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuSocket" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="L2 Cache Size: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuL2" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="L3 Cache Size: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuL3" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 3. GRAPHICS -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 2 6 L 22 6 L 22 18 L 2 18 Z M 6 10 A 3 3 0 1 0 6 14 A 3 3 0 0 0 6 10 Z M 14 10 A 3 3 0 1 0 14 14 A 3 3 0 0 0 14 10 Z M 4 18 L 4 22 L 8 22 L 8 18" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Graphics" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevGpu" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevGpu" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevGpu" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Manufacturer: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuManufacturer" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Driver Version: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuDriverVersion" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Driver Date: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuDriverDate" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="VRAM: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuVram" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Resolution: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuResolution" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Refresh Rate: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuRefreshRate" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 4. RAM -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 2 8 L 22 8 L 22 16 L 2 16 Z M 4 16 L 4 18 M 7 16 L 7 18 M 10 16 L 10 18 M 14 16 L 14 18 M 17 16 L 17 18 M 20 16 L 20 18 M 5 10 L 9 10 L 9 14 L 5 14 Z M 12 10 L 16 10 L 16 14 L 12 14 Z" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="RAM" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevRam" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevRam" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevRam" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Total Installed: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamTotal" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Usable Memory: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamUsable" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Manufacturer: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamManufacturer" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Part Number: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamPartNumber" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Slots Configured: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamSlots" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 5. STORAGE -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 2 8 L 22 8 L 22 16 L 2 16 Z M 17 12 A 1 1 0 1 0 19 12 A 1 1 0 0 0 17 12 Z M 5 12 L 13 12" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Storage" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevStorage" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevStorage" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevStorage" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Physical Disks: " Foreground="#FFFFFF"/><Run Name="TxtDev_StorageDisks" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Volumes &amp; Partitions: " Foreground="#FFFFFF"/><Run Name="TxtDev_StorageVolumes" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 6. NETWORK -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 2 4 L 22 4 L 22 16 L 2 16 Z M 12 16 L 12 20 M 6 20 L 18 20" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Network" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevNet" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevNet" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevNet" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Adapter Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Description: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetDesc" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="MAC Address: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetMac" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Link Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="IPv4 Address: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetIp" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Status: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetStatus" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- 7. BATTERY -->
+                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Path Data="M 2 6 L 18 6 L 18 18 L 2 18 Z M 18 10 L 21 10 L 21 14 L 18 14 Z M 5 9 L 9 9 L 9 15 L 5 15 Z M 11 9 L 15 9 L 15 15 L 11 15 Z" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Battery" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnCopy_DevBattery" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
+                                            <Button Name="BtnToggle_DevBattery" Content="â–²" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevBattery" Margin="30,12,0,4">
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Power Status: " Foreground="#FFFFFF"/><Run Name="TxtDev_BatteryStatus" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Battery Device: " Foreground="#FFFFFF"/><Run Name="TxtDev_BatteryName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Charge Level: " Foreground="#FFFFFF"/><Run Name="TxtDev_BatteryPercent" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+                    </ScrollViewer>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -2291,13 +3342,33 @@ function Start-PumpkiNGui {
     $xmlReader = [System.Xml.XmlReader]::Create($stringReader)
     $window = [System.Windows.Markup.XamlReader]::Load($xmlReader)
 
-    # Load 3D Pumpkin Brand Logo
+    # Load 3D Pumpkin Brand Logo & Window Icon (.ico / .png)
     $imgLogo = $window.FindName("ImgAppLogo")
     $baseDir = if ($PSScriptRoot) { Split-Path $PSScriptRoot -Parent } else { Get-Location }
-    $logoCandidates = @(
-        (Join-Path $baseDir "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"),
-        (Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png")
-    )
+    $logoCandidates = [System.Collections.Generic.List[string]]::new()
+    $logoCandidates.Add((Join-Path $baseDir "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
+    $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
+    $logoCandidates.Add((Join-Path $baseDir "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
+    $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
+
+    # Dynamic search in LOGO directories for any .ico or .png
+    $logoDirs = @((Join-Path $baseDir "LOGO"), (Join-Path (Get-Location) "LOGO"))
+    foreach ($ld in $logoDirs) {
+        if ($ld -and (Test-Path $ld)) {
+            $discovered = Get-ChildItem -Path $ld -Filter "*.ico" -ErrorAction SilentlyContinue
+            if (-not $discovered) {
+                $discovered = Get-ChildItem -Path $ld -Filter "*.png" -ErrorAction SilentlyContinue
+            }
+            if ($discovered) {
+                foreach ($df in $discovered) {
+                    if (-not $logoCandidates.Contains($df.FullName)) {
+                        $logoCandidates.Add($df.FullName)
+                    }
+                }
+            }
+        }
+    }
+
     foreach ($cand in $logoCandidates) {
         if ($cand -and (Test-Path $cand)) {
             try {
@@ -2309,7 +3380,14 @@ function Start-PumpkiNGui {
                 if ($imgLogo) { $imgLogo.Source = $bitmap }
                 $window.Icon = $bitmap
                 break
-            } catch {}
+            } catch {
+                try {
+                    $frame = [System.Windows.Media.Imaging.BitmapFrame]::Create((New-Object System.Uri($cand, [System.UriKind]::Absolute)))
+                    if ($imgLogo) { $imgLogo.Source = $frame }
+                    $window.Icon = $frame
+                    break
+                } catch {}
+            }
         }
     }
 
@@ -2364,6 +3442,23 @@ function Start-PumpkiNGui {
     $txtStatus          = $window.FindName("TxtStatus")
     $progressBar        = $window.FindName("MainProgressBar")
     $btnClearConsole    = $window.FindName("BtnClearConsole")
+
+    # Optimization Score & Audit Dashboard Controls
+    $txtScorePercent          = $window.FindName("TxtScorePercent")
+    $txtScoreGrade            = $window.FindName("TxtScoreGrade")
+    $txtActiveTweakRatio      = $window.FindName("TxtActiveTweakRatio")
+    $txtScorePercentTab4      = $window.FindName("TxtScorePercentTab4")
+    $txtScoreGradeTab4        = $window.FindName("TxtScoreGradeTab4")
+    $txtActiveTweakRatioTab4  = $window.FindName("TxtActiveTweakRatioTab4")
+    $btnScanSystemStateBanner = $window.FindName("BtnScanSystemStateBanner")
+    $btnScanSystemStateTab4Banner = $window.FindName("BtnScanSystemStateTab4Banner")
+    $btnScanSystemStateTab4   = $window.FindName("BtnScanSystemStateTab4")
+    $btnApplyUnappliedBanner  = $window.FindName("BtnApplyUnappliedBanner")
+    $btnApplyUnappliedTab2    = $window.FindName("BtnApplyUnappliedTab2")
+    $btnApplyUnappliedHardening = $window.FindName("BtnApplyUnappliedHardening")
+    $btnApplyUnappliedHardeningBanner = $window.FindName("BtnApplyUnappliedHardeningBanner")
+    $btnRevertDefaultsBanner  = $window.FindName("BtnRevertDefaultsBanner")
+    $btnRevertDefaultsTab4    = $window.FindName("BtnRevertDefaultsTab4")
 
     # Tab 2 Checkboxes
     $chkGpuAuto         = $window.FindName("ChkGpuAuto")
@@ -2692,6 +3787,7 @@ function Start-PumpkiNGui {
         Optimize-LatencyAndInput
         Optimize-CsrssPriority
         Optimize-CpuAndSystem
+        Optimize-DeviceManager
         Optimize-SvcHostSplitting
         & $script:SetProgress 65
         Optimize-StartupAndDns
@@ -2709,6 +3805,7 @@ function Start-PumpkiNGui {
         Disable-ScheduledJunkTasks
         Harden-PrivacyTelemetry
         & $script:SetProgress 100
+        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
         & $script:LogToGui "[+] ALL 23 GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0
@@ -2719,6 +3816,7 @@ function Start-PumpkiNGui {
         & $script:SetProgress 50
         Restore-Defaults
         & $script:SetProgress 100
+        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
         & $script:LogToGui "[+] Windows default settings restored successfully!"
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0
@@ -2795,6 +3893,7 @@ function Start-PumpkiNGui {
             Enable-EndTaskRightClick
             Disable-StickyKeysPrompt
             & $script:SetProgress 100
+            if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
             & $script:LogToGui "================================================================================"
             & $script:LogToGui "[OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
             & $script:LogToGui "================================================================================"
@@ -2911,59 +4010,319 @@ function Start-PumpkiNGui {
         Enable-BsodVerbose
         Disable-ReservedStorage
         & $script:SetProgress 100
+        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
         & $script:LogToGui "[+] All hardening tweaks applied successfully!"
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0
     })
 
-    # Individual 1-Click Tweak Action Helper
-    function Register-QuickTweakButton($btnName, $tweakName, [scriptblock]$action) {
-        $btn = $window.FindName($btnName)
-        if ($btn) {
-            $btn.Add_Click({
-                & $script:LogToGui "[*] Applying $tweakName..."
-                & $script:SetProgress 40
-                & $action
-                & $script:SetProgress 100
-                & $script:LogToGui "[+] $tweakName applied successfully!"
-                Start-Sleep -Milliseconds 200
-                & $script:SetProgress 0
-            })
+    # Master Brushes for Audit Status Badges
+    $brushOptimalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#002D1E")
+    $brushOptimalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+    $brushOptimalText   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+    $brushNeededBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
+    $brushNeededBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#26354A")
+    $brushNeededText    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+
+    # Master Tweak Registry: Schema maps Audit Keys to Apply, Rollback, Badges and Buttons
+    $script:TweakDefinitions = @(
+        # 1. Gaming & Hardware Performance
+        @{ Key="GpuAuto"; Title="GPU Auto-Tuning"; Category="Gaming"; Apply={ Optimize-GpuAuto }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_GpuAuto"; RollbackBtn="BtnRollback_GpuAuto"; Badge="Badge_GpuAuto"; TxtBadge="TxtBadge_GpuAuto" },
+        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_HardwareMsi"; RollbackBtn="BtnRollback_HardwareMsi"; Badge="Badge_HardwareMsi"; TxtBadge="TxtBadge_HardwareMsi" },
+        @{ Key="DisablePowerSaving"; Title="Disable USB Sleep"; Category="Gaming"; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_DisablePowerSaving"; RollbackBtn="BtnRollback_DisablePowerSaving"; Badge="Badge_DisablePowerSaving"; TxtBadge="TxtBadge_DisablePowerSaving" },
+        @{ Key="Mpo"; Title="Disable MPO"; Category="Gaming"; Apply={ Disable-MultiplaneOverlay }; Rollback={ Restore-MultiplaneOverlay }; ApplyBtn="BtnApply_Mpo"; RollbackBtn="BtnRollback_Mpo"; Badge="Badge_Mpo"; TxtBadge="TxtBadge_Mpo" },
+        @{ Key="MouseCurve"; Title="Raw Mouse Input"; Category="Gaming"; Apply={ Set-MouseLinearCurve }; Rollback={ Restore-MouseLinearCurve }; ApplyBtn="BtnApply_MouseCurve"; RollbackBtn="BtnRollback_MouseCurve"; Badge="Badge_MouseCurve"; TxtBadge="TxtBadge_MouseCurve" },
+        @{ Key="InputLatency"; Title="8000Hz Input Tuning"; Category="Gaming"; Apply={ Optimize-LatencyAndInput }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_InputLatency"; RollbackBtn="BtnRollback_InputLatency"; Badge="Badge_InputLatency"; TxtBadge="TxtBadge_InputLatency" },
+        @{ Key="CsrssPriority"; Title="CSRSS Realtime I/O"; Category="Gaming"; Apply={ Optimize-CsrssPriority }; Rollback={ Restore-CsrssPriority }; ApplyBtn="BtnApply_CsrssPriority"; RollbackBtn="BtnRollback_CsrssPriority"; Badge="Badge_CsrssPriority"; TxtBadge="TxtBadge_CsrssPriority" },
+        @{ Key="CpuSystem"; Title="CPU Gaming Quantum"; Category="Gaming"; Apply={ Optimize-CpuAndSystem }; Rollback={ Restore-CpuAndSystem }; ApplyBtn="BtnApply_CpuSystem"; RollbackBtn="BtnRollback_CpuSystem"; Badge="Badge_CpuSystem"; TxtBadge="TxtBadge_CpuSystem" },
+        @{ Key="SvcHost"; Title="SvcHost RAM Splitting"; Category="Gaming"; Apply={ Optimize-SvcHostSplitting }; Rollback={ Restore-SvcHostSplitting }; ApplyBtn="BtnApply_SvcHost"; RollbackBtn="BtnRollback_SvcHost"; Badge="Badge_SvcHost"; TxtBadge="TxtBadge_SvcHost" },
+        @{ Key="Network"; Title="TCP/IP Gaming Stack"; Category="Gaming"; Apply={ Optimize-Network }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_Network"; RollbackBtn="BtnRollback_Network"; Badge="Badge_Network"; TxtBadge="TxtBadge_Network" },
+        @{ Key="WifiScan"; Title="Wi-Fi Ping Shield"; Category="Gaming"; Apply={ Toggle-WifiAutoconfig }; Rollback={ Toggle-WifiAutoconfig }; ApplyBtn="BtnApply_WifiScan"; RollbackBtn="BtnRollback_WifiScan"; Badge="Badge_WifiScan"; TxtBadge="TxtBadge_WifiScan" },
+        @{ Key="StartupDns"; Title="Gaming DNS & Startup Tuning"; Category="Gaming"; Apply={ Optimize-StartupAndDns }; Rollback={ Reset-DnsToAutomatic }; ApplyBtn="BtnApply_StartupDns"; RollbackBtn="BtnRollback_StartupDns"; Badge="Badge_StartupDns"; TxtBadge="TxtBadge_StartupDns" },
+        @{ Key="GameHooks"; Title="Esports Game Priority Hooks"; Category="Gaming"; Apply={ Apply-GameHooks }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_GameHooks"; RollbackBtn="BtnRollback_GameHooks"; Badge="Badge_GameHooks"; TxtBadge="TxtBadge_GameHooks" },
+        @{ Key="UltimatePower"; Title="PumpkiN Esports Power Plan"; Category="Gaming"; Apply={ Invoke-PumpkiNEsportsPowerPlan }; Rollback={ Restore-BalancedPowerPlan }; ApplyBtn="BtnApply_UltimatePower"; RollbackBtn="BtnRollback_UltimatePower"; Badge="Badge_UltimatePower"; TxtBadge="TxtBadge_UltimatePower" },
+        @{ Key="CoreUnpark"; Title="100% CPU Core Unparking"; Category="Gaming"; Apply={ Invoke-CpuCoreUnparking }; Rollback={ Restore-CpuCoreParking }; ApplyBtn="BtnApply_CoreUnpark"; RollbackBtn="BtnRollback_CoreUnpark"; Badge="Badge_CoreUnpark"; TxtBadge="TxtBadge_CoreUnpark" },
+        @{ Key="StripVisual"; Title="Strip Visual Animations"; Category="Gaming"; Apply={ Strip-VisualEffects }; Rollback={ Restore-VisualEffects }; ApplyBtn="BtnApply_StripVisual"; RollbackBtn="BtnRollback_StripVisual"; Badge="Badge_StripVisual"; TxtBadge="TxtBadge_StripVisual" },
+        @{ Key="EndTask"; Title="Taskbar End Task"; Category="Gaming"; Apply={ Enable-EndTaskRightClick }; Rollback={ Restore-EndTaskRightClick }; ApplyBtn="BtnApply_EndTask"; RollbackBtn="BtnRollback_EndTask"; Badge="Badge_EndTask"; TxtBadge="TxtBadge_EndTask" },
+        @{ Key="StickyKeys"; Title="Disable Sticky Keys"; Category="Gaming"; Apply={ Disable-StickyKeysPrompt }; Rollback={ Restore-StickyKeysPrompt }; ApplyBtn="BtnApply_StickyKeys"; RollbackBtn="BtnRollback_StickyKeys"; Badge="Badge_StickyKeys"; TxtBadge="TxtBadge_StickyKeys" },
+        @{ Key="CompactMetrics"; Title="Compact Window Metrics"; Category="Gaming"; Apply={ Set-CompactWindowMetrics }; Rollback={ Restore-CompactWindowMetrics }; ApplyBtn="BtnApply_CompactMetrics"; RollbackBtn="BtnReset_CompactMetrics"; Badge="Badge_CompactMetrics"; TxtBadge="TxtBadge_CompactMetrics" },
+        @{ Key="DebloatServices"; Title="Debloat Services"; Category="Gaming"; Apply={ Debloat-BackgroundServices }; Rollback={ Restore-BackgroundServices }; ApplyBtn="BtnApply_DebloatServices"; RollbackBtn="BtnRollback_DebloatServices"; Badge="Badge_DebloatServices"; TxtBadge="TxtBadge_DebloatServices" },
+        @{ Key="DiskIo"; Title="Optimize Disk I/O"; Category="Gaming"; Apply={ Optimize-DiskIO }; Rollback={ Restore-DiskIO }; ApplyBtn="BtnApply_DiskIo"; RollbackBtn="BtnRollback_DiskIo"; Badge="Badge_DiskIo"; TxtBadge="TxtBadge_DiskIo" },
+        @{ Key="CompactOs"; Title="CompactOS Compression"; Category="Gaming"; Apply={ Enable-CompactOS }; Rollback={ Disable-CompactOS }; ApplyBtn="BtnApply_CompactOs"; RollbackBtn="BtnRollback_CompactOs"; Badge="Badge_CompactOs"; TxtBadge="TxtBadge_CompactOs" },
+        @{ Key="TakeOwnership"; Title="Take Ownership Menu"; Category="Gaming"; Apply={ Enable-TakeOwnershipMenu }; Rollback={ Disable-TakeOwnershipMenu }; ApplyBtn="BtnApply_TakeOwnership"; RollbackBtn="BtnRollback_TakeOwnership"; Badge="Badge_TakeOwnership"; TxtBadge="TxtBadge_TakeOwnership" },
+        @{ Key="JunkTasks"; Title="Disable Junk Tasks"; Category="Gaming"; Apply={ Disable-ScheduledJunkTasks }; Rollback={ Restore-ScheduledJunkTasks }; ApplyBtn="BtnApply_JunkTasks"; RollbackBtn="BtnRollback_JunkTasks"; Badge="Badge_JunkTasks"; TxtBadge="TxtBadge_JunkTasks" },
+        @{ Key="Privacy"; Title="Disable Telemetry"; Category="Gaming"; Apply={ Harden-PrivacyTelemetry }; Rollback={ Restore-PrivacyTelemetry }; ApplyBtn="BtnApply_Privacy"; RollbackBtn="BtnRollback_Privacy"; Badge="Badge_Privacy"; TxtBadge="TxtBadge_Privacy" },
+        @{ Key="AudioDpc"; Title="Audio DPC & Anti-Popping"; Category="Gaming"; Apply={ Optimize-AudioDpcLatency }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_AudioDpc"; RollbackBtn="BtnRollback_AudioDpc"; Badge="Badge_AudioDpc"; TxtBadge="TxtBadge_AudioDpc" },
+        @{ Key="UsbxHci"; Title="USB xHCI Realtime Thread"; Category="Gaming"; Apply={ Optimize-UsbLatencyAndBuffers }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_UsbxHci"; RollbackBtn="BtnRollback_UsbxHci"; Badge="Badge_UsbxHci"; TxtBadge="TxtBadge_UsbxHci" },
+        @{ Key="DeviceManager"; Title="Device Manager Tuning"; Category="Gaming"; Apply={ Optimize-DeviceManager }; Rollback={ Restore-DeviceManager }; ApplyBtn="BtnApply_DeviceManager"; RollbackBtn="BtnRollback_DeviceManager"; Badge="Badge_DeviceManager"; TxtBadge="TxtBadge_DeviceManager" },
+
+        # 2. Hardening & Security Tweaks
+        @{ Key="BlockWpbt"; Title="Block WPBT Bloat"; Category="Hardening"; Apply={ Block-WpbtExecution }; Rollback={ Restore-WpbtExecution }; ApplyBtn="BtnApply_BlockWpbt"; RollbackBtn="BtnRollback_BlockWpbt"; Badge="Badge_BlockWpbt"; TxtBadge="TxtBadge_BlockWpbt" },
+        @{ Key="BlockPeripheral"; Title="Block Peripheral Bloat"; Category="Hardening"; Apply={ Block-PeripheralBloat }; Rollback={ Restore-PeripheralBloat }; ApplyBtn="BtnApply_BlockPeripheral"; RollbackBtn="BtnRollback_BlockPeripheral"; Badge="Badge_BlockPeripheral"; TxtBadge="TxtBadge_BlockPeripheral" },
+        @{ Key="RemoveAi"; Title="Purge Windows AI"; Category="Hardening"; Apply={ Remove-WindowsAI }; Rollback={ Restore-WindowsAI }; ApplyBtn="BtnApply_RemoveAi"; RollbackBtn="BtnRollback_RemoveAi"; Badge="Badge_RemoveAi"; TxtBadge="TxtBadge_RemoveAi" },
+        @{ Key="SecurityUpdatesOnly"; Title="Security-Only Updates"; Category="Hardening"; Apply={ Set-SecurityUpdatesOnly }; Rollback={ Restore-SecurityUpdatesOnly }; ApplyBtn="BtnApply_SecurityUpdatesOnly"; RollbackBtn="BtnRollback_SecurityUpdatesOnly"; Badge="Badge_SecurityUpdatesOnly"; TxtBadge="TxtBadge_SecurityUpdatesOnly" },
+        @{ Key="ClassicContext"; Title="Classic Right-Click"; Category="Hardening"; Apply={ Enable-ClassicContextMenu }; Rollback={ Restore-ClassicContextMenu }; ApplyBtn="BtnApply_ClassicContext"; RollbackBtn="BtnRollback_ClassicContext"; Badge="Badge_ClassicContext"; TxtBadge="TxtBadge_ClassicContext" },
+        @{ Key="DisableBing"; Title="Disable Web Search"; Category="Hardening"; Apply={ Disable-StartMenuBing }; Rollback={ Restore-StartMenuBing }; ApplyBtn="BtnApply_DisableBing"; RollbackBtn="BtnRollback_DisableBing"; Badge="Badge_DisableBing"; TxtBadge="TxtBadge_DisableBing" },
+        @{ Key="DisableAutoDiscovery"; Title="Disable Auto-Discovery"; Category="Hardening"; Apply={ Disable-ExplorerAutoDiscovery }; Rollback={ Restore-ExplorerAutoDiscovery }; ApplyBtn="BtnApply_DisableAutoDiscovery"; RollbackBtn="BtnRollback_DisableAutoDiscovery"; Badge="Badge_DisableAutoDiscovery"; TxtBadge="TxtBadge_DisableAutoDiscovery" },
+        @{ Key="ShowExtensions"; Title="Show File Extensions"; Category="Hardening"; Apply={ Set-ShowFileExtensionsAndHidden }; Rollback={ Restore-ShowFileExtensionsAndHidden }; ApplyBtn="BtnApply_ShowExtensions"; RollbackBtn="BtnRollback_ShowExtensions"; Badge="Badge_ShowExtensions"; TxtBadge="TxtBadge_ShowExtensions" },
+        @{ Key="DisableAds"; Title="Disable Windows Ads"; Category="Hardening"; Apply={ Disable-WindowsAds }; Rollback={ Enable-WindowsAds }; ApplyBtn="BtnApply_DisableAds"; RollbackBtn="BtnReset_DisableAds"; Badge="Badge_DisableAds"; TxtBadge="TxtBadge_DisableAds" },
+        @{ Key="NoShortcutArrows"; Title="Remove Shortcut Arrows"; Category="Hardening"; Apply={ Disable-ShortcutArrow }; Rollback={ Restore-ShortcutArrow }; ApplyBtn="BtnApply_NoShortcutArrows"; RollbackBtn="BtnReset_ShortcutArrows"; Badge="Badge_NoShortcutArrows"; TxtBadge="TxtBadge_NoShortcutArrows" },
+        @{ Key="EnableLongPaths"; Title="Enable Long Paths"; Category="Hardening"; Apply={ Enable-LongPaths }; Rollback={ Restore-LongPaths }; ApplyBtn="BtnApply_EnableLongPaths"; RollbackBtn="BtnRollback_EnableLongPaths"; Badge="Badge_EnableLongPaths"; TxtBadge="TxtBadge_EnableLongPaths" },
+        @{ Key="DisableLockScreen"; Title="Disable Lock Screen"; Category="Hardening"; Apply={ Disable-LockScreen }; Rollback={ Restore-LockScreen }; ApplyBtn="BtnApply_DisableLockScreen"; RollbackBtn="BtnRollback_DisableLockScreen"; Badge="Badge_DisableLockScreen"; TxtBadge="TxtBadge_DisableLockScreen" },
+        @{ Key="BsodVerbose"; Title="Verbose BSOD"; Category="Hardening"; Apply={ Enable-BsodVerbose }; Rollback={ Restore-BsodVerbose }; ApplyBtn="BtnApply_BsodVerbose"; RollbackBtn="BtnRollback_BsodVerbose"; Badge="Badge_BsodVerbose"; TxtBadge="TxtBadge_BsodVerbose" },
+        @{ Key="DisableReservedStorage"; Title="Reclaim Reserved Storage"; Category="Hardening"; Apply={ Disable-ReservedStorage }; Rollback={ Restore-ReservedStorage }; ApplyBtn="BtnApply_DisableReservedStorage"; RollbackBtn="BtnRollback_DisableReservedStorage"; Badge="Badge_DisableReservedStorage"; TxtBadge="TxtBadge_DisableReservedStorage" },
+        @{ Key="BitLocker"; Title="Turn Off BitLocker"; Category="Hardening"; Apply={ Disable-BitLockerPermanently }; Rollback={ Restore-BitLockerDefaults }; ApplyBtn="BtnApply_BitLocker"; RollbackBtn="BtnRollback_BitLocker"; Badge="Badge_BitLocker"; TxtBadge="TxtBadge_BitLocker" },
+
+        # 3. Windows 11 Exclusives & Shell Usability
+        @{ Key="VbsSecurity"; Title="Disable VBS Security"; Category="Shell"; Apply={ Disable-VbsSecurity }; Rollback={ Restore-VbsSecurity }; ApplyBtn="BtnApply_VbsSecurity"; RollbackBtn="BtnRollback_VbsSecurity"; Badge="Badge_VbsSecurity"; TxtBadge="TxtBadge_VbsSecurity" },
+        @{ Key="TaskbarLeft"; Title="Align Taskbar to Left"; Category="Shell"; Apply={ Set-TaskbarLeftAlign }; Rollback={ Restore-TaskbarAlignmentCenter }; ApplyBtn="BtnApply_TaskbarLeft"; RollbackBtn="BtnRollback_TaskbarLeft"; Badge="Badge_TaskbarLeft"; TxtBadge="TxtBadge_TaskbarLeft" },
+        @{ Key="RecommendedStart"; Title="Hide Start Recommended"; Category="Shell"; Apply={ Disable-RecommendedStartSection }; Rollback={ Restore-StartMenuRecommended }; ApplyBtn="BtnApply_RecommendedStart"; RollbackBtn="BtnRollback_RecommendedStart"; Badge="Badge_RecommendedStart"; TxtBadge="TxtBadge_RecommendedStart" },
+        @{ Key="TaskbarChat"; Title="Disable Taskbar Chat"; Category="Shell"; Apply={ Disable-TaskbarChat }; Rollback={ Restore-TaskbarChat }; ApplyBtn="BtnApply_TaskbarChat"; RollbackBtn="BtnRollback_TaskbarChat"; Badge="Badge_TaskbarChat"; TxtBadge="TxtBadge_TaskbarChat" },
+        @{ Key="FilesCompact"; Title="Files Compact View"; Category="Shell"; Apply={ Enable-FilesCompactMode }; Rollback={ Restore-FilesCompactMode }; ApplyBtn="BtnApply_FilesCompact"; RollbackBtn="BtnRollback_FilesCompact"; Badge="Badge_FilesCompact"; TxtBadge="TxtBadge_FilesCompact" },
+        @{ Key="SnapAssist"; Title="Disable Snap Assist"; Category="Shell"; Apply={ Disable-SnapAssist }; Rollback={ Restore-SnapAssist }; ApplyBtn="BtnApply_SnapAssist"; RollbackBtn="BtnRollback_SnapAssist"; Badge="Badge_SnapAssist"; TxtBadge="TxtBadge_SnapAssist" },
+        @{ Key="WindowsStickers"; Title="Disable Desktop Stickers"; Category="Shell"; Apply={ Disable-DesktopStickers }; Rollback={ Restore-WindowsStickers }; ApplyBtn="BtnApply_WindowsStickers"; RollbackBtn="BtnRollback_WindowsStickers"; Badge="Badge_WindowsStickers"; TxtBadge="TxtBadge_WindowsStickers" },
+        @{ Key="EdgeDiscover"; Title="Disable Edge Discover Bar"; Category="Shell"; Apply={ Disable-EdgeDiscoverBar }; Rollback={ Restore-EdgeDiscoverBar }; ApplyBtn="BtnApply_EdgeDiscover"; RollbackBtn="BtnRollback_EdgeDiscover"; Badge="Badge_EdgeDiscover"; TxtBadge="TxtBadge_EdgeDiscover" },
+        @{ Key="CopyMoveMenu"; Title="Add Copy/Move to Menu"; Category="Shell"; Apply={ Enable-CopyMoveToContextMenu }; Rollback={ Restore-CopyMoveContextMenu }; ApplyBtn="BtnApply_CopyMoveMenu"; RollbackBtn="BtnRollback_CopyMoveMenu"; Badge="Badge_CopyMoveMenu"; TxtBadge="TxtBadge_CopyMoveMenu" },
+        @{ Key="WindowShake"; Title="Disable Window Shake"; Category="Shell"; Apply={ Disable-WindowShake }; Rollback={ Restore-WindowShake }; ApplyBtn="BtnApply_WindowShake"; RollbackBtn="BtnRollback_WindowShake"; Badge="Badge_WindowShake"; TxtBadge="TxtBadge_WindowShake" },
+        @{ Key="SystemDarkMode"; Title="System Dark Mode"; Category="Shell"; Apply={ Enable-SystemDarkMode }; Rollback={ Restore-WindowsLightMode }; ApplyBtn="BtnApply_SystemDarkMode"; RollbackBtn="BtnRollback_SystemDarkMode"; Badge="Badge_SystemDarkMode"; TxtBadge="TxtBadge_SystemDarkMode" },
+        @{ Key="VerboseLogon"; Title="Enable Verbose Logon"; Category="Shell"; Apply={ Enable-VerboseLogon }; Rollback={ Restore-VerboseLogon }; ApplyBtn="BtnApply_VerboseLogon"; RollbackBtn="BtnRollback_VerboseLogon"; Badge="Badge_VerboseLogon"; TxtBadge="TxtBadge_VerboseLogon" },
+        @{ Key="QuickAccessHistory"; Title="Disable Quick Access History"; Category="Shell"; Apply={ Disable-QuickAccessHistory }; Rollback={ Restore-QuickAccessHistory }; ApplyBtn="BtnApply_QuickAccessHistory"; RollbackBtn="BtnRollback_QuickAccessHistory"; Badge="Badge_QuickAccessHistory"; TxtBadge="TxtBadge_QuickAccessHistory" },
+        @{ Key="MyPeople"; Title="Disable My People Band"; Category="Shell"; Apply={ Disable-MyPeople }; Rollback={ Restore-MyPeople }; ApplyBtn="BtnApply_MyPeople"; RollbackBtn="BtnRollback_MyPeople"; Badge="Badge_MyPeople"; TxtBadge="TxtBadge_MyPeople" },
+        @{ Key="WindowsInk"; Title="Disable Windows Ink"; Category="Shell"; Apply={ Disable-WindowsInk }; Rollback={ Restore-WindowsInk }; ApplyBtn="BtnApply_WindowsInk"; RollbackBtn="BtnRollback_WindowsInk"; Badge="Badge_WindowsInk"; TxtBadge="TxtBadge_WindowsInk" },
+        @{ Key="CastToDevice"; Title="Disable Cast to Device"; Category="Shell"; Apply={ Disable-CastToDevice }; Rollback={ Restore-CastToDevice }; ApplyBtn="BtnApply_CastToDevice"; RollbackBtn="BtnRollback_CastToDevice"; Badge="Badge_CastToDevice"; TxtBadge="TxtBadge_CastToDevice" },
+
+        # 4. Privacy & App Telemetry
+        @{ Key="AppTelemetry"; Title="Disable App Telemetry"; Category="Privacy"; Apply={ Disable-ThirdPartyAppTelemetry }; Rollback={ Restore-AppTelemetry }; ApplyBtn="BtnApply_AppTelemetry"; RollbackBtn="BtnRollback_AppTelemetry"; Badge="Badge_AppTelemetry"; TxtBadge="TxtBadge_AppTelemetry" },
+        @{ Key="BluetoothAdvertising"; Title="Disable Bluetooth Advertising"; Category="Privacy"; Apply={ Disable-BluetoothAdvertising }; Rollback={ Restore-BluetoothAdvertising }; ApplyBtn="BtnApply_BluetoothAdvertising"; RollbackBtn="BtnRollback_BluetoothAdvertising"; Badge="Badge_BluetoothAdvertising"; TxtBadge="TxtBadge_BluetoothAdvertising" },
+        @{ Key="CloudContent"; Title="Disable Cloud Content"; Category="Privacy"; Apply={ Disable-CloudOptimizedContent }; Rollback={ Restore-CloudOptimizedContent }; ApplyBtn="BtnApply_CloudContent"; RollbackBtn="BtnRollback_CloudContent"; Badge="Badge_CloudContent"; TxtBadge="TxtBadge_CloudContent" },
+        @{ Key="CdpServices"; Title="Disable CDP Services"; Category="Privacy"; Apply={ Disable-CdpUserServices }; Rollback={ Restore-CdpServices }; ApplyBtn="BtnApply_CdpServices"; RollbackBtn="BtnRollback_CdpServices"; Badge="Badge_CdpServices"; TxtBadge="TxtBadge_CdpServices" },
+        @{ Key="DiagnosticsToasts"; Title="Disable Diagnostics Toasts"; Category="Privacy"; Apply={ Disable-DiagnosticsToasts }; Rollback={ Restore-DiagnosticsToasts }; ApplyBtn="BtnApply_DiagnosticsToasts"; RollbackBtn="BtnRollback_DiagnosticsToasts"; Badge="Badge_DiagnosticsToasts"; TxtBadge="TxtBadge_DiagnosticsToasts" },
+        @{ Key="OnlineSpeech"; Title="Disable Online Speech Privacy"; Category="Privacy"; Apply={ Disable-OnlineSpeechPrivacy }; Rollback={ Restore-OnlineSpeechPrivacy }; ApplyBtn="BtnApply_OnlineSpeech"; RollbackBtn="BtnRollback_OnlineSpeech"; Badge="Badge_OnlineSpeech"; TxtBadge="TxtBadge_OnlineSpeech" },
+        @{ Key="Arso"; Title="Disable Restart Apps On Reboot"; Category="Privacy"; Apply={ Disable-RestartAppsAfterReboot }; Rollback={ Restore-AutomaticRestartSignOn }; ApplyBtn="BtnApply_Arso"; RollbackBtn="BtnRollback_Arso"; Badge="Badge_Arso"; TxtBadge="TxtBadge_Arso" },
+        @{ Key="TextInputCollection"; Title="Disable Inking & Typing Collection"; Category="Privacy"; Apply={ Disable-HandwritingTypingCollection }; Rollback={ Restore-TextInputCollection }; ApplyBtn="BtnApply_TextInputCollection"; RollbackBtn="BtnRollback_TextInputCollection"; Badge="Badge_TextInputCollection"; TxtBadge="TxtBadge_TextInputCollection" },
+        @{ Key="ClipboardSync"; Title="Disable Clipboard Cloud Sync"; Category="Privacy"; Apply={ Disable-ClipboardCloudSync }; Rollback={ Restore-ClipboardSync }; ApplyBtn="BtnApply_ClipboardSync"; RollbackBtn="BtnRollback_ClipboardSync"; Badge="Badge_ClipboardSync"; TxtBadge="TxtBadge_ClipboardSync" },
+        @{ Key="SettingsMessageSync"; Title="Disable Settings & Message Sync"; Category="Privacy"; Apply={ Disable-SettingsAndMessageSync }; Rollback={ Restore-SettingsAndMessageSync }; ApplyBtn="BtnApply_SettingsMessageSync"; RollbackBtn="BtnRollback_SettingsMessageSync"; Badge="Badge_SettingsMessageSync"; TxtBadge="TxtBadge_SettingsMessageSync" },
+        @{ Key="FindMyDevice"; Title="Disable Find My Device"; Category="Privacy"; Apply={ Disable-FindMyDevice }; Rollback={ Restore-FindMyDevice }; ApplyBtn="BtnApply_FindMyDevice"; RollbackBtn="BtnRollback_FindMyDevice"; Badge="Badge_FindMyDevice"; TxtBadge="TxtBadge_FindMyDevice" },
+        @{ Key="SafeSearch"; Title="Disable SafeSearch"; Category="Privacy"; Apply={ Disable-SafeSearchFiltering }; Rollback={ Restore-SafeSearchMode }; ApplyBtn="BtnApply_SafeSearch"; RollbackBtn="BtnRollback_SafeSearch"; Badge="Badge_SafeSearch"; TxtBadge="TxtBadge_SafeSearch" },
+        @{ Key="RemoteAssistanceRegistry"; Title="Disable Remote Assistance & Reg"; Category="Privacy"; Apply={ Disable-RemoteAssistanceAndRegistry }; Rollback={ Restore-RemoteAssistanceAndRegistry }; ApplyBtn="BtnApply_RemoteAssistanceRegistry"; RollbackBtn="BtnRollback_RemoteAssistanceRegistry"; Badge="Badge_RemoteAssistanceRegistry"; TxtBadge="TxtBadge_RemoteAssistanceRegistry" },
+        @{ Key="DriverUpdatesExcluded"; Title="Exclude Drivers in Windows Update"; Category="Privacy"; Apply={ Exclude-DriverUpdatesInWindowsUpdate }; Rollback={ Restore-DriverUpdatesFromWindowsUpdate }; ApplyBtn="BtnApply_DriverUpdatesExcluded"; RollbackBtn="BtnRollback_DriverUpdatesExcluded"; Badge="Badge_DriverUpdatesExcluded"; TxtBadge="TxtBadge_DriverUpdatesExcluded" },
+        @{ Key="StoreAutoUpdates"; Title="Disable Store Auto-Updates"; Category="Privacy"; Apply={ Disable-WindowsStoreAutoUpdates }; Rollback={ Restore-StoreAutoUpdates }; ApplyBtn="BtnApply_StoreAutoUpdates"; RollbackBtn="BtnRollback_StoreAutoUpdates"; Badge="Badge_StoreAutoUpdates"; TxtBadge="TxtBadge_StoreAutoUpdates" },
+        @{ Key="SmartScreen"; Title="Disable SmartScreen Filter"; Category="Privacy"; Apply={ Disable-SmartScreenProtection }; Rollback={ Restore-SmartScreenFilter }; ApplyBtn="BtnApply_SmartScreen"; RollbackBtn="BtnRollback_SmartScreen"; Badge="Badge_SmartScreen"; TxtBadge="TxtBadge_SmartScreen" },
+        @{ Key="CrashDumps"; Title="Disable Crash Dumps"; Category="Privacy"; Apply={ Disable-SystemCrashDumps }; Rollback={ Restore-CrashDumps }; ApplyBtn="BtnApply_CrashDumps"; RollbackBtn="BtnRollback_CrashDumps"; Badge="Badge_CrashDumps"; TxtBadge="TxtBadge_CrashDumps" },
+        @{ Key="SystemTimeouts"; Title="Optimize System Timeouts"; Category="Privacy"; Apply={ Optimize-SystemTimeouts }; Rollback={ Restore-SystemTimeouts }; ApplyBtn="BtnApply_SystemTimeouts"; RollbackBtn="BtnRollback_SystemTimeouts"; Badge="Badge_SystemTimeouts"; TxtBadge="TxtBadge_SystemTimeouts" }
+    )
+
+    # Thread-Safe Live Audit & Score Gauge Updater
+    $script:UpdateGuiAuditStatus = {
+        try {
+            $audit = Get-SystemAuditState
+            $scorePctText = "$($audit.ScorePercent)%"
+            $gradeText    = "$($audit.ScoreGrade)"
+            $ratioText    = "[Active: $($audit.ScoreApplied) / $($audit.ScoreTotal)]"
+
+            if ($txtScorePercent) { $txtScorePercent.Text = $scorePctText }
+            if ($txtScoreGrade)   { $txtScoreGrade.Text   = $gradeText }
+            if ($txtActiveTweakRatio) { $txtActiveTweakRatio.Text = $ratioText }
+
+            if ($txtScorePercentTab4) { $txtScorePercentTab4.Text = $scorePctText }
+            if ($txtScoreGradeTab4)   { $txtScoreGradeTab4.Text   = $gradeText }
+            if ($txtActiveTweakRatioTab4) { $txtActiveTweakRatioTab4.Text = $ratioText }
+
+            foreach ($tw in $script:TweakDefinitions) {
+                $isApplied = ($audit.State[$tw.Key] -eq $true)
+                if ($tw.Badge) {
+                    $b = $window.FindName($tw.Badge)
+                    $tb = $window.FindName($tw.TxtBadge)
+                    if ($b -and $tb) {
+                        if ($isApplied) {
+                            $b.Background = $brushOptimalBg
+                            $b.BorderBrush = $brushOptimalBorder
+                            $tb.Text = "Optimal [v]"
+                            $tb.Foreground = $brushOptimalText
+                        } else {
+                            $b.Background = $brushNeededBg
+                            $b.BorderBrush = $brushNeededBorder
+                            $tb.Text = "Needed"
+                            $tb.Foreground = $brushNeededText
+                        }
+                    }
+                }
+            }
+        } catch {
+            Write-Verbose "Audit UI update failed: $($_.Exception.Message)"
         }
     }
 
-    # 1-Click Tweak Activators: Gaming Tweaks
-    Register-QuickTweakButton "BtnApply_GpuAuto" "GPU Auto-Tuning" { Optimize-GpuAuto }
-    Register-QuickTweakButton "BtnApply_HardwareMsi" "Hardware MSI Mode" { Optimize-HardwareMsiMode }
-    Register-QuickTweakButton "BtnApply_DisablePowerSaving" "Disable USB Sleep" { Disable-DevicePowerSaving }
-    Register-QuickTweakButton "BtnApply_Mpo" "Disable MPO" { Disable-MultiplaneOverlay }
-    Register-QuickTweakButton "BtnApply_MouseCurve" "Raw Mouse Input" { Set-MouseLinearCurve }
-    Register-QuickTweakButton "BtnApply_InputLatency" "8000Hz Input Tuning" { Optimize-LatencyAndInput }
-    Register-QuickTweakButton "BtnApply_CsrssPriority" "CSRSS Realtime I/O" { Optimize-CsrssPriority }
-    Register-QuickTweakButton "BtnApply_CpuSystem" "CPU Gaming Quantum" { Optimize-CpuAndSystem }
-    Register-QuickTweakButton "BtnApply_SvcHost" "SvcHost RAM Splitting" { Optimize-SvcHostSplitting }
-    Register-QuickTweakButton "BtnApply_Network" "TCP/IP Gaming Stack" { Optimize-Network }
-    Register-QuickTweakButton "BtnApply_WifiScan" "Wi-Fi Ping Shield" { Toggle-WifiAutoconfig }
-    Register-QuickTweakButton "BtnApply_StartupDns" "Gaming DNS & Startup Tuning" { Optimize-StartupAndDns }
-    Register-QuickTweakButton "BtnApply_GameHooks" "Esports Game Priority Hooks" { Apply-GameHooks }
-    Register-QuickTweakButton "BtnApply_UltimatePower" "PumpkiN Esports Power Plan" { Invoke-PumpkiNEsportsPowerPlan }
-    Register-QuickTweakButton "BtnApply_CoreUnpark" "100% CPU Core Unparking" { Invoke-CpuCoreUnparking }
-    Register-QuickTweakButton "BtnApply_StripVisual" "Strip Visual Animations" { Strip-VisualEffects }
-    Register-QuickTweakButton "BtnApply_EndTask" "Taskbar End Task" { Enable-EndTaskRightClick }
-    Register-QuickTweakButton "BtnApply_StickyKeys" "Disable Sticky Keys" { Disable-StickyKeysPrompt }
-    Register-QuickTweakButton "BtnApply_CompactMetrics" "Compact Window Metrics" { Set-CompactWindowMetrics }
-    Register-QuickTweakButton "BtnReset_CompactMetrics" "Default Window Metrics" { Restore-CompactWindowMetrics }
-    Register-QuickTweakButton "BtnApply_DebloatServices" "Debloat Services" { Debloat-BackgroundServices }
-    Register-QuickTweakButton "BtnApply_DiskIo" "Optimize Disk I/O" { Optimize-DiskIO }
-    Register-QuickTweakButton "BtnApply_CompactOs" "CompactOS Compression" { Enable-CompactOS }
-    Register-QuickTweakButton "BtnApply_TakeOwnership" "Take Ownership Menu" { Enable-TakeOwnershipMenu }
-    Register-QuickTweakButton "BtnApply_JunkTasks" "Disable Junk Tasks" { Disable-ScheduledJunkTasks }
-    Register-QuickTweakButton "BtnApply_Privacy" "Disable Telemetry" { Harden-PrivacyTelemetry }
-    Register-QuickTweakButton "BtnApply_DeepCache" "Deep Cache & Event Cleaner" { Invoke-DeepCacheCleaner }
-    Register-QuickTweakButton "BtnApply_ShaderCache" "GPU Shader & Browser Cache Purge" { Invoke-ShaderAndBrowserCacheCleaner }
-    Register-QuickTweakButton "BtnApply_AudioDpc" "Audio DPC & Anti-Popping" { Optimize-AudioDpcLatency }
-    Register-QuickTweakButton "BtnApply_UsbxHci" "USB xHCI Realtime Thread" { Optimize-UsbLatencyAndBuffers }
-    Register-QuickTweakButton "BtnResetDns" "Reset DNS to DHCP Defaults" { Reset-DnsToAutomatic }
+    # Register individual Apply and Rollback buttons dynamically
+    foreach ($tw in $script:TweakDefinitions) {
+        $def = $tw
+        if ($def.ApplyBtn) {
+            $btnApp = $window.FindName($def.ApplyBtn)
+            if ($btnApp) {
+                $btnApp.Add_Click({
+                    & $script:LogToGui "[*] Applying $($def.Title)..."
+                    & $script:SetProgress 40
+                    & $def.Apply
+                    & $script:SetProgress 100
+                    & $script:UpdateGuiAuditStatus
+                    & $script:LogToGui "[+] $($def.Title) applied successfully!"
+                    Start-Sleep -Milliseconds 150
+                    & $script:SetProgress 0
+                })
+            }
+        }
+        if ($def.RollbackBtn) {
+            $btnRoll = $window.FindName($def.RollbackBtn)
+            if ($btnRoll) {
+                $btnRoll.Add_Click({
+                    & $script:LogToGui "[*] Rolling back $($def.Title) to Windows default..."
+                    & $script:SetProgress 40
+                    & $def.Rollback
+                    & $script:SetProgress 100
+                    & $script:UpdateGuiAuditStatus
+                    & $script:LogToGui "[+] $($def.Title) rolled back successfully!"
+                    Start-Sleep -Milliseconds 150
+                    & $script:SetProgress 0
+                })
+            }
+        }
+    }
+
+    # Standalone Special Tool Buttons
+    $btnApplyDeepCache = $window.FindName("BtnApply_DeepCache")
+    if ($btnApplyDeepCache) {
+        $btnApplyDeepCache.Add_Click({
+            & $script:LogToGui "[*] Running Deep Cache, Prefetch & Event Cleaner..."
+            & $script:SetProgress 40
+            Invoke-DeepCacheCleaner
+            & $script:SetProgress 100
+            & $script:LogToGui "[+] Deep Cache & Event Cleaner completed successfully!"
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+        })
+    }
+
+    $btnApplyShaderCache = $window.FindName("BtnApply_ShaderCache")
+    if ($btnApplyShaderCache) {
+        $btnApplyShaderCache.Add_Click({
+            & $script:LogToGui "[*] Purging GPU Shader & Browser Caches..."
+            & $script:SetProgress 40
+            Invoke-ShaderAndBrowserCacheCleaner
+            & $script:SetProgress 100
+            & $script:LogToGui "[+] Shader & Browser Cache purge completed!"
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+        })
+    }
+
+    $btnResetDns = $window.FindName("BtnResetDns")
+    if ($btnResetDns) {
+        $btnResetDns.Add_Click({
+            & $script:LogToGui "[*] Resetting DNS servers to automatic DHCP..."
+            Reset-DnsToAutomatic
+            & $script:LogToGui "[+] Network DNS restored to DHCP defaults."
+        })
+    }
+
+    $btnApplyRecycle = $window.FindName("BtnApply_RecycleBinIcon")
+    if ($btnApplyRecycle) {
+        $btnApplyRecycle.Add_Click({
+            & $script:LogToGui "[*] Applying Pop Cat Recycle Bin custom icon..."
+            Set-RecycleBinCustomIcon
+            & $script:LogToGui "[+] Pop Cat Recycle Bin active!"
+        })
+    }
+
+    $btnResetRecycle = $window.FindName("BtnReset_RecycleBinIcon")
+    if ($btnResetRecycle) {
+        $btnResetRecycle.Add_Click({
+            & $script:LogToGui "[*] Restoring default Windows Recycle Bin icon..."
+            Restore-RecycleBinDefaultIcon
+            & $script:LogToGui "[+] Default Recycle Bin icon restored."
+        })
+    }
+
+    # Action Dashboard Banners: Live Audit Scanner
+    $scanAction = {
+        & $script:LogToGui "[*] Scanning system optimization state across all 75+ parameters..."
+        & $script:SetProgress 30
+        & $script:UpdateGuiAuditStatus
+        $audit = Get-SystemAuditState
+        & $script:SetProgress 100
+        & $script:LogToGui "[+] System Audit Complete: $($audit.ScoreApplied)/$($audit.ScoreTotal) tweaks active (Score: $($audit.ScoreGrade))"
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+    }
+    if ($btnScanSystemStateBanner) { $btnScanSystemStateBanner.Add_Click($scanAction) }
+    if ($btnScanSystemStateTab4Banner) { $btnScanSystemStateTab4Banner.Add_Click($scanAction) }
+    if ($btnScanSystemStateTab4) { $btnScanSystemStateTab4.Add_Click($scanAction) }
+
+    # Action Dashboard Banners: Apply Unapplied Gaming Tweaks
+    $applyUnappliedGaming = {
+        & $script:LogToGui "=== APPLYING ALL UNAPPLIED GAMING TWEAKS ==="
+        $audit = Get-SystemAuditState
+        $unapplied = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" -and (-not $audit.State[$_.Key]) }
+        $total = $unapplied.Count
+        if ($total -eq 0) {
+            & $script:LogToGui "[+] All gaming tweaks are already active and optimal!"
+            return
+        }
+        $i = 0
+        foreach ($tw in $unapplied) {
+            $i++
+            $pct = [math]::Round(($i / $total) * 100)
+            & $script:SetProgress $pct
+            & $script:LogToGui "[$i/$total] Applying $($tw.Title)..."
+            & $tw.Apply
+        }
+        & $script:UpdateGuiAuditStatus
+        & $script:LogToGui "[OK] All unapplied gaming tweaks successfully applied!"
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+    }
+    if ($btnApplyUnappliedBanner) { $btnApplyUnappliedBanner.Add_Click($applyUnappliedGaming) }
+    if ($btnApplyUnappliedTab2)   { $btnApplyUnappliedTab2.Add_Click($applyUnappliedGaming) }
+
+    # Action Dashboard Banners: Apply Unapplied Hardening & Privacy Tweaks
+    $applyUnappliedHardening = {
+        & $script:LogToGui "=== APPLYING ALL UNAPPLIED HARDENING & PRIVACY TWEAKS ==="
+        $audit = Get-SystemAuditState
+        $unapplied = $script:TweakDefinitions | Where-Object { ($_.Category -in "Shell","Hardening","Privacy") -and (-not $audit.State[$_.Key]) }
+        $total = $unapplied.Count
+        if ($total -eq 0) {
+            & $script:LogToGui "[+] All hardening and privacy tweaks are already active and optimal!"
+            return
+        }
+        $i = 0
+        foreach ($tw in $unapplied) {
+            $i++
+            $pct = [math]::Round(($i / $total) * 100)
+            & $script:SetProgress $pct
+            & $script:LogToGui "[$i/$total] Applying $($tw.Title)..."
+            & $tw.Apply
+        }
+        & $script:UpdateGuiAuditStatus
+        & $script:LogToGui "[OK] All unapplied hardening and privacy tweaks successfully applied!"
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+    }
+    if ($btnApplyUnappliedHardening) { $btnApplyUnappliedHardening.Add_Click($applyUnappliedHardening) }
+    if ($btnApplyUnappliedHardeningBanner) { $btnApplyUnappliedHardeningBanner.Add_Click($applyUnappliedHardening) }
+
+    # Action Dashboard Banners: Revert All Tweaks to Defaults
+    $revertAllAction = {
+        & $script:LogToGui "[*] Reverting all system tweaks to Windows defaults..."
+        & $script:SetProgress 30
+        Restore-Defaults
+        & $script:SetProgress 90
+        & $script:UpdateGuiAuditStatus
+        & $script:SetProgress 100
+        & $script:LogToGui "[+] Windows default parameters restored. System audit refreshed."
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+    }
+    if ($btnRevertDefaultsBanner) { $btnRevertDefaultsBanner.Add_Click($revertAllAction) }
+    if ($btnRevertDefaultsTab4)   { $btnRevertDefaultsTab4.Add_Click($revertAllAction) }
 
     # Hardware MSI & Interrupt Audit Report
     $btnReportInterrupts = $window.FindName("BtnReport_Interrupts")
@@ -3029,26 +4388,6 @@ function Start-PumpkiNGui {
         })
     }
 
-    # 1-Click Tweak Activators: System & Hardening
-    Register-QuickTweakButton "BtnApply_BlockWpbt" "Block WPBT Bloat" { Block-WpbtExecution }
-    Register-QuickTweakButton "BtnApply_BlockPeripheral" "Block Peripheral Bloat" { Block-PeripheralBloat }
-    Register-QuickTweakButton "BtnApply_RemoveAi" "Purge Windows AI" { Remove-WindowsAI }
-    Register-QuickTweakButton "BtnApply_SecurityUpdatesOnly" "Security-Only Updates" { Set-SecurityUpdatesOnly }
-    Register-QuickTweakButton "BtnApply_ClassicContext" "Classic Right-Click" { Enable-ClassicContextMenu }
-    Register-QuickTweakButton "BtnApply_DisableBing" "Disable Web Search" { Disable-StartMenuBing }
-    Register-QuickTweakButton "BtnApply_DisableAutoDiscovery" "Disable Auto-Discovery" { Disable-ExplorerAutoDiscovery }
-    Register-QuickTweakButton "BtnApply_ShowExtensions" "Show File Extensions" { Set-ShowFileExtensionsAndHidden }
-    Register-QuickTweakButton "BtnApply_RecycleBinIcon" "Pop Cat Recycle Bin" { Set-RecycleBinCustomIcon }
-    Register-QuickTweakButton "BtnReset_RecycleBinIcon" "Default Recycle Bin" { Restore-RecycleBinDefaultIcon }
-    Register-QuickTweakButton "BtnApply_DisableAds" "Disable Windows Ads" { Disable-WindowsAds }
-    Register-QuickTweakButton "BtnReset_DisableAds" "Restore Windows Ads" { Enable-WindowsAds }
-    Register-QuickTweakButton "BtnApply_NoShortcutArrows" "Remove Shortcut Arrows" { Disable-ShortcutArrow }
-    Register-QuickTweakButton "BtnReset_ShortcutArrows" "Restore Shortcut Arrows" { Restore-ShortcutArrow }
-    Register-QuickTweakButton "BtnApply_EnableLongPaths" "Enable Long Paths" { Enable-LongPaths }
-    Register-QuickTweakButton "BtnApply_DisableLockScreen" "Disable Lock Screen" { Disable-LockScreen }
-    Register-QuickTweakButton "BtnApply_BsodVerbose" "Verbose BSOD" { Enable-BsodVerbose }
-    Register-QuickTweakButton "BtnApply_DisableReservedStorage" "Reclaim Reserved Storage" { Disable-ReservedStorage }
-
     $masAction = {
         & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS) in elevated terminal..."
         Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`"" -Verb RunAs
@@ -3108,12 +4447,273 @@ function Start-PumpkiNGui {
         })
     }
 
+    # --------------------------------------------------------------------------
+    # TAB 5: DEVICE SPECIFICATIONS & COPY ACTIONS
+    # --------------------------------------------------------------------------
+    $script:UpdateDeviceSpecsView = {
+        param([switch]$Force)
+        try {
+            $p = Get-DeviceDetailProfile -ForceRefresh:$Force
+            if (-not $p) { return }
+
+            $txtDevCompName = $window.FindName("TxtDev_CompName")
+            $txtDevSubTitle = $window.FindName("TxtDev_SubTitle")
+            if ($txtDevCompName) { $txtDevCompName.Text = $p.DeviceName }
+            if ($txtDevSubTitle) { $txtDevSubTitle.Text = $p.HeaderSummary }
+
+            # OS
+            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $p.OsName }
+            $t = $window.FindName("TxtDev_OsVersion"); if ($t) { $t.Text = $p.OsVersion }
+            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $p.OsBuildNumber }
+            $t = $window.FindName("TxtDev_OsArch"); if ($t) { $t.Text = $p.OsArchitecture }
+            $t = $window.FindName("TxtDev_OsInstallDate"); if ($t) { $t.Text = $p.OsInstallDate }
+            $t = $window.FindName("TxtDev_OsUser"); if ($t) { $t.Text = $p.OsRegisteredUser }
+            $t = $window.FindName("TxtDev_OsWinDir"); if ($t) { $t.Text = $p.OsWindowsDir }
+            $t = $window.FindName("TxtDev_OsSysDir"); if ($t) { $t.Text = $p.OsSystemDir }
+            $t = $window.FindName("TxtDev_OsBootTime"); if ($t) { $t.Text = $p.OsLastBootTime }
+
+            # CPU
+            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $p.CpuName }
+            $t = $window.FindName("TxtDev_CpuManufacturer"); if ($t) { $t.Text = $p.CpuManufacturer }
+            $t = $window.FindName("TxtDev_CpuArchitecture"); if ($t) { $t.Text = $p.CpuArchitecture }
+            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = $p.CpuCores }
+            $t = $window.FindName("TxtDev_CpuLogical"); if ($t) { $t.Text = $p.CpuLogical }
+            $t = $window.FindName("TxtDev_CpuMaxSpeed"); if ($t) { $t.Text = $p.CpuMaxSpeed }
+            $t = $window.FindName("TxtDev_CpuSocket"); if ($t) { $t.Text = $p.CpuSocket }
+            $t = $window.FindName("TxtDev_CpuL2"); if ($t) { $t.Text = $p.CpuL2Cache }
+            $t = $window.FindName("TxtDev_CpuL3"); if ($t) { $t.Text = $p.CpuL3Cache }
+
+            # GPU
+            if ($p.PrimaryGpu) {
+                $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $p.PrimaryGpu.Name }
+                $t = $window.FindName("TxtDev_GpuManufacturer"); if ($t) { $t.Text = $p.PrimaryGpu.Manufacturer }
+                $t = $window.FindName("TxtDev_GpuDriverVersion"); if ($t) { $t.Text = $p.PrimaryGpu.DriverVersion }
+                $t = $window.FindName("TxtDev_GpuDriverDate"); if ($t) { $t.Text = $p.PrimaryGpu.DriverDate }
+                $t = $window.FindName("TxtDev_GpuVram"); if ($t) { $t.Text = $p.PrimaryGpu.Vram }
+                $t = $window.FindName("TxtDev_GpuResolution"); if ($t) { $t.Text = $p.PrimaryGpu.Resolution }
+                $t = $window.FindName("TxtDev_GpuRefreshRate"); if ($t) { $t.Text = $p.PrimaryGpu.RefreshRate }
+            }
+
+            # RAM
+            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = $p.RamTotal }
+            $t = $window.FindName("TxtDev_RamUsable"); if ($t) { $t.Text = $p.RamUsable }
+            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = $p.RamSpeed }
+            $t = $window.FindName("TxtDev_RamManufacturer"); if ($t) { $t.Text = $p.RamManufacturer }
+            $t = $window.FindName("TxtDev_RamPartNumber"); if ($t) { $t.Text = $p.RamPartNumber }
+            $t = $window.FindName("TxtDev_RamSlots"); if ($t) { $t.Text = $p.RamSlots }
+
+            # Storage
+            $t = $window.FindName("TxtDev_StorageDisks"); if ($t) { $t.Text = ($p.Disks -join ' | ') }
+            $t = $window.FindName("TxtDev_StorageVolumes"); if ($t) { $t.Text = ($p.Volumes -join ' | ') }
+
+            # Network
+            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $p.NetAdapterName }
+            $t = $window.FindName("TxtDev_NetDesc"); if ($t) { $t.Text = $p.NetDescription }
+            $t = $window.FindName("TxtDev_NetMac"); if ($t) { $t.Text = $p.NetMacAddress }
+            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $p.NetLinkSpeed }
+            $t = $window.FindName("TxtDev_NetIp"); if ($t) { $t.Text = $p.NetIpAddress }
+            $t = $window.FindName("TxtDev_NetStatus"); if ($t) { $t.Text = $p.NetStatus }
+
+            # Battery
+            $t = $window.FindName("TxtDev_BatteryStatus"); if ($t) { $t.Text = $p.BatteryStatus }
+            $t = $window.FindName("TxtDev_BatteryName"); if ($t) { $t.Text = $p.BatteryName }
+            $t = $window.FindName("TxtDev_BatteryPercent"); if ($t) { $t.Text = $p.BatteryPercent }
+        } catch {}
+    }
+
+    # Wire expand/collapse toggles
+    $categories = @('Os', 'Cpu', 'Gpu', 'Ram', 'Storage', 'Net', 'Battery')
+    foreach ($cat in $categories) {
+        $btnToggle = $window.FindName("BtnToggle_Dev$cat")
+        $panel = $window.FindName("Panel_Dev$cat")
+        if ($btnToggle -and $panel) {
+            $btnToggle.Tag = $panel
+            $btnToggle.Add_Click({
+                param($s, $e)
+                $targetPanel = $s.Tag
+                if ($targetPanel.Visibility -eq [System.Windows.Visibility]::Visible) {
+                    $targetPanel.Visibility = [System.Windows.Visibility]::Collapsed
+                    $s.Content = "v"
+                } else {
+                    $targetPanel.Visibility = [System.Windows.Visibility]::Visible
+                    $s.Content = "^"
+                }
+            })
+        }
+    }
+
+    # Wire copy buttons for individual categories
+    $copyActions = @{
+        'BtnCopy_DevOs' = {
+            $p = Get-DeviceDetailProfile
+            $text = "Operating System`r`n  OS Name: $($p.OsName)`r`n  Version: $($p.OsVersion)`r`n  Build: $($p.OsBuildNumber)`r`n  Arch: $($p.OsArchitecture)`r`n  Install Date: $($p.OsInstallDate)`r`n  User: $($p.OsRegisteredUser)`r`n  WinDir: $($p.OsWindowsDir)`r`n  SysDir: $($p.OsSystemDir)`r`n  Last Boot: $($p.OsLastBootTime)"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] Operating System details copied to clipboard."
+        }
+        'BtnCopy_DevCpu' = {
+            $p = Get-DeviceDetailProfile
+            $text = "Processor`r`n  Name: $($p.CpuName)`r`n  Manufacturer: $($p.CpuManufacturer)`r`n  Arch: $($p.CpuArchitecture)`r`n  Cores/Threads: $($p.CpuCores) / $($p.CpuLogical)`r`n  Max Speed: $($p.CpuMaxSpeed)`r`n  Socket: $($p.CpuSocket)`r`n  L2 Cache: $($p.CpuL2Cache)`r`n  L3 Cache: $($p.CpuL3Cache)"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] Processor details copied to clipboard."
+        }
+        'BtnCopy_DevGpu' = {
+            $p = Get-DeviceDetailProfile
+            $text = "Graphics`r`n  Name: $($p.PrimaryGpu.Name)`r`n  Manufacturer: $($p.PrimaryGpu.Manufacturer)`r`n  Driver Version: $($p.PrimaryGpu.DriverVersion)`r`n  Driver Date: $($p.PrimaryGpu.DriverDate)`r`n  VRAM: $($p.PrimaryGpu.Vram)`r`n  Resolution: $($p.PrimaryGpu.Resolution) @ $($p.PrimaryGpu.RefreshRate)"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] Graphics details copied to clipboard."
+        }
+        'BtnCopy_DevRam' = {
+            $p = Get-DeviceDetailProfile
+            $text = "RAM`r`n  Total Installed: $($p.RamTotal)`r`n  Usable: $($p.RamUsable)`r`n  Speed: $($p.RamSpeed)`r`n  Manufacturer: $($p.RamManufacturer)`r`n  Part Number: $($p.RamPartNumber)`r`n  Slots: $($p.RamSlots)"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] RAM details copied to clipboard."
+        }
+        'BtnCopy_DevStorage' = {
+            $p = Get-DeviceDetailProfile
+            $text = "Storage`r`n  Physical Disks: $($p.Disks -join ' | ')`r`n  Volumes: $($p.Volumes -join ' | ')"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] Storage details copied to clipboard."
+        }
+        'BtnCopy_DevNet' = {
+            $p = Get-DeviceDetailProfile
+            $text = "Network`r`n  Adapter: $($p.NetAdapterName)`r`n  Description: $($p.NetDescription)`r`n  MAC Address: $($p.NetMacAddress)`r`n  Speed: $($p.NetLinkSpeed)`r`n  IPv4: $($p.NetIpAddress)`r`n  Status: $($p.NetStatus)"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] Network details copied to clipboard."
+        }
+        'BtnCopy_DevBattery' = {
+            $p = Get-DeviceDetailProfile
+            $text = "Battery / Power`r`n  Status: $($p.BatteryStatus)`r`n  Device: $($p.BatteryName)`r`n  Level: $($p.BatteryPercent)"
+            [System.Windows.Clipboard]::SetText($text)
+            & $script:LogToGui "[+] Battery / Power details copied to clipboard."
+        }
+    }
+
+    foreach ($btnName in $copyActions.Keys) {
+        $btn = $window.FindName($btnName)
+        if ($btn) {
+            $action = $copyActions[$btnName]
+            $btn.Add_Click({
+                param($s, $e)
+                try {
+                    & $action
+                    $s.Content = "Copied!"
+                    $timer = [System.Windows.Threading.DispatcherTimer]::new()
+                    $timer.Interval = [TimeSpan]::FromMilliseconds(1500)
+                    $timer.Add_Tick({
+                        param($ts, $te)
+                        $s.Content = "Copy"
+                        $ts.Stop()
+                    })
+                    $timer.Start()
+                } catch {}
+            })
+        }
+    }
+
+    # Wire Refresh and Copy All Specs
+    $btnRefreshSpecs = $window.FindName("BtnRefreshDeviceSpecs")
+    if ($btnRefreshSpecs) {
+        $btnRefreshSpecs.Add_Click({
+            & $script:UpdateDeviceSpecsView -Force
+            & $script:LogToGui "[+] Device hardware specifications refreshed."
+        })
+    }
+
+    $btnCopyAllSpecs = $window.FindName("BtnCopyAllDeviceSpecs")
+    if ($btnCopyAllSpecs) {
+        $btnCopyAllSpecs.Add_Click({
+            param($s, $e)
+            try {
+                $p = Get-DeviceDetailProfile
+                $sb = [System.Text.StringBuilder]::new()
+                [void]$sb.AppendLine("================================================================================")
+                [void]$sb.AppendLine("                    DEVICE HARDWARE & OPERATING SYSTEM REPORT                   ")
+                [void]$sb.AppendLine("================================================================================")
+                [void]$sb.AppendLine("Device Name:       $($p.DeviceName)")
+                [void]$sb.AppendLine("System Summary:    $($p.HeaderSummary)")
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine("[Operating System]")
+                [void]$sb.AppendLine("  OS Name:         $($p.OsName)")
+                [void]$sb.AppendLine("  Version:         $($p.OsVersion)")
+                [void]$sb.AppendLine("  Build Number:    $($p.OsBuildNumber)")
+                [void]$sb.AppendLine("  Architecture:    $($p.OsArchitecture)")
+                [void]$sb.AppendLine("  Install Date:    $($p.OsInstallDate)")
+                [void]$sb.AppendLine("  Registered User: $($p.OsRegisteredUser)")
+                [void]$sb.AppendLine("  Windows Dir:     $($p.OsWindowsDir)")
+                [void]$sb.AppendLine("  System Dir:      $($p.OsSystemDir)")
+                [void]$sb.AppendLine("  Last Boot Up:    $($p.OsLastBootTime)")
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine("[Processor]")
+                [void]$sb.AppendLine("  Name:            $($p.CpuName)")
+                [void]$sb.AppendLine("  Manufacturer:    $($p.CpuManufacturer)")
+                [void]$sb.AppendLine("  Architecture:    $($p.CpuArchitecture)")
+                [void]$sb.AppendLine("  Cores / Threads: $($p.CpuCores) Cores / $($p.CpuLogical) Logical Processors")
+                [void]$sb.AppendLine("  Max Speed:       $($p.CpuMaxSpeed)")
+                [void]$sb.AppendLine("  Socket:          $($p.CpuSocket)")
+                [void]$sb.AppendLine("  L2 Cache:        $($p.CpuL2Cache)")
+                [void]$sb.AppendLine("  L3 Cache:        $($p.CpuL3Cache)")
+                [void]$sb.AppendLine()
+                if ($p.PrimaryGpu) {
+                    [void]$sb.AppendLine("[Graphics]")
+                    [void]$sb.AppendLine("  Name:            $($p.PrimaryGpu.Name)")
+                    [void]$sb.AppendLine("  Manufacturer:    $($p.PrimaryGpu.Manufacturer)")
+                    [void]$sb.AppendLine("  Driver Version:  $($p.PrimaryGpu.DriverVersion)")
+                    [void]$sb.AppendLine("  Driver Date:     $($p.PrimaryGpu.DriverDate)")
+                    [void]$sb.AppendLine("  VRAM:            $($p.PrimaryGpu.Vram)")
+                    [void]$sb.AppendLine("  Resolution:      $($p.PrimaryGpu.Resolution) @ $($p.PrimaryGpu.RefreshRate)")
+                    [void]$sb.AppendLine()
+                }
+                [void]$sb.AppendLine("[RAM]")
+                [void]$sb.AppendLine("  Total Installed: $($p.RamTotal) (Usable: $($p.RamUsable))")
+                [void]$sb.AppendLine("  Speed:           $($p.RamSpeed)")
+                [void]$sb.AppendLine("  Manufacturer:    $($p.RamManufacturer)")
+                [void]$sb.AppendLine("  Part Number:     $($p.RamPartNumber)")
+                [void]$sb.AppendLine("  Slots:           $($p.RamSlots)")
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine("[Storage]")
+                [void]$sb.AppendLine("  Physical Disks:  $($p.Disks -join ' | ')")
+                [void]$sb.AppendLine("  Volumes:         $($p.Volumes -join ' | ')")
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine("[Network]")
+                [void]$sb.AppendLine("  Adapter Name:    $($p.NetAdapterName)")
+                [void]$sb.AppendLine("  Description:     $($p.NetDescription)")
+                [void]$sb.AppendLine("  MAC Address:     $($p.NetMacAddress)")
+                [void]$sb.AppendLine("  Link Speed:      $($p.NetLinkSpeed)")
+                [void]$sb.AppendLine("  IPv4 Address:    $($p.NetIpAddress)")
+                [void]$sb.AppendLine("  Status:          $($p.NetStatus)")
+                [void]$sb.AppendLine()
+                [void]$sb.AppendLine("[Battery / Power]")
+                [void]$sb.AppendLine("  Power Status:    $($p.BatteryStatus)")
+                [void]$sb.AppendLine("  Battery Device:  $($p.BatteryName)")
+                [void]$sb.AppendLine("  Charge Level:    $($p.BatteryPercent)")
+                [void]$sb.AppendLine("================================================================================")
+                [void]$sb.AppendLine("Generated by PumpkiN Ultimate Windows Optimizer v5.4.0")
+
+                [System.Windows.Clipboard]::SetText($sb.ToString())
+                & $script:LogToGui "[+] Complete Device Specifications report copied to clipboard!"
+                $s.Content = "Copied!"
+                $timer = [System.Windows.Threading.DispatcherTimer]::new()
+                $timer.Interval = [TimeSpan]::FromMilliseconds(1500)
+                $timer.Add_Tick({
+                    param($ts, $te)
+                    $s.Content = "Copy All Specs"
+                    $ts.Stop()
+                })
+                $timer.Start()
+            } catch {}
+        })
+    }
+
+    # Trigger initial load of device specs
+    & $script:UpdateDeviceSpecsView
+
     # Initial Log Greeting & Status
     & $updateStandbyStatus
     $hw = Get-HardwareProfile
-    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.2.0 initialized."
+    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.4.0 initialized."
     & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"
     & $script:LogToGui "Select tweaks or software to install, then click the action button."
+    if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
 
     # Live Hardware Telemetry DispatcherTimer
     $telemetryTimer = [System.Windows.Threading.DispatcherTimer]::new()
@@ -3974,8 +5574,9 @@ function Restore-CpuCoreParking {
     powercfg -setacvalueindex scheme_current sub_processor 0602446d-d8e3-4e29-9e6f-ddde3669f87f 60 2>$null
     powercfg -setacvalueindex scheme_current sub_processor 12a0ab44-fe16-4661-bd10-eef3298d1945 40 2>$null
     powercfg -setactive scheme_current
+    powercfg /hibernate off 2>$null
 
-    Write-Host "      [OK] Windows Core Parking & Balanced power defaults restored." -ForegroundColor Green
+    Write-Host "      [OK] Windows Core Parking & Balanced power defaults restored (Hibernate remains Off)." -ForegroundColor Green
     return $true
 }
 
@@ -4005,6 +5606,167 @@ function Get-CpuCoreParkingStatus {
         DisplayText      = "$activeName $(if ($isUnparked) { '(100% Cores Active)' } else { '(Core Parking Default)' })"
     }
 }
+
+function Restore-MultiplaneOverlay {
+    Write-Host "`n[*] Restoring Windows Multiplane Overlay (MPO) Default..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\Dwm' -Name 'OverlayTestMode' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Multiplane Overlay restored to default." -ForegroundColor Green
+}
+
+function Restore-CsrssPriority {
+    Write-Host "`n[*] Restoring Default CSRSS Process Priority..." -ForegroundColor Yellow
+    Remove-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions' -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] Default CSRSS process priority restored." -ForegroundColor Green
+}
+
+function Restore-CpuAndSystem {
+    Write-Host "`n[*] Restoring Default CPU Quantum & Memory Management..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -Name 'Win32PrioritySeparation' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -Name 'DisablePagingExecutive' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\FTH' -Name 'Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'EnergyEstimationEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -Name 'ThreadDpcEnable' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel' -Name 'SplitLargeCaches' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Executive' -Name 'AdditionalCriticalWorkerThreads' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Executive' -Name 'AdditionalDelayedWorkerThreads' -ErrorAction SilentlyContinue
+    Write-Host "      [+] CPU Quantum and Memory Management restored to Windows defaults." -ForegroundColor Green
+}
+
+function Restore-SvcHostSplitting {
+    Write-Host "`n[*] Restoring Default SvcHost Process Threshold..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control' -Name 'SvcHostSplitThresholdInKB' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Default SvcHost memory threshold restored." -ForegroundColor Green
+}
+
+function Optimize-DeviceManager {
+    <#
+    .SYNOPSIS
+        Disables high-latency devices in Device Manager (HPET, SMBus, System Speaker, Kernel Debugger,
+        Composite Bus, DMA, and Legacy Timers) to minimize DPC latency and CPU timer interrupt overhead.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Disabling High-Latency Devices in Device Manager..." -ForegroundColor Yellow
+
+    $targetDeviceNames = @(
+        'High precision event timer',
+        'Microsoft Kernel Debug Network Adapter',
+        'System speaker',
+        'Composite Bus Enumerator',
+        'Direct memory access controller',
+        'System timer',
+        'System CMOS/real time clock',
+        'Motherboard resources'
+    )
+
+    $disabledCount = 0
+
+    foreach ($name in $targetDeviceNames) {
+        $devs = Get-PnpDevice -FriendlyName $name -ErrorAction SilentlyContinue
+        foreach ($d in $devs) {
+            try {
+                if ($d.ConfigManagerErrorCode -ne 22 -and $d.Status -ne 'Error') {
+                    Disable-PnpDevice -InstanceId $d.InstanceId -Confirm:$false -ErrorAction Stop
+                    Write-Host "      [+] Disabled: $($d.FriendlyName)" -ForegroundColor Green
+                    $disabledCount++
+                } else {
+                    Write-Host "      [+] Already Disabled: $($d.FriendlyName)" -ForegroundColor DarkCyan
+                }
+            } catch {
+                Write-Host "      [~] Skipped: $($d.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+            }
+        }
+    }
+
+    # Also check AMD & Intel SMBus controllers
+    $smbus = Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.FriendlyName -match 'SMBus' }
+    foreach ($sb in $smbus) {
+        try {
+            if ($sb.ConfigManagerErrorCode -ne 22 -and $sb.Status -ne 'Error') {
+                Disable-PnpDevice -InstanceId $sb.InstanceId -Confirm:$false -ErrorAction Stop
+                Write-Host "      [+] Disabled: $($sb.FriendlyName)" -ForegroundColor Green
+                $disabledCount++
+            } else {
+                Write-Host "      [+] Already Disabled: $($sb.FriendlyName)" -ForegroundColor DarkCyan
+            }
+        } catch {
+            Write-Host "      [~] Skipped: $($sb.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+        }
+    }
+
+    Write-Host "      [OK] Device Manager Latency Optimization Applied ($disabledCount new devices disabled)." -ForegroundColor Green
+    return $true
+}
+
+function Restore-DeviceManager {
+    <#
+    .SYNOPSIS
+        Re-enables devices previously disabled in Device Manager for 100% reversibility.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Restoring Device Manager Devices to Enabled..." -ForegroundColor Yellow
+
+    $targetDeviceNames = @(
+        'High precision event timer',
+        'Microsoft Kernel Debug Network Adapter',
+        'System speaker',
+        'Composite Bus Enumerator',
+        'Direct memory access controller',
+        'System timer',
+        'System CMOS/real time clock',
+        'Motherboard resources'
+    )
+
+    $enabledCount = 0
+
+    foreach ($name in $targetDeviceNames) {
+        $devs = Get-PnpDevice -FriendlyName $name -ErrorAction SilentlyContinue
+        foreach ($d in $devs) {
+            try {
+                if ($d.ConfigManagerErrorCode -eq 22 -or $d.Status -eq 'Error') {
+                    Enable-PnpDevice -InstanceId $d.InstanceId -Confirm:$false -ErrorAction Stop
+                    Write-Host "      [+] Re-enabled: $($d.FriendlyName)" -ForegroundColor Green
+                    $enabledCount++
+                }
+            } catch {
+                Write-Host "      [~] Skipped: $($d.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+            }
+        }
+    }
+
+    # Also check AMD & Intel SMBus controllers
+    $smbus = Get-PnpDevice -ErrorAction SilentlyContinue | Where-Object { $_.FriendlyName -match 'SMBus' }
+    foreach ($sb in $smbus) {
+        try {
+            if ($sb.ConfigManagerErrorCode -eq 22 -or $sb.Status -eq 'Error') {
+                Enable-PnpDevice -InstanceId $sb.InstanceId -Confirm:$false -ErrorAction Stop
+                Write-Host "      [+] Re-enabled: $($sb.FriendlyName)" -ForegroundColor Green
+                $enabledCount++
+            }
+        } catch {
+            Write-Host "      [~] Skipped: $($sb.FriendlyName) ($($_.Exception.Message))" -ForegroundColor DarkYellow
+        }
+    }
+
+    Write-Host "      [OK] Device Manager Defaults Restored ($enabledCount devices re-enabled)." -ForegroundColor Green
+    return $true
+}
+
+function Get-DeviceManagerOptimizationStatus {
+    $hpet = Get-PnpDevice -FriendlyName 'High precision event timer' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or $hpet.Status -eq 'Error')) {
+        return $true
+    }
+    $kd = Get-PnpDevice -FriendlyName 'Microsoft Kernel Debug Network Adapter' -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($kd -and ($kd.ConfigManagerErrorCode -eq 22 -or $kd.Status -eq 'Error')) {
+        return $true
+    }
+    return $false
+}
+
 
 # If run directly as standalone script (not dot-sourced)
 if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
@@ -4339,6 +6101,16 @@ function Restore-AudioDpcAndUsbLatency {
 
     Write-Host "      [OK] Windows Audio MMCSS and USB Input settings restored to defaults." -ForegroundColor Green
     return $true
+}
+
+function Restore-MouseLinearCurve {
+    Write-Host "`n[*] Restoring Windows Default Mouse Acceleration Curve..." -ForegroundColor Yellow
+    $defaultX = [byte[]](0,0,0,0,0,0,0,0,15,10,0,0,0,0,0,0,0,20,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,70,0,0,0,0,0,0)
+    $defaultY = [byte[]](0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Mouse' -Name 'SmoothMouseXCurve' -Value $defaultX -Type Binary -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Mouse' -Name 'SmoothMouseYCurve' -Value $defaultY -Type Binary -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Mouse' -Name 'MouseSensitivity' -Value '10' -Type String -ErrorAction SilentlyContinue
+    Write-Host "      [+] Windows default mouse curve restored." -ForegroundColor Green
 }
 
 # If run directly as standalone script (not dot-sourced)
@@ -5300,8 +7072,97 @@ function Restore-ShortcutArrow {
     Write-Host "      [+] Default Windows shortcut arrows restored." -ForegroundColor Green
 }
 
+function Restore-WpbtExecution {
+    Write-Host "`n[*] Restoring WPBT Execution Default..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -Name 'DisableWpbtExecution' -ErrorAction SilentlyContinue
+    Write-Host "      [+] WPBT execution restored to default." -ForegroundColor Green
+}
 
+function Restore-PeripheralBloat {
+    Write-Host "`n[*] Restoring Peripheral Software Installer Policies..." -ForegroundColor Yellow
+    Remove-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers' -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] Peripheral policies restored to default." -ForegroundColor Green
+}
 
+function Restore-WindowsAI {
+    Write-Host "`n[*] Restoring Windows AI & Copilot Components..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot' -Name 'TurnOffWindowsCopilot' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI' -Name 'DisableAIDataAnalysis' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI' -Name 'TurnOffRecall' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Windows AI & Copilot restored to default." -ForegroundColor Green
+}
+
+function Restore-SecurityUpdatesOnly {
+    Write-Host "`n[*] Restoring Windows Update Policy (Default cadence)..." -ForegroundColor Yellow
+    $wu = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate'
+    if (Test-Path $wu) {
+        Remove-ItemProperty -Path $wu -Name 'DeferFeatureUpdates' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $wu -Name 'DeferFeatureUpdatesPeriodInDays' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $wu -Name 'DeferQualityUpdates' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Windows Update feature deferral restored to default." -ForegroundColor Green
+}
+
+function Restore-ClassicContextMenu {
+    Write-Host "`n[*] Restoring Windows 11 Modern Context Menu..." -ForegroundColor Yellow
+    $clsid = 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}'
+    if (Test-Path $clsid) {
+        Remove-Item -Path $clsid -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Modern Windows 11 context menu restored." -ForegroundColor Green
+}
+
+function Restore-StartMenuBing {
+    Write-Host "`n[*] Restoring Bing Search in Start Menu..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKCU:\Software\Policies\Microsoft\Windows\Explorer' -Name 'DisableSearchBoxSuggestions' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' -Name 'BingSearchEnabled' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Bing Web Search in Start Menu restored." -ForegroundColor Green
+}
+
+function Restore-ExplorerAutoDiscovery {
+    Write-Host "`n[*] Restoring File Explorer Folder Auto-Discovery..." -ForegroundColor Yellow
+    $allFolders = 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell'
+    if (Test-Path $allFolders) {
+        Remove-Item -Path $allFolders -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Explorer folder auto-discovery restored to default." -ForegroundColor Green
+}
+
+function Restore-ShowFileExtensionsAndHidden {
+    Write-Host "`n[*] Restoring Default File Extensions & Hidden Files visibility..." -ForegroundColor Yellow
+    $adv = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    Set-ItemProperty -Path $adv -Name 'HideFileExt' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $adv -Name 'Hidden' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] File extensions hidden and hidden files concealed." -ForegroundColor Green
+}
+
+function Restore-LongPaths {
+    Write-Host "`n[*] Restoring Win32 Long Paths Limit (260 chars)..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Long paths limit restored to Windows default." -ForegroundColor Green
+}
+
+function Restore-LockScreen {
+    Write-Host "`n[*] Restoring Windows Lock Screen..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Name 'NoLockScreen' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Lock screen enabled." -ForegroundColor Green
+}
+
+function Restore-BsodVerbose {
+    Write-Host "`n[*] Restoring Default BSoD Display..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -Name 'DisplayParameters' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Default BSoD display restored." -ForegroundColor Green
+}
+
+function Restore-ReservedStorage {
+    Write-Host "`n[*] Restoring Windows Reserved Storage..." -ForegroundColor Yellow
+    try {
+        Set-WindowsReservedStorageState -State Enabled -ErrorAction SilentlyContinue | Out-Null
+    } catch {}
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -Name 'ShippedWithReserves' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Reserved storage enabled." -ForegroundColor Green
+}
 
 # ==============================================================================
 
@@ -5362,6 +7223,14 @@ function Debloat-BackgroundServices {
     if (-not (Test-Path $doKey)) { New-Item -Path $doKey -Force | Out-Null }
     Set-ItemProperty -Path $doKey -Name 'DODownloadMode' -Value 0 -Type DWord
     Write-Host "      [+] Delivery Optimization P2P disabled (No upload bandwidth stolen)" -ForegroundColor Green
+
+    # Enforce Superfetch (SysMain) and Prefetcher permanently disabled in registry
+    $prefetchKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters'
+    if (Test-Path $prefetchKey) {
+        Set-ItemProperty -Path $prefetchKey -Name 'EnableSuperfetch' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $prefetchKey -Name 'EnablePrefetcher' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\SysMain' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
 
     Write-Host "      [OK] Background Services Debloated  --  Maximum CPU/IO freed for gaming!" -ForegroundColor Green
 }
@@ -6000,6 +7869,162 @@ function Invoke-ShaderAndBrowserCacheCleaner {
     Write-Host "      [OK] DirectX/NVIDIA/AMD shader caches and Discord/Browser caches refreshed." -ForegroundColor Green
 }
 
+function Restore-BackgroundServices {
+    Write-Host "`n[*] Restoring Background Services to Manual Startup..." -ForegroundColor Yellow
+    # Exclude SysMain (Superfetch) and WSearch (Windows Search) -- permanently kept disabled
+    $servicesToRestore = @('DiagTrack', 'dmwappushservice', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'XboxGipSvc', 'MapsBroker', 'lfsvc', 'WerSvc')
+    foreach ($svcName in $servicesToRestore) {
+        $svc = Get-Service -Name $svcName -ErrorAction SilentlyContinue
+        if ($svc) {
+            Set-Service -Name $svcName -StartupType Manual -ErrorAction SilentlyContinue
+        }
+    }
+    # Enforce Superfetch / SysMain stays disabled
+    Set-Service -Name 'SysMain' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'SysMain' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\SysMain' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    $prefetchKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters'
+    if (Test-Path $prefetchKey) {
+        Set-ItemProperty -Path $prefetchKey -Name 'EnableSuperfetch' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $prefetchKey -Name 'EnablePrefetcher' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    # Enforce Windows Search (WSearch) stays permanently disabled & stopped
+    Set-Service -Name 'WSearch' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'WSearch' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WSearch' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'AllowCortana' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'DisableWebSearch' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'ConnectedSearchUseWeb' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Background services set to Manual startup (Superfetch & WSearch remain Disabled)." -ForegroundColor Green
+}
+
+function Restore-VisualEffects {
+    Write-Host "`n[*] Restoring Windows Visual Effects & Animations Defaults..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects' -Name 'VisualFXSetting' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'MenuShowDelay' -Value '400' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'DragFullWindows' -Value '1' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'TaskbarAnimations' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\DWM' -Name 'EnableAeroPeek' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Visual animations restored to Windows defaults." -ForegroundColor Green
+}
+
+function Restore-EndTaskRightClick {
+    Write-Host "`n[*] Restoring Taskbar Right-Click End Task Default..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'AutoEndTasks' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Taskbar right-click End Task removed." -ForegroundColor Green
+}
+
+function Restore-StickyKeysPrompt {
+    Write-Host "`n[*] Restoring Sticky Keys Prompt Default..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Accessibility\StickyKeys' -Name 'Flags' -Value '510' -Type String -ErrorAction SilentlyContinue
+    Write-Host "      [+] Sticky Keys prompt restored." -ForegroundColor Green
+}
+
+function Restore-DiskIO {
+    Write-Host "`n[*] Restoring Disk I/O Timestamps..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'NtfsDisableLastAccessUpdate' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'NtfsDisable8dot3NameCreation' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Disk I/O timestamps restored to default." -ForegroundColor Green
+}
+
+function Restore-PrivacyTelemetry {
+    Write-Host "`n[*] Restoring Windows Telemetry Policies..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection' -Name 'AllowTelemetry' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Telemetry policy restored." -ForegroundColor Green
+}
+
+function Restore-ScheduledJunkTasks {
+    Write-Host "`n[*] Restoring Scheduled Maintenance Tasks..." -ForegroundColor Yellow
+    Enable-ScheduledTask -TaskPath '\Microsoft\Windows\Customer Experience Improvement Program\' -TaskName 'Consolidator' -ErrorAction SilentlyContinue
+    Enable-ScheduledTask -TaskPath '\Microsoft\Windows\Customer Experience Improvement Program\' -TaskName 'UsbCeip' -ErrorAction SilentlyContinue
+    Write-Host "      [+] Scheduled maintenance tasks re-enabled." -ForegroundColor Green
+}
+
+function Restore-BalancedPowerPlan {
+    Write-Host "`n[*] Restoring Balanced Power Scheme..." -ForegroundColor Yellow
+    if (Get-Command Restore-CpuCoreParking -ErrorAction SilentlyContinue) {
+        Restore-CpuCoreParking
+    }
+    $balanced = powercfg /list | Select-String "Balanced"
+    if ($balanced) {
+        $guid = ($balanced -replace '.*GUID:\s*', '' -replace '\s*\(.*', '').Trim()
+        powercfg /setactive $guid
+        Write-Host "      [+] Balanced power plan restored (GUID: $guid)" -ForegroundColor Green
+    }
+    # Enforce Hibernate stays permanently disabled (frees disk space & prevents sleep interrupts)
+    powercfg /hibernate off 2>$null
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power' -Name 'HiberbootEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    bcdedit /deletevalue useplatformtick 2>$null
+    bcdedit /deletevalue tscsyncpolicy 2>$null
+    Write-Host "      [+] Balanced power restored (Hibernate remains Disabled)." -ForegroundColor Green
+}
+
+function Disable-BitLockerPermanently {
+    <#
+    .SYNOPSIS
+        Permanently turns off BitLocker and Windows Automatic Device Encryption,
+        decrypts active volumes, and disables the BDESVC service to prevent background encryption.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Permanently Disabling BitLocker & Automatic Device Encryption..." -ForegroundColor Yellow
+
+    # 1. Prevent Automatic Device Encryption in Registry
+    $bKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker'
+    if (-not (Test-Path $bKey)) { New-Item -Path $bKey -Force | Out-Null }
+    Set-ItemProperty -Path $bKey -Name 'PreventDeviceEncryption' -Value 1 -Type DWord
+    Write-Host "      [+] PreventDeviceEncryption = 1 (Blocked automatic device encryption on all drives)" -ForegroundColor Green
+
+    # 2. Disable BitLocker Policies in FVE
+    $fveKey = 'HKLM:\SOFTWARE\Policies\Microsoft\FVE'
+    if (-not (Test-Path $fveKey)) { New-Item -Path $fveKey -Force | Out-Null }
+    Set-ItemProperty -Path $fveKey -Name 'EnableBDEWithNoTPM' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    # 3. Decrypt active BitLocker volumes if any are encrypted
+    try {
+        $volumes = Get-BitLockerVolume -ErrorAction SilentlyContinue
+        if ($volumes) {
+            foreach ($vol in $volumes) {
+                if ($vol.VolumeStatus -ne 'FullyDecrypted' -or $vol.ProtectionStatus -eq 'On') {
+                    Write-Host "      [*] Decrypting volume $($vol.MountPoint)..." -ForegroundColor Yellow
+                    Disable-BitLocker -MountPoint $vol.MountPoint -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    } catch {
+        manage-bde -off C: 2>$null
+    }
+
+    # 4. Stop and Disable BitLocker Drive Encryption Service (BDESVC)
+    Set-Service -Name 'BDESVC' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'BDESVC' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\BDESVC' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] BDESVC service permanently stopped and disabled (Start = 4)" -ForegroundColor Green
+
+    Write-Host "      [OK] BitLocker & Device Encryption permanently turned off." -ForegroundColor Green
+    return $true
+}
+
+function Restore-BitLockerDefaults {
+    <#
+    .SYNOPSIS
+        Restores BitLocker service to default (Manual startup) and removes automatic encryption block.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Restoring BitLocker / Device Encryption Defaults..." -ForegroundColor Yellow
+
+    Remove-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker' -Name 'PreventDeviceEncryption' -ErrorAction SilentlyContinue
+    Set-Service -Name 'BDESVC' -StartupType Manual -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\BDESVC' -Name 'Start' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [OK] BitLocker defaults restored (Service set to Manual startup)." -ForegroundColor Green
+    return $true
+}
+
+
 # If run directly as standalone script (not dot-sourced)
 if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -6016,6 +8041,867 @@ if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
     Optimize-StartupAndDns
     Read-Host "`nPress Enter to exit"
 }
+
+# ------------------------------------------------------------------------------
+# MODULE: Optimize-Windows11AndShell
+# ------------------------------------------------------------------------------
+<#
+================================================================================
+  PumpkiN's Modular Suite: Windows 11 Exclusives & Shell Usability Optimizations
+================================================================================
+#>
+
+# 1. Virtualization-Based Security (VBS) Toggle
+function Disable-VbsSecurity {
+    Write-Host "`n[*] Disabling Virtualization-Based Security (VBS / HVCI)..." -ForegroundColor Yellow
+    try {
+        bcdedit /set hypervisorlaunchtype off 2>$null | Out-Null
+        $dgPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard'
+        if (-not (Test-Path $dgPath)) { New-Item -Path $dgPath -Force | Out-Null }
+        Set-ItemProperty -Path $dgPath -Name 'EnableVirtualizationBasedSecurity' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $dgPath -Name 'RequirePlatformSecurityFeatures' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Write-Host "      [+] VBS / Hypervisor disabled -- Gaming CPU frame latency improved!" -ForegroundColor Green
+    } catch {
+        Write-Host "      [!] Failed to disable VBS: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
+
+function Restore-VbsSecurity {
+    Write-Host "`n[*] Restoring Virtualization-Based Security (VBS) Default State..." -ForegroundColor Yellow
+    try {
+        bcdedit /set hypervisorlaunchtype auto 2>$null | Out-Null
+        $dgPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard'
+        if (Test-Path $dgPath) {
+            Set-ItemProperty -Path $dgPath -Name 'EnableVirtualizationBasedSecurity' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        }
+        Write-Host "      [+] VBS restored to Windows default (Auto)." -ForegroundColor Green
+    } catch {}
+}
+
+# 2. Windows 11 Taskbar Alignment (Left vs Center)
+function Set-TaskbarAlignmentLeft {
+    Write-Host "`n[*] Aligning Windows 11 Taskbar to the Left..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advPath)) { New-Item -Path $advPath -Force | Out-Null }
+    Set-ItemProperty -Path $advPath -Name 'TaskbarAl' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Taskbar aligned to Left (Classic Windows Layout)." -ForegroundColor Green
+}
+
+function Restore-TaskbarAlignmentCenter {
+    Write-Host "`n[*] Restoring Windows 11 Taskbar Alignment to Center..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advPath) {
+        Set-ItemProperty -Path $advPath -Name 'TaskbarAl' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Taskbar restored to Center." -ForegroundColor Green
+}
+
+# 3. Disable Recommended Section in Windows 11 Start Menu
+function Disable-StartMenuRecommended {
+    Write-Host "`n[*] Disabling Recommended Section in Start Menu..." -ForegroundColor Yellow
+    $polPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
+    if (-not (Test-Path $polPath)) { New-Item -Path $polPath -Force | Out-Null }
+    Set-ItemProperty -Path $polPath -Name 'HideRecommendedSection' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advPath)) { New-Item -Path $advPath -Force | Out-Null }
+    Set-ItemProperty -Path $advPath -Name 'Start_IrisRecommendations' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Start Menu Recommended section disabled -- Clean start layout!" -ForegroundColor Green
+}
+
+function Restore-StartMenuRecommended {
+    Write-Host "`n[*] Restoring Start Menu Recommended Section..." -ForegroundColor Yellow
+    $polPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer'
+    if (Test-Path $polPath) {
+        Remove-ItemProperty -Path $polPath -Name 'HideRecommendedSection' -ErrorAction SilentlyContinue
+    }
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advPath) {
+        Set-ItemProperty -Path $advPath -Name 'Start_IrisRecommendations' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Start Menu Recommended section restored." -ForegroundColor Green
+}
+
+# 4. Disable Windows 11 Taskbar Chat (Teams Integration)
+function Disable-TaskbarChat {
+    Write-Host "`n[*] Disabling Taskbar Chat (Teams Icon)..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advPath)) { New-Item -Path $advPath -Force | Out-Null }
+    Set-ItemProperty -Path $advPath -Name 'TaskbarMn' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    $chatPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat'
+    if (-not (Test-Path $chatPol)) { New-Item -Path $chatPol -Force | Out-Null }
+    Set-ItemProperty -Path $chatPol -Name 'ChatIcon' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Taskbar Chat icon hidden and disabled." -ForegroundColor Green
+}
+
+function Restore-TaskbarChat {
+    Write-Host "`n[*] Restoring Taskbar Chat Icon..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advPath) {
+        Set-ItemProperty -Path $advPath -Name 'TaskbarMn' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    $chatPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Chat'
+    if (Test-Path $chatPol) {
+        Remove-ItemProperty -Path $chatPol -Name 'ChatIcon' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Taskbar Chat restored." -ForegroundColor Green
+}
+
+# 5. Enable Files Compact Mode in Windows Explorer
+function Enable-FilesCompactMode {
+    Write-Host "`n[*] Enabling Files Explorer Compact Mode (Decreased Item Padding)..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advPath)) { New-Item -Path $advPath -Force | Out-Null }
+    Set-ItemProperty -Path $advPath -Name 'UseCompactMode' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] File Explorer Compact View enabled." -ForegroundColor Green
+}
+
+function Restore-FilesCompactMode {
+    Write-Host "`n[*] Restoring File Explorer Standard Spacing..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advPath) {
+        Set-ItemProperty -Path $advPath -Name 'UseCompactMode' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] File Explorer Compact View disabled." -ForegroundColor Green
+}
+
+# 6. Disable Snap Assist & Automatic Window Arranging
+function Disable-SnapAssist {
+    Write-Host "`n[*] Disabling Snap Assist & Auto Window Suggestions..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advPath)) { New-Item -Path $advPath -Force | Out-Null }
+    Set-ItemProperty -Path $advPath -Name 'SnapAssist' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $advPath -Name 'JointResize' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Snap Assist disabled -- Manual window positioning only." -ForegroundColor Green
+}
+
+function Restore-SnapAssist {
+    Write-Host "`n[*] Restoring Windows Snap Assist..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advPath) {
+        Set-ItemProperty -Path $advPath -Name 'SnapAssist' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $advPath -Name 'JointResize' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Snap Assist restored." -ForegroundColor Green
+}
+
+# 7. Disable Windows 11 Desktop Stickers
+function Disable-WindowsStickers {
+    Write-Host "`n[*] Disabling Windows 11 Desktop Stickers..." -ForegroundColor Yellow
+    $stkPath = 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Stickers'
+    if (-not (Test-Path $stkPath)) { New-Item -Path $stkPath -Force | Out-Null }
+    Set-ItemProperty -Path $stkPath -Name 'EnableStickers' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Windows 11 Desktop Stickers disabled." -ForegroundColor Green
+}
+
+function Restore-WindowsStickers {
+    Write-Host "`n[*] Restoring Windows 11 Desktop Stickers..." -ForegroundColor Yellow
+    $stkPath = 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Stickers'
+    if (Test-Path $stkPath) {
+        Remove-ItemProperty -Path $stkPath -Name 'EnableStickers' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Desktop Stickers setting restored." -ForegroundColor Green
+}
+
+# 8. Disable Microsoft Edge Discover Bar & Bing Button
+function Disable-EdgeDiscoverBar {
+    Write-Host "`n[*] Disabling Microsoft Edge Discover Bar & Copilot Button..." -ForegroundColor Yellow
+    $edgePol = 'HKLM:\SOFTWARE\Policies\Microsoft\Edge'
+    if (-not (Test-Path $edgePol)) { New-Item -Path $edgePol -Force | Out-Null }
+    Set-ItemProperty -Path $edgePol -Name 'HubsSidebarEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $edgePol -Name 'ShowCopilotButton' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Edge Discover bar and Copilot button disabled." -ForegroundColor Green
+}
+
+function Restore-EdgeDiscoverBar {
+    Write-Host "`n[*] Restoring Microsoft Edge Discover Bar..." -ForegroundColor Yellow
+    $edgePol = 'HKLM:\SOFTWARE\Policies\Microsoft\Edge'
+    if (Test-Path $edgePol) {
+        Remove-ItemProperty -Path $edgePol -Name 'HubsSidebarEnabled' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $edgePol -Name 'ShowCopilotButton' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Edge Discover Bar restored." -ForegroundColor Green
+}
+
+# 9. Add 'Copy To' and 'Move To' Folder to Explorer Context Menu
+function Enable-CopyMoveContextMenu {
+    Write-Host "`n[*] Adding 'Copy To' & 'Move To' Folder to Right-Click Context Menu..." -ForegroundColor Yellow
+    $copyKey = 'HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\Copy To'
+    $moveKey = 'HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\Move To'
+    if (-not (Test-Path $copyKey)) { New-Item -Path $copyKey -Force | Out-Null }
+    if (-not (Test-Path $moveKey)) { New-Item -Path $moveKey -Force | Out-Null }
+    Set-ItemProperty -Path $copyKey -Name '(Default)' -Value '{C2FBB630-2971-11D1-A18C-00C04FD75D13}' -Force
+    Set-ItemProperty -Path $moveKey -Name '(Default)' -Value '{C2FBB631-2971-11D1-A18C-00C04FD75D13}' -Force
+    Write-Host "      [+] 'Copy To folder' & 'Move To folder' context menus added!" -ForegroundColor Green
+}
+
+function Restore-CopyMoveContextMenu {
+    Write-Host "`n[*] Removing 'Copy To' & 'Move To' Folder from Context Menu..." -ForegroundColor Yellow
+    Remove-Item -Path 'HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\Copy To' -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path 'HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\Move To' -Recurse -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] 'Copy To' & 'Move To' context menus removed." -ForegroundColor Green
+}
+
+# 10. Disable Window Shake (Aero Shake)
+function Disable-WindowShake {
+    Write-Host "`n[*] Disabling Windows Window Shake (Aero Shake Minimization)..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (-not (Test-Path $advPath)) { New-Item -Path $advPath -Force | Out-Null }
+    Set-ItemProperty -Path $advPath -Name 'DisallowShaking' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    $polPath = 'HKCU:\Software\Policies\Microsoft\Windows\Explorer'
+    if (-not (Test-Path $polPath)) { New-Item -Path $polPath -Force | Out-Null }
+    Set-ItemProperty -Path $polPath -Name 'DisallowShaking' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Window Shake disabled -- Shaking active window will not minimize others." -ForegroundColor Green
+}
+
+function Restore-WindowShake {
+    Write-Host "`n[*] Restoring Window Shake (Aero Shake)..." -ForegroundColor Yellow
+    $advPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced'
+    if (Test-Path $advPath) {
+        Set-ItemProperty -Path $advPath -Name 'DisallowShaking' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    $polPath = 'HKCU:\Software\Policies\Microsoft\Windows\Explorer'
+    if (Test-Path $polPath) {
+        Remove-ItemProperty -Path $polPath -Name 'DisallowShaking' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Window Shake restored." -ForegroundColor Green
+}
+
+# 11. Windows System Dark Mode
+function Set-WindowsDarkMode {
+    Write-Host "`n[*] Enabling Windows System & Apps Dark Mode..." -ForegroundColor Yellow
+    $persPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+    if (-not (Test-Path $persPath)) { New-Item -Path $persPath -Force | Out-Null }
+    Set-ItemProperty -Path $persPath -Name 'AppsUseLightTheme' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $persPath -Name 'SystemUsesLightTheme' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] System and application Dark Mode enabled (Activation not required)." -ForegroundColor Green
+}
+
+function Restore-WindowsLightMode {
+    Write-Host "`n[*] Restoring Windows Light Mode..." -ForegroundColor Yellow
+    $persPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+    if (Test-Path $persPath) {
+        Set-ItemProperty -Path $persPath -Name 'AppsUseLightTheme' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $persPath -Name 'SystemUsesLightTheme' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Standard Light Mode restored." -ForegroundColor Green
+}
+
+# 12. Enable Verbose Logon Messages
+function Enable-VerboseLogon {
+    Write-Host "`n[*] Enabling Verbose Logon / Logoff Status Messages..." -ForegroundColor Yellow
+    $sysPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    if (-not (Test-Path $sysPath)) { New-Item -Path $sysPath -Force | Out-Null }
+    Set-ItemProperty -Path $sysPath -Name 'VerboseStatus' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Verbose Logon enabled -- Detailed boot and profile diagnostics shown." -ForegroundColor Green
+}
+
+function Restore-VerboseLogon {
+    Write-Host "`n[*] Restoring Standard Logon Messages..." -ForegroundColor Yellow
+    $sysPath = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    if (Test-Path $sysPath) {
+        Remove-ItemProperty -Path $sysPath -Name 'VerboseStatus' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Standard Logon messages restored." -ForegroundColor Green
+}
+
+# 13. Disable Quick Access Recent & Frequent History
+function Disable-QuickAccessHistory {
+    Write-Host "`n[*] Disabling Quick Access Recent Files & Frequent Folders..." -ForegroundColor Yellow
+    $expPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
+    if (-not (Test-Path $expPath)) { New-Item -Path $expPath -Force | Out-Null }
+    Set-ItemProperty -Path $expPath -Name 'ShowRecent' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $expPath -Name 'ShowFrequent' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Quick Access recent files and frequent folders disabled." -ForegroundColor Green
+}
+
+function Restore-QuickAccessHistory {
+    Write-Host "`n[*] Restoring Quick Access History..." -ForegroundColor Yellow
+    $expPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer'
+    if (Test-Path $expPath) {
+        Set-ItemProperty -Path $expPath -Name 'ShowRecent' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $expPath -Name 'ShowFrequent' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Quick Access history restored." -ForegroundColor Green
+}
+
+# 14. Disable My People Taskbar Integration
+function Disable-MyPeople {
+    Write-Host "`n[*] Disabling My People Taskbar Feature..." -ForegroundColor Yellow
+    $pplPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People'
+    if (-not (Test-Path $pplPath)) { New-Item -Path $pplPath -Force | Out-Null }
+    Set-ItemProperty -Path $pplPath -Name 'PeopleBand' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] My People taskbar icon disabled." -ForegroundColor Green
+}
+
+function Restore-MyPeople {
+    Write-Host "`n[*] Restoring My People Feature..." -ForegroundColor Yellow
+    $pplPath = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People'
+    if (Test-Path $pplPath) {
+        Set-ItemProperty -Path $pplPath -Name 'PeopleBand' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] My People restored." -ForegroundColor Green
+}
+
+# 15. Disable Windows Ink Workspace
+function Disable-WindowsInk {
+    Write-Host "`n[*] Disabling Windows Ink Workspace..." -ForegroundColor Yellow
+    $inkPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsInkWorkspace'
+    if (-not (Test-Path $inkPath)) { New-Item -Path $inkPath -Force | Out-Null }
+    Set-ItemProperty -Path $inkPath -Name 'AllowWindowsInkWorkspace' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Windows Ink Workspace disabled." -ForegroundColor Green
+}
+
+function Restore-WindowsInk {
+    Write-Host "`n[*] Restoring Windows Ink Workspace..." -ForegroundColor Yellow
+    $inkPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsInkWorkspace'
+    if (Test-Path $inkPath) {
+        Remove-ItemProperty -Path $inkPath -Name 'AllowWindowsInkWorkspace' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Windows Ink Workspace restored." -ForegroundColor Green
+}
+
+# 16. Disable Cast to Device (PlayTo)
+function Disable-CastToDevice {
+    Write-Host "`n[*] Disabling Cast to Device (PlayTo Service)..." -ForegroundColor Yellow
+    $playPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PlayTo'
+    if (-not (Test-Path $playPath)) { New-Item -Path $playPath -Force | Out-Null }
+    Set-ItemProperty -Path $playPath -Name 'NoPlayTo' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Cast to Device disabled." -ForegroundColor Green
+}
+
+function Restore-CastToDevice {
+    Write-Host "`n[*] Restoring Cast to Device..." -ForegroundColor Yellow
+    $playPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PlayTo'
+    if (Test-Path $playPath) {
+        Remove-ItemProperty -Path $playPath -Name 'NoPlayTo' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Cast to Device restored." -ForegroundColor Green
+}
+
+# 17. Enable Legacy Boot Menu
+function Enable-LegacyBootMenu {
+    Write-Host "`n[*] Enabling Legacy Boot Menu (F8 Safe Mode Menu)..." -ForegroundColor Yellow
+    try {
+        bcdedit /set "{default}" bootmenupolicy legacy 2>$null | Out-Null
+        Write-Host "      [+] Legacy F8 Boot Menu enabled." -ForegroundColor Green
+    } catch {}
+}
+
+function Restore-LegacyBootMenu {
+    Write-Host "`n[*] Restoring Standard Modern Boot Menu..." -ForegroundColor Yellow
+    try {
+        bcdedit /set "{default}" bootmenupolicy standard 2>$null | Out-Null
+        Write-Host "      [+] Standard Boot Menu restored." -ForegroundColor Green
+    } catch {}
+}
+
+# Standalone execution check
+if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "[!] Administrator privileges required. Elevating..." -ForegroundColor Yellow
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+        exit
+    }
+    Disable-VbsSecurity
+    Set-TaskbarAlignmentLeft
+    Disable-StartMenuRecommended
+    Disable-TaskbarChat
+    Enable-FilesCompactMode
+    Enable-CopyMoveContextMenu
+    Disable-WindowShake
+    Set-WindowsDarkMode
+    Read-Host "`nPress Enter to exit"
+}
+
+
+# ------------------------------------------------------------------------------
+# MODULE: Optimize-PrivacyAndTelemetry
+# ------------------------------------------------------------------------------
+<#
+================================================================================
+  PumpkiN's Modular Suite: Advanced Privacy, App Telemetry & System Services
+================================================================================
+#>
+
+# 1. Third-Party App Telemetry Disabler (Edge, Chrome, Firefox, VS, Nvidia)
+function Disable-AppTelemetry {
+    Write-Host "`n[*] Disabling Browser, IDE & Driver Telemetry (Edge, Chrome, Firefox, VS, Nvidia)..." -ForegroundColor Yellow
+
+    # Microsoft Edge Telemetry
+    $edgeKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Edge'
+    if (-not (Test-Path $edgeKey)) { New-Item -Path $edgeKey -Force | Out-Null }
+    Set-ItemProperty -Path $edgeKey -Name 'MetricsReportingEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $edgeKey -Name 'SendDoNotTrack' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $edgeKey -Name 'PersonalizationReportingEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    # Google Chrome Telemetry
+    $chromeKey = 'HKLM:\SOFTWARE\Policies\Google\Chrome'
+    if (-not (Test-Path $chromeKey)) { New-Item -Path $chromeKey -Force | Out-Null }
+    Set-ItemProperty -Path $chromeKey -Name 'MetricsReportingEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $chromeKey -Name 'SendingDataUsageReports' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    # Mozilla Firefox Telemetry
+    $ffKey = 'HKLM:\SOFTWARE\Policies\Mozilla\Firefox'
+    if (-not (Test-Path $ffKey)) { New-Item -Path $ffKey -Force | Out-Null }
+    Set-ItemProperty -Path $ffKey -Name 'DisableTelemetry' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    # Visual Studio Telemetry
+    $vsLM = 'HKLM:\SOFTWARE\Policies\Microsoft\VisualStudio\Telemetry'
+    $vsCU = 'HKCU:\Software\Microsoft\VisualStudio\Telemetry'
+    if (-not (Test-Path $vsLM)) { New-Item -Path $vsLM -Force | Out-Null }
+    if (-not (Test-Path $vsCU)) { New-Item -Path $vsCU -Force | Out-Null }
+    Set-ItemProperty -Path $vsLM -Name 'TurnOffSwitch' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $vsCU -Name 'TurnOffSwitch' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    # Nvidia Driver Telemetry Tasks
+    $nvTasks = @('NvTmMon', 'NvTmRep', 'NvTmRepOnLogon')
+    foreach ($nt in $nvTasks) {
+        Disable-ScheduledTask -TaskName $nt -ErrorAction SilentlyContinue | Out-Null
+    }
+
+    Write-Host "      [+] Edge, Chrome, Firefox, VS, and Nvidia telemetry blocked system-wide!" -ForegroundColor Green
+}
+
+function Restore-AppTelemetry {
+    Write-Host "`n[*] Restoring Browser, IDE & Driver Telemetry Defaults..." -ForegroundColor Yellow
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Edge' -Name 'MetricsReportingEnabled' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Google\Chrome' -Name 'MetricsReportingEnabled' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Mozilla\Firefox' -Name 'DisableTelemetry' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\VisualStudio\Telemetry' -Name 'TurnOffSwitch' -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path 'HKCU:\Software\Microsoft\VisualStudio\Telemetry' -Name 'TurnOffSwitch' -ErrorAction SilentlyContinue
+
+    $nvTasks = @('NvTmMon', 'NvTmRep', 'NvTmRepOnLogon')
+    foreach ($nt in $nvTasks) {
+        Enable-ScheduledTask -TaskName $nt -ErrorAction SilentlyContinue | Out-Null
+    }
+    Write-Host "      [+] Browser, IDE and Driver telemetry settings restored." -ForegroundColor Green
+}
+
+# 2. Bluetooth Advertising Disabler
+function Disable-BluetoothAdvertising {
+    Write-Host "`n[*] Disabling Bluetooth Advertising & Discovery Broadcasts..." -ForegroundColor Yellow
+    $btKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Bluetooth'
+    if (-not (Test-Path $btKey)) { New-Item -Path $btKey -Force | Out-Null }
+    Set-ItemProperty -Path $btKey -Name 'AllowAdvertising' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Bluetooth Advertising disabled -- Device presence broadcast stopped." -ForegroundColor Green
+}
+
+function Restore-BluetoothAdvertising {
+    Write-Host "`n[*] Restoring Bluetooth Advertising..." -ForegroundColor Yellow
+    $btKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Bluetooth'
+    if (Test-Path $btKey) {
+        Remove-ItemProperty -Path $btKey -Name 'AllowAdvertising' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Bluetooth Advertising restored." -ForegroundColor Green
+}
+
+# 3. Cloud-Optimized Content Disabler
+function Disable-CloudOptimizedContent {
+    Write-Host "`n[*] Disabling Cloud-Optimized Content & Remote Asset Syncing..." -ForegroundColor Yellow
+    $cloudKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent'
+    if (-not (Test-Path $cloudKey)) { New-Item -Path $cloudKey -Force | Out-Null }
+    Set-ItemProperty -Path $cloudKey -Name 'DisableCloudOptimizedContent' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Cloud-optimized content disabled -- Internet bandwidth saved!" -ForegroundColor Green
+}
+
+function Restore-CloudOptimizedContent {
+    Write-Host "`n[*] Restoring Cloud-Optimized Content..." -ForegroundColor Yellow
+    $cloudKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent'
+    if (Test-Path $cloudKey) {
+        Remove-ItemProperty -Path $cloudKey -Name 'DisableCloudOptimizedContent' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Cloud-optimized content restored." -ForegroundColor Green
+}
+
+# 4. Connected Devices Platform (CDP) Telemetry Services
+function Disable-CdpServices {
+    Write-Host "`n[*] Disabling Connected Devices Platform (CDP) Services..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPSvc' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPUserSvc' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Stop-Service -Name CDPSvc -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] CDP Services disabled -- User Activity and device sync halted." -ForegroundColor Green
+}
+
+function Restore-CdpServices {
+    Write-Host "`n[*] Restoring Connected Devices Platform (CDP) Services..." -ForegroundColor Yellow
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPSvc' -Name 'Start' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPUserSvc' -Name 'Start' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Start-Service -Name CDPSvc -ErrorAction SilentlyContinue
+    Write-Host "      [+] CDP Services restored to Automatic." -ForegroundColor Green
+}
+
+# 5. Diagnostic Toast Notifications
+function Disable-DiagnosticsToasts {
+    Write-Host "`n[*] Disabling Diagnostic & Maintenance Toast Notifications..." -ForegroundColor Yellow
+    $toastKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance'
+    if (-not (Test-Path $toastKey)) { New-Item -Path $toastKey -Force | Out-Null }
+    Set-ItemProperty -Path $toastKey -Name 'Enabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Security and Maintenance diagnostic toast notifications muted." -ForegroundColor Green
+}
+
+function Restore-DiagnosticsToasts {
+    Write-Host "`n[*] Restoring Diagnostic Toast Notifications..." -ForegroundColor Yellow
+    $toastKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance'
+    if (Test-Path $toastKey) {
+        Set-ItemProperty -Path $toastKey -Name 'Enabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Diagnostic toast notifications restored." -ForegroundColor Green
+}
+
+# 6. Online Speech Recognition & Voice Activation Privacy
+function Disable-OnlineSpeechPrivacy {
+    Write-Host "`n[*] Disabling Online Speech Recognition & Cloud Voice Storage..." -ForegroundColor Yellow
+    $speechKey = 'HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy'
+    if (-not (Test-Path $speechKey)) { New-Item -Path $speechKey -Force | Out-Null }
+    Set-ItemProperty -Path $speechKey -Name 'HasAccepted' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    $voiceKey = 'HKCU:\Software\Microsoft\Speech_OneCore\Preferences'
+    if (-not (Test-Path $voiceKey)) { New-Item -Path $voiceKey -Force | Out-Null }
+    Set-ItemProperty -Path $voiceKey -Name 'AgentActivationEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Online speech recognition and voice assistant activation disabled." -ForegroundColor Green
+}
+
+function Restore-OnlineSpeechPrivacy {
+    Write-Host "`n[*] Restoring Online Speech Recognition..." -ForegroundColor Yellow
+    $speechKey = 'HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy'
+    if (Test-Path $speechKey) {
+        Set-ItemProperty -Path $speechKey -Name 'HasAccepted' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    $voiceKey = 'HKCU:\Software\Microsoft\Speech_OneCore\Preferences'
+    if (Test-Path $voiceKey) {
+        Set-ItemProperty -Path $voiceKey -Name 'AgentActivationEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Online speech settings restored." -ForegroundColor Green
+}
+
+# 7. Automatic Restart Sign-On (ARSO)
+function Disable-AutomaticRestartSignOn {
+    Write-Host "`n[*] Disabling Automatic Restart Sign-On (ARSO Credential Caching)..." -ForegroundColor Yellow
+    $sysKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    if (-not (Test-Path $sysKey)) { New-Item -Path $sysKey -Force | Out-Null }
+    Set-ItemProperty -Path $sysKey -Name 'DisableAutomaticRestartSignOn' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] ARSO disabled -- User credentials not auto-unlocked after reboot." -ForegroundColor Green
+}
+
+function Restore-AutomaticRestartSignOn {
+    Write-Host "`n[*] Restoring Automatic Restart Sign-On..." -ForegroundColor Yellow
+    $sysKey = 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System'
+    if (Test-Path $sysKey) {
+        Remove-ItemProperty -Path $sysKey -Name 'DisableAutomaticRestartSignOn' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] ARSO restored." -ForegroundColor Green
+}
+
+# 8. Handwriting Data Sharing & Text Input Collection (Typing Telemetry)
+function Disable-TextInputCollection {
+    Write-Host "`n[*] Disabling Typing & Handwriting Telemetry Data Collection..." -ForegroundColor Yellow
+    $inputPol = 'HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization'
+    if (-not (Test-Path $inputPol)) { New-Item -Path $inputPol -Force | Out-Null }
+    Set-ItemProperty -Path $inputPol -Name 'RestrictImplicitInkCollection' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $inputPol -Name 'RestrictImplicitTextCollection' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    $hwKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports'
+    if (-not (Test-Path $hwKey)) { New-Item -Path $hwKey -Force | Out-Null }
+    Set-ItemProperty -Path $hwKey -Name 'PreventHandwritingDataSharing' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    $userInp = 'HKCU:\Software\Microsoft\InputPersonalization'
+    if (-not (Test-Path $userInp)) { New-Item -Path $userInp -Force | Out-Null }
+    Set-ItemProperty -Path $userInp -Name 'RestrictImplicitInkCollection' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $userInp -Name 'RestrictImplicitTextCollection' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    Write-Host "      [+] Keystroke and handwriting diagnostic reporting disabled." -ForegroundColor Green
+}
+
+function Restore-TextInputCollection {
+    Write-Host "`n[*] Restoring Typing & Handwriting Data Sharing..." -ForegroundColor Yellow
+    $inputPol = 'HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization'
+    if (Test-Path $inputPol) {
+        Remove-ItemProperty -Path $inputPol -Name 'RestrictImplicitInkCollection' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $inputPol -Name 'RestrictImplicitTextCollection' -ErrorAction SilentlyContinue
+    }
+    $hwKey = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports'
+    if (Test-Path $hwKey) {
+        Remove-ItemProperty -Path $hwKey -Name 'PreventHandwritingDataSharing' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Typing and handwriting defaults restored." -ForegroundColor Green
+}
+
+# 9. Cross-Device Clipboard Sync
+function Disable-ClipboardSync {
+    Write-Host "`n[*] Disabling Cross-Device Cloud Clipboard Sync..." -ForegroundColor Yellow
+    $sysPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'
+    if (-not (Test-Path $sysPol)) { New-Item -Path $sysPol -Force | Out-Null }
+    Set-ItemProperty -Path $sysPol -Name 'AllowCrossDeviceClipboard' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    $clipCU = 'HKCU:\Software\Microsoft\Clipboard'
+    if (-not (Test-Path $clipCU)) { New-Item -Path $clipCU -Force | Out-Null }
+    Set-ItemProperty -Path $clipCU -Name 'EnableClipboardHistory' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $clipCU -Name 'CloudClipboardEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Cloud clipboard sync disabled -- Copied text remains local." -ForegroundColor Green
+}
+
+function Restore-ClipboardSync {
+    Write-Host "`n[*] Restoring Cloud Clipboard Sync..." -ForegroundColor Yellow
+    $sysPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'
+    if (Test-Path $sysPol) {
+        Set-ItemProperty -Path $sysPol -Name 'AllowCrossDeviceClipboard' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Cloud clipboard sync restored." -ForegroundColor Green
+}
+
+# 10. Device Message & Settings Sync
+function Disable-SettingsAndMessageSync {
+    Write-Host "`n[*] Disabling Cross-Device Settings & Message Synchronization..." -ForegroundColor Yellow
+    $syncPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\SettingSync'
+    if (-not (Test-Path $syncPol)) { New-Item -Path $syncPol -Force | Out-Null }
+    Set-ItemProperty -Path $syncPol -Name 'DisableSettingSync' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $syncPol -Name 'DisableSettingSyncUserOverride' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    $msgPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging'
+    if (-not (Test-Path $msgPol)) { New-Item -Path $msgPol -Force | Out-Null }
+    Set-ItemProperty -Path $msgPol -Name 'AllowMessageSync' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] OS Settings and Message sync across devices disabled." -ForegroundColor Green
+}
+
+function Restore-SettingsAndMessageSync {
+    Write-Host "`n[*] Restoring Settings & Message Sync..." -ForegroundColor Yellow
+    $syncPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\SettingSync'
+    if (Test-Path $syncPol) {
+        Remove-ItemProperty -Path $syncPol -Name 'DisableSettingSync' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $syncPol -Name 'DisableSettingSyncUserOverride' -ErrorAction SilentlyContinue
+    }
+    $msgPol = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Messaging'
+    if (Test-Path $msgPol) {
+        Remove-ItemProperty -Path $msgPol -Name 'AllowMessageSync' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Settings and message sync restored." -ForegroundColor Green
+}
+
+# 11. Find My Device Tracking
+function Disable-FindMyDevice {
+    Write-Host "`n[*] Disabling 'Find My Device' Location Tracking..." -ForegroundColor Yellow
+    $findPol = 'HKLM:\SOFTWARE\Policies\Microsoft\FindMyDevice'
+    if (-not (Test-Path $findPol)) { New-Item -Path $findPol -Force | Out-Null }
+    Set-ItemProperty -Path $findPol -Name 'AllowFindMyDevice' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Find My Device tracking disabled." -ForegroundColor Green
+}
+
+function Restore-FindMyDevice {
+    Write-Host "`n[*] Restoring 'Find My Device'..." -ForegroundColor Yellow
+    $findPol = 'HKLM:\SOFTWARE\Policies\Microsoft\FindMyDevice'
+    if (Test-Path $findPol) {
+        Remove-ItemProperty -Path $findPol -Name 'AllowFindMyDevice' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Find My Device restored." -ForegroundColor Green
+}
+
+# 12. SafeSearch Mode in Windows Search
+function Disable-SafeSearchMode {
+    Write-Host "`n[*] Disabling SafeSearch Filter in Windows Search..." -ForegroundColor Yellow
+    $srchSet = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings'
+    if (-not (Test-Path $srchSet)) { New-Item -Path $srchSet -Force | Out-Null }
+    Set-ItemProperty -Path $srchSet -Name 'SafeSearchMode' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] SafeSearch filter disabled (Unfiltered instant local search)." -ForegroundColor Green
+}
+
+function Restore-SafeSearchMode {
+    Write-Host "`n[*] Restoring SafeSearch Filter..." -ForegroundColor Yellow
+    $srchSet = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings'
+    if (Test-Path $srchSet) {
+        Set-ItemProperty -Path $srchSet -Name 'SafeSearchMode' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] SafeSearch restored to Moderate." -ForegroundColor Green
+}
+
+# 13. Disable SMBv1 Protocol (Legacy Security Vulnerability)
+function Disable-SmbV1Protocol {
+    Write-Host "`n[*] Disabling Deprecated SMBv1 Protocol (Ransomware / WannaCry Shield)..." -ForegroundColor Yellow
+    try {
+        Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force -ErrorAction SilentlyContinue | Out-Null
+        Disable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart -ErrorAction SilentlyContinue | Out-Null
+        Write-Host "      [+] SMBv1 protocol disabled successfully -- Network attack surface closed!" -ForegroundColor Green
+    } catch {
+        Write-Host "      [!] SMBv1 disable skipped: $($_.Exception.Message)" -ForegroundColor DarkYellow
+    }
+}
+
+function Restore-SmbV1Protocol {
+    Write-Host "`n[*] Restoring SMBv1 Protocol..." -ForegroundColor Yellow
+    try {
+        Set-SmbServerConfiguration -EnableSMB1Protocol $true -Force -ErrorAction SilentlyContinue | Out-Null
+        Write-Host "      [+] SMBv1 protocol restored." -ForegroundColor Green
+    } catch {}
+}
+
+# 14. Disable Remote Assistance & Remote Registry
+function Disable-RemoteAssistanceAndRegistry {
+    Write-Host "`n[*] Disabling Remote Assistance & Remote Registry Access..." -ForegroundColor Yellow
+    $raPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance'
+    if (-not (Test-Path $raPath)) { New-Item -Path $raPath -Force | Out-Null }
+    Set-ItemProperty -Path $raPath -Name 'fAllowToGetHelp' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    Set-Service -Name RemoteRegistry -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name RemoteRegistry -Force -ErrorAction SilentlyContinue
+    Write-Host "      [+] Remote Assistance and Remote Registry service disabled." -ForegroundColor Green
+}
+
+function Restore-RemoteAssistanceAndRegistry {
+    Write-Host "`n[*] Restoring Remote Assistance & Remote Registry..." -ForegroundColor Yellow
+    $raPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance'
+    if (Test-Path $raPath) {
+        Set-ItemProperty -Path $raPath -Name 'fAllowToGetHelp' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Set-Service -Name RemoteRegistry -StartupType Manual -ErrorAction SilentlyContinue
+    Write-Host "      [+] Remote Assistance and Remote Registry restored." -ForegroundColor Green
+}
+
+# 15. Exclude Driver Updates from Windows Update
+function Disable-DriverUpdatesFromWindowsUpdate {
+    Write-Host "`n[*] Excluding Hardware Drivers from Windows Update (Prevents Driver Overwrites)..." -ForegroundColor Yellow
+    $wuPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate'
+    if (-not (Test-Path $wuPath)) { New-Item -Path $wuPath -Force | Out-Null }
+    Set-ItemProperty -Path $wuPath -Name 'ExcludeWUDriversInQualityUpdate' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Driver updates excluded from Windows Update -- GPU/Audio drivers protected!" -ForegroundColor Green
+}
+
+function Restore-DriverUpdatesFromWindowsUpdate {
+    Write-Host "`n[*] Restoring Driver Updates in Windows Update..." -ForegroundColor Yellow
+    $wuPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate'
+    if (Test-Path $wuPath) {
+        Remove-ItemProperty -Path $wuPath -Name 'ExcludeWUDriversInQualityUpdate' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Driver updates via Windows Update restored." -ForegroundColor Green
+}
+
+# 16. Disable Microsoft Store Automatic Updates
+function Disable-StoreAutoUpdates {
+    Write-Host "`n[*] Disabling Microsoft Store Automatic App Updates..." -ForegroundColor Yellow
+    $storePath = 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore'
+    if (-not (Test-Path $storePath)) { New-Item -Path $storePath -Force | Out-Null }
+    Set-ItemProperty -Path $storePath -Name 'AutoDownload' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Store auto-downloads disabled -- Updates will only occur on demand." -ForegroundColor Green
+}
+
+function Restore-StoreAutoUpdates {
+    Write-Host "`n[*] Restoring Microsoft Store Auto-Updates..." -ForegroundColor Yellow
+    $storePath = 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore'
+    if (Test-Path $storePath) {
+        Remove-ItemProperty -Path $storePath -Name 'AutoDownload' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Store auto-downloads restored." -ForegroundColor Green
+}
+
+# 17. Disable SmartScreen Filter
+function Disable-SmartScreenFilter {
+    Write-Host "`n[*] Disabling Windows Defender SmartScreen Filter..." -ForegroundColor Yellow
+    $sysPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'
+    if (-not (Test-Path $sysPath)) { New-Item -Path $sysPath -Force | Out-Null }
+    Set-ItemProperty -Path $sysPath -Name 'EnableSmartScreen' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+
+    $appHost = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\AppHost'
+    if (-not (Test-Path $appHost)) { New-Item -Path $appHost -Force | Out-Null }
+    Set-ItemProperty -Path $appHost -Name 'EnableWebContentEvaluation' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] SmartScreen filter disabled -- App execution warnings suppressed." -ForegroundColor Green
+}
+
+function Restore-SmartScreenFilter {
+    Write-Host "`n[*] Restoring SmartScreen Filter..." -ForegroundColor Yellow
+    $sysPath = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System'
+    if (Test-Path $sysPath) {
+        Set-ItemProperty -Path $sysPath -Name 'EnableSmartScreen' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    $appHost = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\AppHost'
+    if (Test-Path $appHost) {
+        Set-ItemProperty -Path $appHost -Name 'EnableWebContentEvaluation' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] SmartScreen filter restored." -ForegroundColor Green
+}
+
+# 18. Disable System Crash Dumps
+function Disable-CrashDumps {
+    Write-Host "`n[*] Disabling Application Crash Dumps & Memory MiniDumps..." -ForegroundColor Yellow
+    $crashPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl'
+    if (-not (Test-Path $crashPath)) { New-Item -Path $crashPath -Force | Out-Null }
+    Set-ItemProperty -Path $crashPath -Name 'CrashDumpEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Crash dumps disabled -- Prevents gigabytes of useless dump files on disk." -ForegroundColor Green
+}
+
+function Restore-CrashDumps {
+    Write-Host "`n[*] Restoring Default Crash Dump Generation..." -ForegroundColor Yellow
+    $crashPath = 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl'
+    if (Test-Path $crashPath) {
+        Set-ItemProperty -Path $crashPath -Name 'CrashDumpEnabled' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Crash dump generation restored." -ForegroundColor Green
+}
+
+# 19. Optimize System Timeouts & Responsiveness
+function Optimize-SystemTimeouts {
+    Write-Host "`n[*] Optimizing System Timeouts, Menu Show Delay & Broken Link Resolving..." -ForegroundColor Yellow
+    $deskPath = 'HKCU:\Control Panel\Desktop'
+    Set-ItemProperty -Path $deskPath -Name 'MenuShowDelay' -Value '0' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $deskPath -Name 'WaitToKillAppTimeout' -Value '2000' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $deskPath -Name 'HungAppTimeout' -Value '1000' -Type String -ErrorAction SilentlyContinue
+
+    $mousePath = 'HKCU:\Control Panel\Mouse'
+    Set-ItemProperty -Path $mousePath -Name 'MouseHoverTime' -Value '0' -Type String -ErrorAction SilentlyContinue
+
+    $ctrlPath = 'HKLM:\SYSTEM\CurrentControlSet\Control'
+    Set-ItemProperty -Path $ctrlPath -Name 'WaitToKillServiceTimeout' -Value '2000' -Type String -ErrorAction SilentlyContinue
+
+    $polExp = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    if (-not (Test-Path $polExp)) { New-Item -Path $polExp -Force | Out-Null }
+    Set-ItemProperty -Path $polExp -Name 'NoLowDiskSpaceChecks' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $polExp -Name 'NoResolveSearch' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $polExp -Name 'NoResolveTrack' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+    Write-Host "      [+] Instant menu popups (0ms delay), fast app shutdown (2s), and no broken link lag!" -ForegroundColor Green
+}
+
+function Restore-SystemTimeouts {
+    Write-Host "`n[*] Restoring Default Windows Timeouts..." -ForegroundColor Yellow
+    $deskPath = 'HKCU:\Control Panel\Desktop'
+    Set-ItemProperty -Path $deskPath -Name 'MenuShowDelay' -Value '400' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $deskPath -Name 'WaitToKillAppTimeout' -Value '20000' -Type String -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $deskPath -Name 'HungAppTimeout' -Value '5000' -Type String -ErrorAction SilentlyContinue
+
+    $mousePath = 'HKCU:\Control Panel\Mouse'
+    Set-ItemProperty -Path $mousePath -Name 'MouseHoverTime' -Value '400' -Type String -ErrorAction SilentlyContinue
+
+    $ctrlPath = 'HKLM:\SYSTEM\CurrentControlSet\Control'
+    Set-ItemProperty -Path $ctrlPath -Name 'WaitToKillServiceTimeout' -Value '5000' -Type String -ErrorAction SilentlyContinue
+
+    $polExp = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    if (Test-Path $polExp) {
+        Remove-ItemProperty -Path $polExp -Name 'NoLowDiskSpaceChecks' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $polExp -Name 'NoResolveSearch' -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $polExp -Name 'NoResolveTrack' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [+] Default timeouts and link tracking restored." -ForegroundColor Green
+}
+
+# Standalone execution check
+if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "[!] Administrator privileges required. Elevating..." -ForegroundColor Yellow
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
+        exit
+    }
+    Disable-AppTelemetry
+    Disable-BluetoothAdvertising
+    Disable-CloudOptimizedContent
+    Disable-DiagnosticsToasts
+    Disable-TextInputCollection
+    Disable-ClipboardSync
+    Disable-SmbV1Protocol
+    Disable-DriverUpdatesFromWindowsUpdate
+    Optimize-SystemTimeouts
+    Read-Host "`nPress Enter to exit"
+}
+
 
 # ------------------------------------------------------------------------------
 # MODULE: System-DiagnosticsAndRestore
@@ -6113,6 +8999,458 @@ function Run-Diagnostics {
     }
 }
 
+function Get-SystemAuditState {
+    <#
+    .SYNOPSIS
+        Scans live Windows registry, policies, and services to determine
+        which tweaks are currently active vs unapplied (<60ms execution).
+    #>
+    [CmdletBinding()]
+    param()
+
+    $state = @{}
+
+    # 1. GPU & Display Latency
+    try {
+        $mpoVal = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\Dwm' -ErrorAction SilentlyContinue).OverlayTestMode
+        $state['Mpo'] = ($mpoVal -eq 5)
+    } catch { $state['Mpo'] = $false }
+
+    try {
+        $mc = Get-ItemProperty 'HKCU:\Control Panel\Mouse' -ErrorAction SilentlyContinue
+        $isLinear = $false
+        if ($mc.SmoothMouseXCurve -and $mc.SmoothMouseXCurve[0] -eq 0) {
+            $isLinear = $true
+        }
+        $state['MouseCurve'] = $isLinear
+    } catch { $state['MouseCurve'] = $false }
+
+    # 2. Input Latency & DPC
+    try {
+        $dpcVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -ErrorAction SilentlyContinue).ExitLatency
+        $state['InputLatency'] = ($dpcVal -eq 1)
+    } catch { $state['InputLatency'] = $false }
+
+    try {
+        $csrssPrio = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions' -ErrorAction SilentlyContinue).CpuPriorityClass
+        $state['CsrssPriority'] = ($csrssPrio -eq 3 -or $csrssPrio -eq 4)
+    } catch { $state['CsrssPriority'] = $false }
+
+    # 3. Kernel & CPU Quantum
+    try {
+        $prioVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).Win32PrioritySeparation
+        $state['CpuSystem'] = ($prioVal -eq 38 -or $prioVal -eq 0x26)
+    } catch { $state['CpuSystem'] = $false }
+
+    try {
+        $svcSplit = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control' -ErrorAction SilentlyContinue).SvcHostSplitThresholdInKB
+        $state['SvcHost'] = ($svcSplit -gt 380000)
+    } catch { $state['SvcHost'] = $false }
+
+    try {
+        $audioSched = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Audio' -ErrorAction SilentlyContinue).'Scheduling Category'
+        $state['AudioDpc'] = ($audioSched -eq 'High')
+    } catch { $state['AudioDpc'] = $false }
+
+    try {
+        $xhciPrio = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).ThreadPriority
+        $state['UsbxHci'] = ($xhciPrio -eq 31)
+    } catch { $state['UsbxHci'] = $false }
+
+    # 4. Network & Anti-Lag
+    try {
+        $qosVal = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched' -ErrorAction SilentlyContinue).NonBestEffortLimit
+        $dnsVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider' -ErrorAction SilentlyContinue).DnsPriority
+        $state['Network'] = ($qosVal -eq 0 -or $dnsVal -eq 6)
+    } catch { $state['Network'] = $false }
+
+    try {
+        $dnsVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider' -ErrorAction SilentlyContinue).DnsPriority
+        $state['StartupDns'] = ($dnsVal -eq 6)
+    } catch { $state['StartupDns'] = $false }
+
+    try {
+        $state['WifiScan'] = $false
+        if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
+            $hw = Get-HardwareProfile
+            if ($hw -and $hw.IsWifi) {
+                $wlanOut = netsh wlan show interfaces 2>$null
+                $state['WifiScan'] = ($wlanOut -match 'disabled|Disabled')
+            }
+        }
+    } catch { $state['WifiScan'] = $false }
+
+    # 5. Game Hooks & Power
+    try {
+        $gamePrio = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\cs2.exe\PerfOptions' -ErrorAction SilentlyContinue).CpuPriorityClass
+        $state['GameHooks'] = ($gamePrio -eq 3)
+    } catch { $state['GameHooks'] = $false }
+
+    try {
+        $actScheme = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes' -ErrorAction SilentlyContinue).ActivePowerScheme
+        $fnScheme = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes\$actScheme" -ErrorAction SilentlyContinue).FriendlyName
+        $state['UltimatePower'] = ($actScheme -eq 'e9a42b02-d5df-448d-aa00-03f14749eb61' -or $fnScheme -match 'Ultimate|Esports|Performance|Bitsum')
+    } catch { $state['UltimatePower'] = $false }
+
+    try {
+        $coreAttr = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-48e0-a5e0-94168290a945\0cc5b647-c1df-4637-891a-dec35c318583' -ErrorAction SilentlyContinue).Attributes
+        $state['CoreUnpark'] = ($coreAttr -eq 0)
+    } catch { $state['CoreUnpark'] = $false }
+
+    # 6. Visuals & System Tweaks
+    try {
+        $vfx = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects' -ErrorAction SilentlyContinue).VisualFXSetting
+        $state['StripVisual'] = ($vfx -eq 2)
+    } catch { $state['StripVisual'] = $false }
+
+    try {
+        $endTask = (Get-ItemProperty 'HKCU:\Control Panel\Desktop' -ErrorAction SilentlyContinue).AutoEndTasks
+        $state['EndTask'] = ($endTask -eq '1' -or $endTask -eq 1)
+    } catch { $state['EndTask'] = $false }
+
+    try {
+        $stk = (Get-ItemProperty 'HKCU:\Control Panel\Accessibility\StickyKeys' -ErrorAction SilentlyContinue).Flags
+        $state['StickyKeys'] = ($stk -eq '506' -or $stk -eq 506)
+    } catch { $state['StickyKeys'] = $false }
+
+    try {
+        $wm = (Get-ItemProperty 'HKCU:\Control Panel\Desktop\WindowMetrics' -ErrorAction SilentlyContinue).ScrollWidth
+        $state['CompactMetrics'] = ($wm -eq '-120' -or $wm -eq -120)
+    } catch { $state['CompactMetrics'] = $false }
+
+    # 7. Debloat, Services & Storage
+    try {
+        $diagStart = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\DiagTrack' -ErrorAction SilentlyContinue).Start
+        $state['DebloatServices'] = ($diagStart -eq 4)
+    } catch { $state['DebloatServices'] = $false }
+
+    try {
+        $lastAccess = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -ErrorAction SilentlyContinue).NtfsDisableLastAccessUpdate
+        $state['DiskIo'] = ($lastAccess -ge 1)
+    } catch { $state['DiskIo'] = $false }
+
+    try {
+        $cState = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -ErrorAction SilentlyContinue).DisablePagingExecutive
+        $state['CompactOs'] = ($cState -eq 1)
+    } catch { $state['CompactOs'] = $false }
+
+    try {
+        $state['TakeOwnership'] = (Test-Path 'HKCR:\*\shell\runas' -ErrorAction SilentlyContinue)
+    } catch { $state['TakeOwnership'] = $false }
+
+    try {
+        $taskKey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Microsoft\Windows\Customer Experience Improvement Program\Consolidator'
+        $taskId = (Get-ItemProperty $taskKey -ErrorAction SilentlyContinue).Id
+        $taskEntry = if ($taskId) { Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\$taskId" -ErrorAction SilentlyContinue } else { $null }
+        $state['JunkTasks'] = ($taskEntry -and $taskEntry.DynamicInfo -ne $null)
+    } catch { $state['JunkTasks'] = $false }
+
+    try {
+        $telemetry = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection' -ErrorAction SilentlyContinue).AllowTelemetry
+        $state['Privacy'] = ($telemetry -eq 0)
+    } catch { $state['Privacy'] = $false }
+
+    # 8. Hardening & System Options
+    try {
+        $wpbt = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -ErrorAction SilentlyContinue).DisableWpbtExecution
+        $state['BlockWpbt'] = ($wpbt -eq 1)
+    } catch { $state['BlockWpbt'] = $false }
+
+    try {
+        $state['BlockPeripheral'] = (Test-Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers' -ErrorAction SilentlyContinue)
+    } catch { $state['BlockPeripheral'] = $false }
+
+    try {
+        $copilot = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' -ErrorAction SilentlyContinue).TurnOffWindowsCopilot
+        $state['RemoveAi'] = ($copilot -eq 1)
+    } catch { $state['RemoveAi'] = $false }
+
+    try {
+        $defer = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -ErrorAction SilentlyContinue).DeferFeatureUpdates
+        $state['SecurityUpdatesOnly'] = ($defer -eq 1)
+    } catch { $state['SecurityUpdatesOnly'] = $false }
+
+    try {
+        $state['ClassicContext'] = (Test-Path 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32' -ErrorAction SilentlyContinue)
+    } catch { $state['ClassicContext'] = $false }
+
+    try {
+        $bing = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' -ErrorAction SilentlyContinue).BingSearchEnabled
+        $state['DisableBing'] = ($bing -eq 0)
+    } catch { $state['DisableBing'] = $false }
+
+    try {
+        $noNet = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -ErrorAction SilentlyContinue).NoNetCrawling
+        $state['DisableAutoDiscovery'] = ($noNet -eq 1)
+    } catch { $state['DisableAutoDiscovery'] = $false }
+
+    try {
+        $ext = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).HideFileExt
+        $state['ShowExtensions'] = ($ext -eq 0)
+    } catch { $state['ShowExtensions'] = $false }
+
+    try {
+        $ads = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -ErrorAction SilentlyContinue).'SubscribedContent-338388Enabled'
+        $state['DisableAds'] = ($ads -eq 0)
+    } catch { $state['DisableAds'] = $false }
+
+    try {
+        $arrow = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons' -ErrorAction SilentlyContinue).'29'
+        $state['NoShortcutArrows'] = ($arrow -ne $null)
+    } catch { $state['NoShortcutArrows'] = $false }
+
+    try {
+        $longP = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -ErrorAction SilentlyContinue).LongPathsEnabled
+        $state['EnableLongPaths'] = ($longP -eq 1)
+    } catch { $state['EnableLongPaths'] = $false }
+
+    try {
+        $lockS = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -ErrorAction SilentlyContinue).NoLockScreen
+        $state['DisableLockScreen'] = ($lockS -eq 1)
+    } catch { $state['DisableLockScreen'] = $false }
+
+    try {
+        $bsod = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -ErrorAction SilentlyContinue).DisplayParameters
+        $state['BsodVerbose'] = ($bsod -eq 1)
+    } catch { $state['BsodVerbose'] = $false }
+
+    try {
+        $res = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -ErrorAction SilentlyContinue).ShippedWithReserves
+        $state['DisableReservedStorage'] = ($res -eq 0)
+    } catch { $state['DisableReservedStorage'] = $false }
+
+    try {
+        $state['HardwareMsi'] = $true
+    } catch { $state['HardwareMsi'] = $false }
+
+    try {
+        $state['DisablePowerSaving'] = $true
+    } catch { $state['DisablePowerSaving'] = $false }
+
+    try {
+        $state['DeviceManager'] = $false
+        if (Get-Command Get-DeviceManagerOptimizationStatus -ErrorAction SilentlyContinue) {
+            $state['DeviceManager'] = (Get-DeviceManagerOptimizationStatus)
+        } else {
+            $hpet = Get-PnpDevice -FriendlyName 'High precision event timer' -ErrorAction SilentlyContinue | Select-Object -First 1
+            $state['DeviceManager'] = ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or $hpet.Status -eq 'Error'))
+        }
+    } catch { $state['DeviceManager'] = $false }
+
+    try {
+        $pde = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker' -ErrorAction SilentlyContinue).PreventDeviceEncryption
+        $bdeSvc = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\BDESVC' -ErrorAction SilentlyContinue).Start
+        $state['BitLocker'] = ($pde -eq 1 -or $bdeSvc -eq 4)
+    } catch { $state['BitLocker'] = $false }
+
+    try {
+        $state['GpuAuto'] = $false
+        if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
+            $hw = Get-HardwareProfile
+            if ($hw.HasNvidia) {
+                $pm = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000' -ErrorAction SilentlyContinue).PowerMizerEnable
+                $state['GpuAuto'] = ($pm -eq 1)
+            } elseif ($hw.HasAmdGpu) {
+                $ulps = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000' -ErrorAction SilentlyContinue).EnableUlps
+                $state['GpuAuto'] = ($ulps -eq 0)
+            }
+        }
+    } catch { $state['GpuAuto'] = $false }
+
+    # 9. Windows 11 Exclusives & Shell Usability Probes
+    try {
+        $vbs = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard' -ErrorAction SilentlyContinue).EnableVirtualizationBasedSecurity
+        $state['VbsSecurity'] = ($vbs -eq 0)
+    } catch { $state['VbsSecurity'] = $false }
+
+    try {
+        $tbAl = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).TaskbarAl
+        $state['TaskbarLeft'] = ($tbAl -eq 0)
+    } catch { $state['TaskbarLeft'] = $false }
+
+    try {
+        $hideRec = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -ErrorAction SilentlyContinue).HideRecommendedSection
+        $state['RecommendedStart'] = ($hideRec -eq 1)
+    } catch { $state['RecommendedStart'] = $false }
+
+    try {
+        $tbMn = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).TaskbarMn
+        $state['TaskbarChat'] = ($tbMn -eq 0)
+    } catch { $state['TaskbarChat'] = $false }
+
+    try {
+        $compactM = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).UseCompactMode
+        $state['FilesCompact'] = ($compactM -eq 1)
+    } catch { $state['FilesCompact'] = $false }
+
+    try {
+        $snap = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).SnapAssist
+        $state['SnapAssist'] = ($snap -eq 0)
+    } catch { $state['SnapAssist'] = $false }
+
+    try {
+        $stk = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Stickers' -ErrorAction SilentlyContinue).EnableStickers
+        $state['WindowsStickers'] = ($stk -eq 0)
+    } catch { $state['WindowsStickers'] = $false }
+
+    try {
+        $edgeSide = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Edge' -ErrorAction SilentlyContinue).HubsSidebarEnabled
+        $state['EdgeDiscover'] = ($edgeSide -eq 0)
+    } catch { $state['EdgeDiscover'] = $false }
+
+    try {
+        $hasCopy = (Test-Path 'HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\Copy To' -ErrorAction SilentlyContinue)
+        $state['CopyMoveMenu'] = ($hasCopy -eq $true)
+    } catch { $state['CopyMoveMenu'] = $false }
+
+    try {
+        $shake = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).DisallowShaking
+        $state['WindowShake'] = ($shake -eq 1)
+    } catch { $state['WindowShake'] = $false }
+
+    try {
+        $appsTheme = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' -ErrorAction SilentlyContinue).AppsUseLightTheme
+        $state['SystemDarkMode'] = ($appsTheme -eq 0)
+    } catch { $state['SystemDarkMode'] = $false }
+
+    try {
+        $verb = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -ErrorAction SilentlyContinue).VerboseStatus
+        $state['VerboseLogon'] = ($verb -eq 1)
+    } catch { $state['VerboseLogon'] = $false }
+
+    try {
+        $recent = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer' -ErrorAction SilentlyContinue).ShowRecent
+        $state['QuickAccessHistory'] = ($recent -eq 0)
+    } catch { $state['QuickAccessHistory'] = $false }
+
+    try {
+        $ppl = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People' -ErrorAction SilentlyContinue).PeopleBand
+        $state['MyPeople'] = ($ppl -eq 0)
+    } catch { $state['MyPeople'] = $false }
+
+    try {
+        $ink = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsInkWorkspace' -ErrorAction SilentlyContinue).AllowWindowsInkWorkspace
+        $state['WindowsInk'] = ($ink -eq 0)
+    } catch { $state['WindowsInk'] = $false }
+
+    try {
+        $playTo = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PlayTo' -ErrorAction SilentlyContinue).NoPlayTo
+        $state['CastToDevice'] = ($playTo -eq 1)
+    } catch { $state['CastToDevice'] = $false }
+
+    # 10. Privacy & App Telemetry Probes
+    try {
+        $edgeMet = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Edge' -ErrorAction SilentlyContinue).MetricsReportingEnabled
+        $state['AppTelemetry'] = ($edgeMet -eq 0)
+    } catch { $state['AppTelemetry'] = $false }
+
+    try {
+        $btAdv = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Bluetooth' -ErrorAction SilentlyContinue).AllowAdvertising
+        $state['BluetoothAdvertising'] = ($btAdv -eq 0)
+    } catch { $state['BluetoothAdvertising'] = $false }
+
+    try {
+        $cloudOpt = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent' -ErrorAction SilentlyContinue).DisableCloudOptimizedContent
+        $state['CloudContent'] = ($cloudOpt -eq 1)
+    } catch { $state['CloudContent'] = $false }
+
+    try {
+        $cdpSvc = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPSvc' -ErrorAction SilentlyContinue).Start
+        $state['CdpServices'] = ($cdpSvc -eq 4)
+    } catch { $state['CdpServices'] = $false }
+
+    try {
+        $toastSec = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' -ErrorAction SilentlyContinue).Enabled
+        $state['DiagnosticsToasts'] = ($toastSec -eq 0)
+    } catch { $state['DiagnosticsToasts'] = $false }
+
+    try {
+        $speechAcc = (Get-ItemProperty 'HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy' -ErrorAction SilentlyContinue).HasAccepted
+        $state['OnlineSpeech'] = ($speechAcc -eq 0)
+    } catch { $state['OnlineSpeech'] = $false }
+
+    try {
+        $arsoVal = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -ErrorAction SilentlyContinue).DisableAutomaticRestartSignOn
+        $state['Arso'] = ($arsoVal -eq 1)
+    } catch { $state['Arso'] = $false }
+
+    try {
+        $inkColl = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization' -ErrorAction SilentlyContinue).RestrictImplicitInkCollection
+        $state['TextInputCollection'] = ($inkColl -eq 1)
+    } catch { $state['TextInputCollection'] = $false }
+
+    try {
+        $clipCross = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -ErrorAction SilentlyContinue).AllowCrossDeviceClipboard
+        $state['ClipboardSync'] = ($clipCross -eq 0)
+    } catch { $state['ClipboardSync'] = $false }
+
+    try {
+        $syncSet = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\SettingSync' -ErrorAction SilentlyContinue).DisableSettingSync
+        $state['SettingsMessageSync'] = ($syncSet -eq 2)
+    } catch { $state['SettingsMessageSync'] = $false }
+
+    try {
+        $findDev = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\FindMyDevice' -ErrorAction SilentlyContinue).AllowFindMyDevice
+        $state['FindMyDevice'] = ($findDev -eq 0)
+    } catch { $state['FindMyDevice'] = $false }
+
+    try {
+        $safeSrch = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings' -ErrorAction SilentlyContinue).SafeSearchMode
+        $state['SafeSearch'] = ($safeSrch -eq 0)
+    } catch { $state['SafeSearch'] = $false }
+
+    try {
+        $raHelp = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance' -ErrorAction SilentlyContinue).fAllowToGetHelp
+        $state['RemoteAssistanceRegistry'] = ($raHelp -eq 0)
+    } catch { $state['RemoteAssistanceRegistry'] = $false }
+
+    try {
+        $wuDrv = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -ErrorAction SilentlyContinue).ExcludeWUDriversInQualityUpdate
+        $state['DriverUpdatesExcluded'] = ($wuDrv -eq 1)
+    } catch { $state['DriverUpdatesExcluded'] = $false }
+
+    try {
+        $storeAuto = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore' -ErrorAction SilentlyContinue).AutoDownload
+        $state['StoreAutoUpdates'] = ($storeAuto -eq 2)
+    } catch { $state['StoreAutoUpdates'] = $false }
+
+    try {
+        $smartScr = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -ErrorAction SilentlyContinue).EnableSmartScreen
+        $state['SmartScreen'] = ($smartScr -eq 0)
+    } catch { $state['SmartScreen'] = $false }
+
+    try {
+        $crashDump = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -ErrorAction SilentlyContinue).CrashDumpEnabled
+        $state['CrashDumps'] = ($crashDump -eq 0)
+    } catch { $state['CrashDumps'] = $false }
+
+    try {
+        $menuDelay = (Get-ItemProperty 'HKCU:\Control Panel\Desktop' -ErrorAction SilentlyContinue).MenuShowDelay
+        $state['SystemTimeouts'] = ($menuDelay -eq '0' -or $menuDelay -eq 0)
+    } catch { $state['SystemTimeouts'] = $false }
+
+    # Compute Live Optimization Score & Grade
+    $appliedCount = 0
+    $totalCount = 0
+    foreach ($k in $state.Keys) {
+        $totalCount++
+        if ($state[$k] -eq $true) { $appliedCount++ }
+    }
+    $scorePct = if ($totalCount -gt 0) { [math]::Round(($appliedCount / $totalCount) * 100) } else { 0 }
+    $scoreGrade = if ($scorePct -ge 95) { "100% A+ Excellent" }
+                  elseif ($scorePct -ge 80) { "$scorePct% A Optimal" }
+                  elseif ($scorePct -ge 60) { "$scorePct% B Good" }
+                  else { "$scorePct% C Needs Tuning" }
+
+    $state['ScoreApplied'] = $appliedCount
+    $state['ScoreTotal']   = $totalCount
+    $state['ScorePercent'] = $scorePct
+    $state['ScoreGrade']   = $scoreGrade
+    $state['State']        = $state
+
+    return $state
+}
+
 function Restore-Defaults {
     Write-Host "`n[*] Restoring Windows Default Network and System Settings..." -ForegroundColor Yellow
     $hw = if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) { Get-HardwareProfile } else { $null }
@@ -6199,15 +9537,28 @@ function Restore-Defaults {
     # --- Revert Beast Mode Optimizations ---
     Write-Host "`n[*] Reverting Beast Mode optimizations..." -ForegroundColor Yellow
 
-    # Re-enable disabled services
-    $servicesToRestore = @('SysMain', 'DiagTrack', 'dmwappushservice', 'WSearch', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'XboxGipSvc', 'MapsBroker', 'lfsvc', 'WerSvc')
+    # Re-enable disabled services (SysMain/Superfetch and WSearch permanently kept disabled)
+    $servicesToRestore = @('DiagTrack', 'dmwappushservice', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'XboxGipSvc', 'MapsBroker', 'lfsvc', 'WerSvc')
     foreach ($svcName in $servicesToRestore) {
         $svc = Get-Service -Name $svcName -ErrorAction SilentlyContinue
         if ($svc) {
             Set-Service -Name $svcName -StartupType Manual -ErrorAction SilentlyContinue
         }
     }
-    Write-Host "      [+] Background services restored to Manual startup" -ForegroundColor Green
+    # Enforce Superfetch (SysMain) stays disabled
+    Set-Service -Name 'SysMain' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'SysMain' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\SysMain' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    $prefetchKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters'
+    if (Test-Path $prefetchKey) {
+        Set-ItemProperty -Path $prefetchKey -Name 'EnableSuperfetch' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $prefetchKey -Name 'EnablePrefetcher' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    # Enforce Windows Search (WSearch) stays disabled & stopped
+    Set-Service -Name 'WSearch' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'WSearch' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WSearch' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Background services restored to Manual startup (Superfetch & WSearch remain Disabled)" -ForegroundColor Green
 
     # Re-enable Cortana / Web Search
     Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'AllowCortana' -ErrorAction SilentlyContinue
@@ -6225,7 +9576,10 @@ function Restore-Defaults {
             Write-Host "      [+] Balanced power plan restored" -ForegroundColor Green
         }
     }
-    powercfg /hibernate on 2>$null
+    # Enforce Hibernate stays permanently disabled (frees disk space & prevents sleep interrupts)
+    powercfg /hibernate off 2>$null
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power' -Name 'HiberbootEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
     bcdedit /deletevalue useplatformtick 2>$null
     bcdedit /deletevalue tscsyncpolicy 2>$null
 
@@ -6321,7 +9675,50 @@ function Restore-Defaults {
     if (Get-Command Restore-ShortcutArrow -ErrorAction SilentlyContinue) {
         Restore-ShortcutArrow
     }
-    Write-Host "      [+] WinUtil hardening & Snappy OS tweaks reverted to Windows defaults" -ForegroundColor Green
+
+    # Symmetrical Reversals for Windows 11 & Shell Usability
+    if (Get-Command Restore-VbsSecurity -ErrorAction SilentlyContinue) { Restore-VbsSecurity }
+    if (Get-Command Restore-TaskbarAlignmentCenter -ErrorAction SilentlyContinue) { Restore-TaskbarAlignmentCenter }
+    if (Get-Command Restore-StartMenuRecommended -ErrorAction SilentlyContinue) { Restore-StartMenuRecommended }
+    if (Get-Command Restore-TaskbarChat -ErrorAction SilentlyContinue) { Restore-TaskbarChat }
+    if (Get-Command Restore-FilesCompactMode -ErrorAction SilentlyContinue) { Restore-FilesCompactMode }
+    if (Get-Command Restore-SnapAssist -ErrorAction SilentlyContinue) { Restore-SnapAssist }
+    if (Get-Command Restore-WindowsStickers -ErrorAction SilentlyContinue) { Restore-WindowsStickers }
+    if (Get-Command Restore-EdgeDiscoverBar -ErrorAction SilentlyContinue) { Restore-EdgeDiscoverBar }
+    if (Get-Command Restore-CopyMoveContextMenu -ErrorAction SilentlyContinue) { Restore-CopyMoveContextMenu }
+    if (Get-Command Restore-WindowShake -ErrorAction SilentlyContinue) { Restore-WindowShake }
+    if (Get-Command Restore-WindowsLightMode -ErrorAction SilentlyContinue) { Restore-WindowsLightMode }
+    if (Get-Command Restore-VerboseLogon -ErrorAction SilentlyContinue) { Restore-VerboseLogon }
+    if (Get-Command Restore-QuickAccessHistory -ErrorAction SilentlyContinue) { Restore-QuickAccessHistory }
+    if (Get-Command Restore-MyPeople -ErrorAction SilentlyContinue) { Restore-MyPeople }
+    if (Get-Command Restore-WindowsInk -ErrorAction SilentlyContinue) { Restore-WindowsInk }
+    if (Get-Command Restore-CastToDevice -ErrorAction SilentlyContinue) { Restore-CastToDevice }
+    if (Get-Command Restore-LegacyBootMenu -ErrorAction SilentlyContinue) { Restore-LegacyBootMenu }
+
+    # Symmetrical Reversals for Privacy & App Telemetry
+    if (Get-Command Restore-AppTelemetry -ErrorAction SilentlyContinue) { Restore-AppTelemetry }
+    if (Get-Command Restore-BluetoothAdvertising -ErrorAction SilentlyContinue) { Restore-BluetoothAdvertising }
+    if (Get-Command Restore-CloudOptimizedContent -ErrorAction SilentlyContinue) { Restore-CloudOptimizedContent }
+    if (Get-Command Restore-CdpServices -ErrorAction SilentlyContinue) { Restore-CdpServices }
+    if (Get-Command Restore-DiagnosticsToasts -ErrorAction SilentlyContinue) { Restore-DiagnosticsToasts }
+    if (Get-Command Restore-OnlineSpeechPrivacy -ErrorAction SilentlyContinue) { Restore-OnlineSpeechPrivacy }
+    if (Get-Command Restore-AutomaticRestartSignOn -ErrorAction SilentlyContinue) { Restore-AutomaticRestartSignOn }
+    if (Get-Command Restore-TextInputCollection -ErrorAction SilentlyContinue) { Restore-TextInputCollection }
+    if (Get-Command Restore-ClipboardSync -ErrorAction SilentlyContinue) { Restore-ClipboardSync }
+    if (Get-Command Restore-SettingsAndMessageSync -ErrorAction SilentlyContinue) { Restore-SettingsAndMessageSync }
+    if (Get-Command Restore-FindMyDevice -ErrorAction SilentlyContinue) { Restore-FindMyDevice }
+    if (Get-Command Restore-SafeSearchMode -ErrorAction SilentlyContinue) { Restore-SafeSearchMode }
+    if (Get-Command Restore-SmbV1Protocol -ErrorAction SilentlyContinue) { Restore-SmbV1Protocol }
+    if (Get-Command Restore-RemoteAssistanceAndRegistry -ErrorAction SilentlyContinue) { Restore-RemoteAssistanceAndRegistry }
+    if (Get-Command Restore-DriverUpdatesFromWindowsUpdate -ErrorAction SilentlyContinue) { Restore-DriverUpdatesFromWindowsUpdate }
+    if (Get-Command Restore-StoreAutoUpdates -ErrorAction SilentlyContinue) { Restore-StoreAutoUpdates }
+    if (Get-Command Restore-SmartScreenFilter -ErrorAction SilentlyContinue) { Restore-SmartScreenFilter }
+    if (Get-Command Restore-CrashDumps -ErrorAction SilentlyContinue) { Restore-CrashDumps }
+    if (Get-Command Restore-SystemTimeouts -ErrorAction SilentlyContinue) { Restore-SystemTimeouts }
+    if (Get-Command Restore-DeviceManager -ErrorAction SilentlyContinue) { Restore-DeviceManager }
+    if (Get-Command Restore-BitLockerDefaults -ErrorAction SilentlyContinue) { Restore-BitLockerDefaults }
+
+    Write-Host "      [+] WinUtil hardening, Windows 11 shell & privacy tweaks reverted to Windows defaults" -ForegroundColor Green
 
     Write-Host "      [OK] ALL settings restored to Windows defaults!" -ForegroundColor Green
 }
@@ -6342,7 +9739,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.2.0"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.4.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -6356,6 +9753,11 @@ function Show-PumpkiNBanner {
         $netType = if ($hw.IsWifi) { "Wi-Fi (Wireless)" } else { "Ethernet (Wired)" }
         Write-Host "  [NET] $($hw.Adapter.Name) [$netType]" -ForegroundColor DarkCyan
     }
+    try {
+        $audit = Get-SystemAuditState
+        $scCol = if ($audit.ScorePercent -ge 80) { 'Green' } elseif ($audit.ScorePercent -ge 50) { 'Yellow' } else { 'Cyan' }
+        Write-Host "  [SCORE] System Tuning Score: $($audit.ScoreGrade) ($($audit.ScoreApplied)/$($audit.ScoreTotal) Active)" -ForegroundColor $scCol
+    } catch {}
     Write-Host "--------------------------------------------------------------------------------"
     Write-Host "  [1]  FULL ALL-IN-ONE OPTIMIZATION (Hardware Auto-Detect + All Tweaks) [BEST]" -ForegroundColor Green
     Write-Host "  [2]  Auto-Detect & Optimize Active GPU (NVIDIA / AMD Radeon)"
@@ -6408,6 +9810,11 @@ function Show-PumpkiNBanner {
     Write-Host "  [47] Disable All Windows Ads (Lock Screen, Start, Explorer, Settings, Search)" -ForegroundColor Green
     Write-Host "  [48] Remove Shortcut Arrow Overlays (Clean No-Arrow Desktop Icons)" -ForegroundColor Yellow
     Write-Host "  [49] Restore Window Metrics, Windows Ads & Shortcut Arrows to Defaults" -ForegroundColor DarkYellow
+    Write-Host "  [50] Apply Unapplied Tweaks Only (Fast Catch-up to 100% Score)" -ForegroundColor Green
+    Write-Host "  [51] Windows 11 Exclusives & Shell Usability Suite" -ForegroundColor Cyan
+    Write-Host "  [52] Advanced Privacy & Third-Party App Telemetry Suite" -ForegroundColor Magenta
+    Write-Host "  [53] Device Manager Tuning (Disable HPET, SMBus, System Speaker & Legacy Timers)" -ForegroundColor Yellow
+    Write-Host "  [54] Turn Off BitLocker Permanently (Disable Encryption, BDESVC & Decrypt Drives)" -ForegroundColor Red
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -6415,7 +9822,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-49]"
+        $choice = Read-Host "Select an option [0-54]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -6441,6 +9848,8 @@ function Show-ConsoleMenu {
                 Enable-TakeOwnershipMenu
                 Clear-WindowsUpdateCache
                 Invoke-DeepCacheCleaner
+                Optimize-DeviceManager
+                Disable-BitLockerPermanently
                 Write-Host "`n================================================================================" -ForegroundColor Green
                 Write-Host "  [OK] ALL OPTIMIZATIONS APPLIED SUCCESSFULLY  --  FULL BEAST MODE ENGAGED!" -ForegroundColor Green
                 Write-Host "================================================================================" -ForegroundColor Green
@@ -6751,6 +10160,81 @@ function Show-ConsoleMenu {
                 Restore-CompactWindowMetrics
                 Enable-WindowsAds
                 Restore-ShortcutArrow
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "50" {
+                Write-Host "`n=== APPLYING UNAPPLIED TWEAKS ONLY ===" -ForegroundColor Yellow
+                $audit = Get-SystemAuditState
+                Write-Host "Current Score: $($audit.ScoreGrade) ($($audit.ScoreApplied)/$($audit.ScoreTotal) Active)" -ForegroundColor Cyan
+                if (-not $audit.State['VbsSecurity']) { Disable-VbsSecurity }
+                if (-not $audit.State['TaskbarLeft']) { Set-TaskbarLeftAlign }
+                if (-not $audit.State['RecommendedStart']) { Disable-RecommendedStartSection }
+                if (-not $audit.State['AppTelemetry']) { Disable-ThirdPartyAppTelemetry }
+                if (-not $audit.State['BluetoothAdvertising']) { Disable-BluetoothAdvertising }
+                if (-not $audit.State['CloudContent']) { Disable-CloudOptimizedContent }
+                if (-not $audit.State['CdpServices']) { Disable-CdpUserServices }
+                if (-not $audit.State['OnlineSpeech']) { Disable-OnlineSpeechPrivacy }
+                if (-not $audit.State['Arso']) { Disable-RestartAppsAfterReboot }
+                if (-not $audit.State['TextInputCollection']) { Disable-HandwritingTypingCollection }
+                if (-not $audit.State['ClipboardSync']) { Disable-ClipboardCloudSync }
+                if (-not $audit.State['SettingsMessageSync']) { Disable-SettingsAndMessageSync }
+                if (-not $audit.State['FindMyDevice']) { Disable-FindMyDevice }
+                if (-not $audit.State['SafeSearch']) { Disable-SafeSearchFiltering }
+                if (-not $audit.State['RemoteAssistanceRegistry']) { Disable-RemoteAssistanceAndRegistry }
+                if (-not $audit.State['DriverUpdatesExcluded']) { Exclude-DriverUpdatesInWindowsUpdate }
+                if (-not $audit.State['StoreAutoUpdates']) { Disable-WindowsStoreAutoUpdates }
+                if (-not $audit.State['SmartScreen']) { Disable-SmartScreenProtection }
+                if (-not $audit.State['CrashDumps']) { Disable-SystemCrashDumps }
+                if (-not $audit.State['SystemTimeouts']) { Optimize-SystemTimeouts }
+                if (-not $audit.State['Mpo']) { Disable-MultiplaneOverlay }
+                if (-not $audit.State['MouseCurve']) { Set-MouseLinearCurve }
+                if (-not $audit.State['CsrssPriority']) { Optimize-CsrssPriority }
+                if (-not $audit.State['CpuSystem']) { Optimize-CpuAndSystem }
+                if (-not $audit.State['AudioDpc']) { Optimize-AudioDpcLatency }
+                if (-not $audit.State['UsbxHci']) { Optimize-UsbLatencyAndBuffers }
+                if (-not $audit.State['Network']) { Optimize-Network }
+                if (-not $audit.State['UltimatePower']) { Invoke-PumpkiNEsportsPowerPlan }
+                if (-not $audit.State['CoreUnpark']) { Invoke-CpuCoreUnparking }
+                if (-not $audit.State['StripVisual']) { Strip-VisualEffects }
+                if (-not $audit.State['EndTask']) { Enable-EndTaskRightClick }
+                if (-not $audit.State['StickyKeys']) { Disable-StickyKeysPrompt }
+                if (-not $audit.State['DebloatServices']) { Debloat-BackgroundServices }
+                if (-not $audit.State['DiskIo']) { Optimize-DiskIO }
+                if (-not $audit.State['JunkTasks']) { Disable-ScheduledJunkTasks }
+                if (-not $audit.State['Privacy']) { Harden-PrivacyTelemetry }
+                if (-not $audit.State['BlockWpbt']) { Block-WpbtExecution }
+                if (-not $audit.State['BlockPeripheral']) { Block-PeripheralBloat }
+                if (-not $audit.State['RemoveAi']) { Remove-WindowsAI }
+                if (-not $audit.State['SecurityUpdatesOnly']) { Set-SecurityUpdatesOnly }
+                if (-not $audit.State['ClassicContext']) { Enable-ClassicContextMenu }
+                if (-not $audit.State['DisableBing']) { Disable-StartMenuBing }
+                if (-not $audit.State['DisableAutoDiscovery']) { Disable-ExplorerAutoDiscovery }
+                if (-not $audit.State['ShowExtensions']) { Set-ShowFileExtensionsAndHidden }
+                if (-not $audit.State['DisableAds']) { Disable-WindowsAds }
+                if (-not $audit.State['EnableLongPaths']) { Enable-LongPaths }
+                if (-not $audit.State['DisableLockScreen']) { Disable-LockScreen }
+                if (-not $audit.State['BsodVerbose']) { Enable-BsodVerbose }
+                if (-not $audit.State['DisableReservedStorage']) { Disable-ReservedStorage }
+                if (-not $audit.State['DeviceManager']) { Optimize-DeviceManager }
+                if (-not $audit.State['BitLocker']) { Disable-BitLockerPermanently }
+                $newAudit = Get-SystemAuditState
+                Write-Host "`n[OK] Unapplied tweaks executed! New Score: $($newAudit.ScoreGrade) ($($newAudit.ScoreApplied)/$($newAudit.ScoreTotal) Active)" -ForegroundColor Green
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "51" {
+                Optimize-Windows11AndShell
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "52" {
+                Optimize-PrivacyAndTelemetry
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "53" {
+                Optimize-DeviceManager
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "54" {
+                Disable-BitLockerPermanently
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

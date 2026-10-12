@@ -320,6 +320,22 @@ function Get-SystemAuditState {
     } catch { $state['DisablePowerSaving'] = $false }
 
     try {
+        $state['DeviceManager'] = $false
+        if (Get-Command Get-DeviceManagerOptimizationStatus -ErrorAction SilentlyContinue) {
+            $state['DeviceManager'] = (Get-DeviceManagerOptimizationStatus)
+        } else {
+            $hpet = Get-PnpDevice -FriendlyName 'High precision event timer' -ErrorAction SilentlyContinue | Select-Object -First 1
+            $state['DeviceManager'] = ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or $hpet.Status -eq 'Error'))
+        }
+    } catch { $state['DeviceManager'] = $false }
+
+    try {
+        $pde = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\BitLocker' -ErrorAction SilentlyContinue).PreventDeviceEncryption
+        $bdeSvc = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\BDESVC' -ErrorAction SilentlyContinue).Start
+        $state['BitLocker'] = ($pde -eq 1 -or $bdeSvc -eq 4)
+    } catch { $state['BitLocker'] = $false }
+
+    try {
         $state['GpuAuto'] = $false
         if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
             $hw = Get-HardwareProfile
@@ -332,6 +348,197 @@ function Get-SystemAuditState {
             }
         }
     } catch { $state['GpuAuto'] = $false }
+
+    # 9. Windows 11 Exclusives & Shell Usability Probes
+    try {
+        $vbs = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\DeviceGuard' -ErrorAction SilentlyContinue).EnableVirtualizationBasedSecurity
+        $state['VbsSecurity'] = ($vbs -eq 0)
+    } catch { $state['VbsSecurity'] = $false }
+
+    try {
+        $tbAl = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).TaskbarAl
+        $state['TaskbarLeft'] = ($tbAl -eq 0)
+    } catch { $state['TaskbarLeft'] = $false }
+
+    try {
+        $hideRec = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Explorer' -ErrorAction SilentlyContinue).HideRecommendedSection
+        $state['RecommendedStart'] = ($hideRec -eq 1)
+    } catch { $state['RecommendedStart'] = $false }
+
+    try {
+        $tbMn = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).TaskbarMn
+        $state['TaskbarChat'] = ($tbMn -eq 0)
+    } catch { $state['TaskbarChat'] = $false }
+
+    try {
+        $compactM = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).UseCompactMode
+        $state['FilesCompact'] = ($compactM -eq 1)
+    } catch { $state['FilesCompact'] = $false }
+
+    try {
+        $snap = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).SnapAssist
+        $state['SnapAssist'] = ($snap -eq 0)
+    } catch { $state['SnapAssist'] = $false }
+
+    try {
+        $stk = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\PolicyManager\current\device\Stickers' -ErrorAction SilentlyContinue).EnableStickers
+        $state['WindowsStickers'] = ($stk -eq 0)
+    } catch { $state['WindowsStickers'] = $false }
+
+    try {
+        $edgeSide = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Edge' -ErrorAction SilentlyContinue).HubsSidebarEnabled
+        $state['EdgeDiscover'] = ($edgeSide -eq 0)
+    } catch { $state['EdgeDiscover'] = $false }
+
+    try {
+        $hasCopy = (Test-Path 'HKCR:\AllFilesystemObjects\shellex\ContextMenuHandlers\Copy To' -ErrorAction SilentlyContinue)
+        $state['CopyMoveMenu'] = ($hasCopy -eq $true)
+    } catch { $state['CopyMoveMenu'] = $false }
+
+    try {
+        $shake = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).DisallowShaking
+        $state['WindowShake'] = ($shake -eq 1)
+    } catch { $state['WindowShake'] = $false }
+
+    try {
+        $appsTheme = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize' -ErrorAction SilentlyContinue).AppsUseLightTheme
+        $state['SystemDarkMode'] = ($appsTheme -eq 0)
+    } catch { $state['SystemDarkMode'] = $false }
+
+    try {
+        $verb = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -ErrorAction SilentlyContinue).VerboseStatus
+        $state['VerboseLogon'] = ($verb -eq 1)
+    } catch { $state['VerboseLogon'] = $false }
+
+    try {
+        $recent = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer' -ErrorAction SilentlyContinue).ShowRecent
+        $state['QuickAccessHistory'] = ($recent -eq 0)
+    } catch { $state['QuickAccessHistory'] = $false }
+
+    try {
+        $ppl = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\People' -ErrorAction SilentlyContinue).PeopleBand
+        $state['MyPeople'] = ($ppl -eq 0)
+    } catch { $state['MyPeople'] = $false }
+
+    try {
+        $ink = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsInkWorkspace' -ErrorAction SilentlyContinue).AllowWindowsInkWorkspace
+        $state['WindowsInk'] = ($ink -eq 0)
+    } catch { $state['WindowsInk'] = $false }
+
+    try {
+        $playTo = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PlayTo' -ErrorAction SilentlyContinue).NoPlayTo
+        $state['CastToDevice'] = ($playTo -eq 1)
+    } catch { $state['CastToDevice'] = $false }
+
+    # 10. Privacy & App Telemetry Probes
+    try {
+        $edgeMet = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Edge' -ErrorAction SilentlyContinue).MetricsReportingEnabled
+        $state['AppTelemetry'] = ($edgeMet -eq 0)
+    } catch { $state['AppTelemetry'] = $false }
+
+    try {
+        $btAdv = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Bluetooth' -ErrorAction SilentlyContinue).AllowAdvertising
+        $state['BluetoothAdvertising'] = ($btAdv -eq 0)
+    } catch { $state['BluetoothAdvertising'] = $false }
+
+    try {
+        $cloudOpt = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent' -ErrorAction SilentlyContinue).DisableCloudOptimizedContent
+        $state['CloudContent'] = ($cloudOpt -eq 1)
+    } catch { $state['CloudContent'] = $false }
+
+    try {
+        $cdpSvc = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\CDPSvc' -ErrorAction SilentlyContinue).Start
+        $state['CdpServices'] = ($cdpSvc -eq 4)
+    } catch { $state['CdpServices'] = $false }
+
+    try {
+        $toastSec = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance' -ErrorAction SilentlyContinue).Enabled
+        $state['DiagnosticsToasts'] = ($toastSec -eq 0)
+    } catch { $state['DiagnosticsToasts'] = $false }
+
+    try {
+        $speechAcc = (Get-ItemProperty 'HKCU:\Software\Microsoft\Speech_OneCore\Settings\OnlineSpeechPrivacy' -ErrorAction SilentlyContinue).HasAccepted
+        $state['OnlineSpeech'] = ($speechAcc -eq 0)
+    } catch { $state['OnlineSpeech'] = $false }
+
+    try {
+        $arsoVal = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -ErrorAction SilentlyContinue).DisableAutomaticRestartSignOn
+        $state['Arso'] = ($arsoVal -eq 1)
+    } catch { $state['Arso'] = $false }
+
+    try {
+        $inkColl = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\InputPersonalization' -ErrorAction SilentlyContinue).RestrictImplicitInkCollection
+        $state['TextInputCollection'] = ($inkColl -eq 1)
+    } catch { $state['TextInputCollection'] = $false }
+
+    try {
+        $clipCross = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -ErrorAction SilentlyContinue).AllowCrossDeviceClipboard
+        $state['ClipboardSync'] = ($clipCross -eq 0)
+    } catch { $state['ClipboardSync'] = $false }
+
+    try {
+        $syncSet = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\SettingSync' -ErrorAction SilentlyContinue).DisableSettingSync
+        $state['SettingsMessageSync'] = ($syncSet -eq 2)
+    } catch { $state['SettingsMessageSync'] = $false }
+
+    try {
+        $findDev = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\FindMyDevice' -ErrorAction SilentlyContinue).AllowFindMyDevice
+        $state['FindMyDevice'] = ($findDev -eq 0)
+    } catch { $state['FindMyDevice'] = $false }
+
+    try {
+        $safeSrch = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\SearchSettings' -ErrorAction SilentlyContinue).SafeSearchMode
+        $state['SafeSearch'] = ($safeSrch -eq 0)
+    } catch { $state['SafeSearch'] = $false }
+
+    try {
+        $raHelp = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance' -ErrorAction SilentlyContinue).fAllowToGetHelp
+        $state['RemoteAssistanceRegistry'] = ($raHelp -eq 0)
+    } catch { $state['RemoteAssistanceRegistry'] = $false }
+
+    try {
+        $wuDrv = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -ErrorAction SilentlyContinue).ExcludeWUDriversInQualityUpdate
+        $state['DriverUpdatesExcluded'] = ($wuDrv -eq 1)
+    } catch { $state['DriverUpdatesExcluded'] = $false }
+
+    try {
+        $storeAuto = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\WindowsStore' -ErrorAction SilentlyContinue).AutoDownload
+        $state['StoreAutoUpdates'] = ($storeAuto -eq 2)
+    } catch { $state['StoreAutoUpdates'] = $false }
+
+    try {
+        $smartScr = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\System' -ErrorAction SilentlyContinue).EnableSmartScreen
+        $state['SmartScreen'] = ($smartScr -eq 0)
+    } catch { $state['SmartScreen'] = $false }
+
+    try {
+        $crashDump = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -ErrorAction SilentlyContinue).CrashDumpEnabled
+        $state['CrashDumps'] = ($crashDump -eq 0)
+    } catch { $state['CrashDumps'] = $false }
+
+    try {
+        $menuDelay = (Get-ItemProperty 'HKCU:\Control Panel\Desktop' -ErrorAction SilentlyContinue).MenuShowDelay
+        $state['SystemTimeouts'] = ($menuDelay -eq '0' -or $menuDelay -eq 0)
+    } catch { $state['SystemTimeouts'] = $false }
+
+    # Compute Live Optimization Score & Grade
+    $appliedCount = 0
+    $totalCount = 0
+    foreach ($k in $state.Keys) {
+        $totalCount++
+        if ($state[$k] -eq $true) { $appliedCount++ }
+    }
+    $scorePct = if ($totalCount -gt 0) { [math]::Round(($appliedCount / $totalCount) * 100) } else { 0 }
+    $scoreGrade = if ($scorePct -ge 95) { "100% A+ Excellent" }
+                  elseif ($scorePct -ge 80) { "$scorePct% A Optimal" }
+                  elseif ($scorePct -ge 60) { "$scorePct% B Good" }
+                  else { "$scorePct% C Needs Tuning" }
+
+    $state['ScoreApplied'] = $appliedCount
+    $state['ScoreTotal']   = $totalCount
+    $state['ScorePercent'] = $scorePct
+    $state['ScoreGrade']   = $scoreGrade
+    $state['State']        = $state
 
     return $state
 }
@@ -422,15 +629,28 @@ function Restore-Defaults {
     # --- Revert Beast Mode Optimizations ---
     Write-Host "`n[*] Reverting Beast Mode optimizations..." -ForegroundColor Yellow
 
-    # Re-enable disabled services
-    $servicesToRestore = @('SysMain', 'DiagTrack', 'dmwappushservice', 'WSearch', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'XboxGipSvc', 'MapsBroker', 'lfsvc', 'WerSvc')
+    # Re-enable disabled services (SysMain/Superfetch and WSearch permanently kept disabled)
+    $servicesToRestore = @('DiagTrack', 'dmwappushservice', 'XblAuthManager', 'XblGameSave', 'XboxNetApiSvc', 'XboxGipSvc', 'MapsBroker', 'lfsvc', 'WerSvc')
     foreach ($svcName in $servicesToRestore) {
         $svc = Get-Service -Name $svcName -ErrorAction SilentlyContinue
         if ($svc) {
             Set-Service -Name $svcName -StartupType Manual -ErrorAction SilentlyContinue
         }
     }
-    Write-Host "      [+] Background services restored to Manual startup" -ForegroundColor Green
+    # Enforce Superfetch (SysMain) stays disabled
+    Set-Service -Name 'SysMain' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'SysMain' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\SysMain' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    $prefetchKey = 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters'
+    if (Test-Path $prefetchKey) {
+        Set-ItemProperty -Path $prefetchKey -Name 'EnableSuperfetch' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $prefetchKey -Name 'EnablePrefetcher' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    }
+    # Enforce Windows Search (WSearch) stays disabled & stopped
+    Set-Service -Name 'WSearch' -StartupType Disabled -ErrorAction SilentlyContinue
+    Stop-Service -Name 'WSearch' -Force -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\WSearch' -Name 'Start' -Value 4 -Type DWord -ErrorAction SilentlyContinue
+    Write-Host "      [+] Background services restored to Manual startup (Superfetch & WSearch remain Disabled)" -ForegroundColor Green
 
     # Re-enable Cortana / Web Search
     Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'AllowCortana' -ErrorAction SilentlyContinue
@@ -448,7 +668,10 @@ function Restore-Defaults {
             Write-Host "      [+] Balanced power plan restored" -ForegroundColor Green
         }
     }
-    powercfg /hibernate on 2>$null
+    # Enforce Hibernate stays permanently disabled (frees disk space & prevents sleep interrupts)
+    powercfg /hibernate off 2>$null
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -Name 'HibernateEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power' -Name 'HiberbootEnabled' -Value 0 -Type DWord -ErrorAction SilentlyContinue
     bcdedit /deletevalue useplatformtick 2>$null
     bcdedit /deletevalue tscsyncpolicy 2>$null
 
@@ -544,7 +767,50 @@ function Restore-Defaults {
     if (Get-Command Restore-ShortcutArrow -ErrorAction SilentlyContinue) {
         Restore-ShortcutArrow
     }
-    Write-Host "      [+] WinUtil hardening & Snappy OS tweaks reverted to Windows defaults" -ForegroundColor Green
+
+    # Symmetrical Reversals for Windows 11 & Shell Usability
+    if (Get-Command Restore-VbsSecurity -ErrorAction SilentlyContinue) { Restore-VbsSecurity }
+    if (Get-Command Restore-TaskbarAlignmentCenter -ErrorAction SilentlyContinue) { Restore-TaskbarAlignmentCenter }
+    if (Get-Command Restore-StartMenuRecommended -ErrorAction SilentlyContinue) { Restore-StartMenuRecommended }
+    if (Get-Command Restore-TaskbarChat -ErrorAction SilentlyContinue) { Restore-TaskbarChat }
+    if (Get-Command Restore-FilesCompactMode -ErrorAction SilentlyContinue) { Restore-FilesCompactMode }
+    if (Get-Command Restore-SnapAssist -ErrorAction SilentlyContinue) { Restore-SnapAssist }
+    if (Get-Command Restore-WindowsStickers -ErrorAction SilentlyContinue) { Restore-WindowsStickers }
+    if (Get-Command Restore-EdgeDiscoverBar -ErrorAction SilentlyContinue) { Restore-EdgeDiscoverBar }
+    if (Get-Command Restore-CopyMoveContextMenu -ErrorAction SilentlyContinue) { Restore-CopyMoveContextMenu }
+    if (Get-Command Restore-WindowShake -ErrorAction SilentlyContinue) { Restore-WindowShake }
+    if (Get-Command Restore-WindowsLightMode -ErrorAction SilentlyContinue) { Restore-WindowsLightMode }
+    if (Get-Command Restore-VerboseLogon -ErrorAction SilentlyContinue) { Restore-VerboseLogon }
+    if (Get-Command Restore-QuickAccessHistory -ErrorAction SilentlyContinue) { Restore-QuickAccessHistory }
+    if (Get-Command Restore-MyPeople -ErrorAction SilentlyContinue) { Restore-MyPeople }
+    if (Get-Command Restore-WindowsInk -ErrorAction SilentlyContinue) { Restore-WindowsInk }
+    if (Get-Command Restore-CastToDevice -ErrorAction SilentlyContinue) { Restore-CastToDevice }
+    if (Get-Command Restore-LegacyBootMenu -ErrorAction SilentlyContinue) { Restore-LegacyBootMenu }
+
+    # Symmetrical Reversals for Privacy & App Telemetry
+    if (Get-Command Restore-AppTelemetry -ErrorAction SilentlyContinue) { Restore-AppTelemetry }
+    if (Get-Command Restore-BluetoothAdvertising -ErrorAction SilentlyContinue) { Restore-BluetoothAdvertising }
+    if (Get-Command Restore-CloudOptimizedContent -ErrorAction SilentlyContinue) { Restore-CloudOptimizedContent }
+    if (Get-Command Restore-CdpServices -ErrorAction SilentlyContinue) { Restore-CdpServices }
+    if (Get-Command Restore-DiagnosticsToasts -ErrorAction SilentlyContinue) { Restore-DiagnosticsToasts }
+    if (Get-Command Restore-OnlineSpeechPrivacy -ErrorAction SilentlyContinue) { Restore-OnlineSpeechPrivacy }
+    if (Get-Command Restore-AutomaticRestartSignOn -ErrorAction SilentlyContinue) { Restore-AutomaticRestartSignOn }
+    if (Get-Command Restore-TextInputCollection -ErrorAction SilentlyContinue) { Restore-TextInputCollection }
+    if (Get-Command Restore-ClipboardSync -ErrorAction SilentlyContinue) { Restore-ClipboardSync }
+    if (Get-Command Restore-SettingsAndMessageSync -ErrorAction SilentlyContinue) { Restore-SettingsAndMessageSync }
+    if (Get-Command Restore-FindMyDevice -ErrorAction SilentlyContinue) { Restore-FindMyDevice }
+    if (Get-Command Restore-SafeSearchMode -ErrorAction SilentlyContinue) { Restore-SafeSearchMode }
+    if (Get-Command Restore-SmbV1Protocol -ErrorAction SilentlyContinue) { Restore-SmbV1Protocol }
+    if (Get-Command Restore-RemoteAssistanceAndRegistry -ErrorAction SilentlyContinue) { Restore-RemoteAssistanceAndRegistry }
+    if (Get-Command Restore-DriverUpdatesFromWindowsUpdate -ErrorAction SilentlyContinue) { Restore-DriverUpdatesFromWindowsUpdate }
+    if (Get-Command Restore-StoreAutoUpdates -ErrorAction SilentlyContinue) { Restore-StoreAutoUpdates }
+    if (Get-Command Restore-SmartScreenFilter -ErrorAction SilentlyContinue) { Restore-SmartScreenFilter }
+    if (Get-Command Restore-CrashDumps -ErrorAction SilentlyContinue) { Restore-CrashDumps }
+    if (Get-Command Restore-SystemTimeouts -ErrorAction SilentlyContinue) { Restore-SystemTimeouts }
+    if (Get-Command Restore-DeviceManager -ErrorAction SilentlyContinue) { Restore-DeviceManager }
+    if (Get-Command Restore-BitLockerDefaults -ErrorAction SilentlyContinue) { Restore-BitLockerDefaults }
+
+    Write-Host "      [+] WinUtil hardening, Windows 11 shell & privacy tweaks reverted to Windows defaults" -ForegroundColor Green
 
     Write-Host "      [OK] ALL settings restored to Windows defaults!" -ForegroundColor Green
 }
