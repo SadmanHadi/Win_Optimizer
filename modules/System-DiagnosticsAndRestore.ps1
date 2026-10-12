@@ -269,6 +269,7 @@ function Restore-Defaults {
     Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'HideFileExt' -Value 1 -ErrorAction SilentlyContinue
     Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -Name 'Hidden' -Value 2 -ErrorAction SilentlyContinue
     Remove-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -Recurse -Force -ErrorAction SilentlyContinue
+    Restore-RecycleBinDefaultIcon
     Write-Host "      [+] WinUtil hardening & Snappy OS tweaks reverted to Windows defaults" -ForegroundColor Green
 
     Write-Host "      [OK] ALL settings restored to Windows defaults!" -ForegroundColor Green

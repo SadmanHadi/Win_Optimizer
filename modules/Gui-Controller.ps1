@@ -591,6 +591,8 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_DisableBing" "Disable Web Search" { Disable-StartMenuBing }
     Register-QuickTweakButton "BtnApply_DisableAutoDiscovery" "Disable Auto-Discovery" { Disable-ExplorerAutoDiscovery }
     Register-QuickTweakButton "BtnApply_ShowExtensions" "Show File Extensions" { Set-ShowFileExtensionsAndHidden }
+    Register-QuickTweakButton "BtnApply_RecycleBinIcon" "Pop Cat Recycle Bin" { Set-RecycleBinCustomIcon }
+    Register-QuickTweakButton "BtnReset_RecycleBinIcon" "Default Recycle Bin" { Restore-RecycleBinDefaultIcon }
     Register-QuickTweakButton "BtnApply_EnableLongPaths" "Enable Long Paths" { Enable-LongPaths }
     Register-QuickTweakButton "BtnApply_DisableLockScreen" "Disable Lock Screen" { Disable-LockScreen }
     Register-QuickTweakButton "BtnApply_BsodVerbose" "Verbose BSOD" { Enable-BsodVerbose }

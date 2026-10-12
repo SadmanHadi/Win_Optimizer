@@ -1,4 +1,4 @@
-﻿<#
+<#
 ================================================================================
   PumpkiN's Modular Suite: WinUtil S-Tier & Snappy OS Hardening Optimizations
 ================================================================================
@@ -199,6 +199,133 @@ function Set-SecurityUpdatesOnly {
     Set-ItemProperty -Path $wu -Name 'DeferFeatureUpdatesPeriodInDays' -Value 730 -Type DWord -ErrorAction SilentlyContinue
     Set-ItemProperty -Path $wu -Name 'DeferQualityUpdates' -Value 0 -Type DWord -ErrorAction SilentlyContinue
     Write-Host "      [+] Security-only update policy active  --  Feature builds deferred 2 years, drivers protected!" -ForegroundColor Green
+}
+
+function Update-DesktopIconCache {
+    <#
+    .SYNOPSIS
+        Refreshes desktop icons and shell cache without requiring a reboot.
+    #>
+    try {
+        $typeDef = @"
+using System;
+using System.Runtime.InteropServices;
+public class ShellIconRefresh {
+    [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    public static extern void SHChangeNotify(int wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+}
+"@
+        if (-not ([System.Management.Automation.PSTypeName]'ShellIconRefresh').Type) {
+            Add-Type -TypeDefinition $typeDef -ErrorAction SilentlyContinue
+        }
+        [ShellIconRefresh]::SHChangeNotify(0x08000000, 0, [IntPtr]::Zero, [IntPtr]::Zero)
+    } catch {}
+
+    Start-Process ie4uinit.exe -ArgumentList "-show" -Wait -ErrorAction SilentlyContinue
+}
+
+function Set-RecycleBinCustomIcon {
+    <#
+    .SYNOPSIS
+        Sets the Desktop Recycle Bin icons to custom Pop Cat icons (open/closed mouth) with 1 click.
+    .DESCRIPTION
+        Copies custom .ico files to a persistent local application directory, updates the
+        user Explorer CLSID registry values for empty and full states, and refreshes the shell icon cache.
+    #>
+    [CmdletBinding()]
+    param(
+        [string]$EmptyIconPath,
+        [string]$FullIconPath
+    )
+
+    Write-Host "`n[*] Applying Custom Pop Cat Recycle Bin Desktop Icons..." -ForegroundColor Yellow
+
+    # Target persistent directory for custom icons
+    $iconsDir = "$env:LOCALAPPDATA\PumpkiNOptimizer\Icons"
+    if (-not (Test-Path $iconsDir)) {
+        New-Item -ItemType Directory -Path $iconsDir -Force | Out-Null
+    }
+
+    # Locate empty icon
+    if (-not $EmptyIconPath -or -not (Test-Path $EmptyIconPath)) {
+        $candidateEmpty = @(
+            (Join-Path $PSScriptRoot "..\recycle bin new style\empty.ico"),
+            (Join-Path $PSScriptRoot "..\recycle bin new style\pop-cat-empty.ico"),
+            "e:\Projects\Win_Optimizer\recycle bin new style\empty.ico",
+            "e:\Projects\Win_Optimizer\recycle bin new style\pop-cat-empty.ico",
+            "E:\Sadman softs\recycle bin new style\pop-cat-empty.ico"
+        )
+        foreach ($c in $candidateEmpty) {
+            if ($c -and (Test-Path $c)) { $EmptyIconPath = (Resolve-Path $c).Path; break }
+        }
+    }
+
+    # Locate full icon
+    if (-not $FullIconPath -or -not (Test-Path $FullIconPath)) {
+        $candidateFull = @(
+            (Join-Path $PSScriptRoot "..\recycle bin new style\full.ico"),
+            (Join-Path $PSScriptRoot "..\recycle bin new style\pop-cat-full.ico"),
+            "e:\Projects\Win_Optimizer\recycle bin new style\full.ico",
+            "e:\Projects\Win_Optimizer\recycle bin new style\pop-cat-full.ico",
+            "E:\Sadman softs\recycle bin new style\pop-cat-full.ico"
+        )
+        foreach ($c in $candidateFull) {
+            if ($c -and (Test-Path $c)) { $FullIconPath = (Resolve-Path $c).Path; break }
+        }
+    }
+
+    if (-not $EmptyIconPath -or -not (Test-Path $EmptyIconPath) -or -not $FullIconPath -or -not (Test-Path $FullIconPath)) {
+        Write-Host "      [!] Could not locate custom Recycle Bin icon files (.ico)." -ForegroundColor Red
+        return
+    }
+
+    # Copy icons to persistent location so they survive folder movement
+    $destEmpty = Join-Path $iconsDir "recycle-empty.ico"
+    $destFull  = Join-Path $iconsDir "recycle-full.ico"
+    Copy-Item -Path $EmptyIconPath -Destination $destEmpty -Force
+    Copy-Item -Path $FullIconPath -Destination $destFull -Force
+
+    # Registry keys for Recycle Bin DefaultIcon
+    $clsidKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}"
+    $iconKey  = "$clsidKey\DefaultIcon"
+
+    if (-not (Test-Path $clsidKey)) { New-Item -Path $clsidKey -Force | Out-Null }
+    if (-not (Test-Path $iconKey))  { New-Item -Path $iconKey -Force | Out-Null }
+
+    # Set icon values in HKCU
+    Set-ItemProperty -Path $iconKey -Name "(Default)" -Value $destFull -Type ExpandString -Force
+    Set-ItemProperty -Path $iconKey -Name "empty"     -Value $destEmpty -Type ExpandString -Force
+    Set-ItemProperty -Path $iconKey -Name "full"      -Value $destFull -Type ExpandString -Force
+
+    # Refresh Windows Shell icon cache
+    Update-DesktopIconCache
+
+    Write-Host "      [+] Custom Pop Cat Recycle Bin icons applied successfully!" -ForegroundColor Green
+    Write-Host "      [+] Empty icon: $destEmpty" -ForegroundColor Gray
+    Write-Host "      [+] Full icon:  $destFull" -ForegroundColor Gray
+}
+
+function Restore-RecycleBinDefaultIcon {
+    <#
+    .SYNOPSIS
+        Restores default Windows Recycle Bin desktop icons.
+    #>
+    Write-Host "`n[*] Restoring Default Windows Recycle Bin Desktop Icons..." -ForegroundColor Yellow
+
+    $iconKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon"
+    $defaultEmpty = "%SystemRoot%\System32\imageres.dll,-55"
+    $defaultFull  = "%SystemRoot%\System32\imageres.dll,-54"
+
+    if (Test-Path $iconKey) {
+        Set-ItemProperty -Path $iconKey -Name "(Default)" -Value $defaultFull -Type ExpandString -Force
+        Set-ItemProperty -Path $iconKey -Name "empty"     -Value $defaultEmpty -Type ExpandString -Force
+        Set-ItemProperty -Path $iconKey -Name "full"      -Value $defaultFull -Type ExpandString -Force
+    }
+
+    # Refresh Windows Shell icon cache
+    Update-DesktopIconCache
+
+    Write-Host "      [+] Default Windows Recycle Bin icons restored successfully!" -ForegroundColor Green
 }
 
 

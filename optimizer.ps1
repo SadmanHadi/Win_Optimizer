@@ -134,6 +134,8 @@ function Show-PumpkiNBanner {
     Write-Host "  [30] Purge Windows Update & Delivery Optimization Cache" -ForegroundColor Yellow
     Write-Host "  [31] Download & Install DirectX + Visual C++ AIO (Direct from Sites)" -ForegroundColor Magenta
     Write-Host "  [32] Deep Cache & Event Cleaner (Temp, Prefetch, Spooler, Wipes Event Logs)" -ForegroundColor Yellow
+    Write-Host "  [33] Pop Cat Recycle Bin Icons (One-Click Pop Cat Empty & Full Desktop Icons)" -ForegroundColor Green
+    Write-Host "  [34] Restore Default Windows Recycle Bin Icons" -ForegroundColor DarkYellow
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -141,7 +143,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-32]"
+        $choice = Read-Host "Select an option [0-34]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -339,6 +341,14 @@ function Show-ConsoleMenu {
             }
             "32" {
                 Invoke-DeepCacheCleaner
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "33" {
+                Set-RecycleBinCustomIcon
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "34" {
+                Restore-RecycleBinDefaultIcon
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

@@ -944,6 +944,22 @@ $Global:xamlContent = @'
                                                 <Button Name="BtnApply_ShowExtensions" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="Pop Cat Recycle Bin" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Changes Desktop Recycle Bin to Pop Cat (open when full, closed when empty)." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_RecycleBinIcon" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,6,0"/>
+                                                    <Button Name="BtnReset_RecycleBinIcon" Content="Default" Style="{StaticResource MiniApplyButton}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
