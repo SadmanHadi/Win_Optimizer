@@ -502,6 +502,103 @@ function Start-PumpkiNGui {
         & $script:LogToGui "[+] Selected hardening tweaks applied successfully!"
     })
 
+    # Individual 1-Click Tweak Action Helper
+    function Register-QuickTweakButton($btnName, $tweakName, [scriptblock]$action) {
+        $btn = $window.FindName($btnName)
+        if ($btn) {
+            $btn.Add_Click({
+                & $script:LogToGui "[*] Applying $tweakName..."
+                & $script:SetProgress 40
+                & $action
+                & $script:SetProgress 100
+                & $script:LogToGui "[+] $tweakName applied successfully!"
+                Start-Sleep -Milliseconds 200
+                & $script:SetProgress 0
+            })
+        }
+    }
+
+    # 1-Click Tweak Activators: Gaming Tweaks
+    Register-QuickTweakButton "BtnApply_GpuAuto" "GPU Auto-Tuning" { Optimize-GpuAuto }
+    Register-QuickTweakButton "BtnApply_HardwareMsi" "Hardware MSI Mode" { Optimize-HardwareMsiMode }
+    Register-QuickTweakButton "BtnApply_DisablePowerSaving" "Disable USB Sleep" { Disable-DevicePowerSaving }
+    Register-QuickTweakButton "BtnApply_Mpo" "Disable MPO" { Disable-MultiplaneOverlay }
+    Register-QuickTweakButton "BtnApply_MouseCurve" "Raw Mouse Input" { Set-MouseLinearCurve }
+    Register-QuickTweakButton "BtnApply_InputLatency" "8000Hz Input Tuning" { Optimize-LatencyAndInput }
+    Register-QuickTweakButton "BtnApply_CsrssPriority" "CSRSS Realtime I/O" { Optimize-CsrssPriority }
+    Register-QuickTweakButton "BtnApply_CpuSystem" "CPU Gaming Quantum" { Optimize-CpuAndSystem }
+    Register-QuickTweakButton "BtnApply_SvcHost" "SvcHost RAM Splitting" { Optimize-SvcHostSplitting }
+    Register-QuickTweakButton "BtnApply_Network" "TCP/IP Gaming Stack" { Optimize-Network }
+    Register-QuickTweakButton "BtnApply_WifiScan" "Wi-Fi Ping Shield" { Toggle-WifiAutoconfig }
+    Register-QuickTweakButton "BtnApply_UltimatePower" "Ultimate Power Plan" { Enable-UltimatePerformancePlan }
+    Register-QuickTweakButton "BtnApply_StripVisual" "Strip Visual Animations" { Strip-VisualEffects }
+    Register-QuickTweakButton "BtnApply_EndTask" "Taskbar End Task" { Enable-EndTaskRightClick }
+    Register-QuickTweakButton "BtnApply_StickyKeys" "Disable Sticky Keys" { Disable-StickyKeysPrompt }
+    Register-QuickTweakButton "BtnApply_DebloatServices" "Debloat Services" { Debloat-BackgroundServices }
+    Register-QuickTweakButton "BtnApply_DiskIo" "Optimize Disk I/O" { Optimize-DiskIO }
+    Register-QuickTweakButton "BtnApply_CompactOs" "CompactOS Compression" { Enable-CompactOS }
+    Register-QuickTweakButton "BtnApply_TakeOwnership" "Take Ownership Menu" { Enable-TakeOwnershipMenu }
+    Register-QuickTweakButton "BtnApply_JunkTasks" "Disable Junk Tasks" { Disable-ScheduledJunkTasks }
+    Register-QuickTweakButton "BtnApply_Privacy" "Disable Telemetry" { Harden-PrivacyTelemetry }
+
+    # 1-Click Tweak Activators: System & Hardening
+    Register-QuickTweakButton "BtnApply_BlockWpbt" "Block WPBT Bloat" { Block-WpbtExecution }
+    Register-QuickTweakButton "BtnApply_BlockPeripheral" "Block Peripheral Bloat" { Block-PeripheralBloat }
+    Register-QuickTweakButton "BtnApply_RemoveAi" "Purge Windows AI" { Remove-WindowsAI }
+    Register-QuickTweakButton "BtnApply_SecurityUpdatesOnly" "Security-Only Updates" { Set-SecurityUpdatesOnly }
+    Register-QuickTweakButton "BtnApply_ClassicContext" "Classic Right-Click" { Enable-ClassicContextMenu }
+    Register-QuickTweakButton "BtnApply_DisableBing" "Disable Web Search" { Disable-StartMenuBing }
+    Register-QuickTweakButton "BtnApply_DisableAutoDiscovery" "Disable Auto-Discovery" { Disable-ExplorerAutoDiscovery }
+    Register-QuickTweakButton "BtnApply_ShowExtensions" "Show File Extensions" { Set-ShowFileExtensionsAndHidden }
+    Register-QuickTweakButton "BtnApply_EnableLongPaths" "Enable Long Paths" { Enable-LongPaths }
+    Register-QuickTweakButton "BtnApply_DisableLockScreen" "Disable Lock Screen" { Disable-LockScreen }
+    Register-QuickTweakButton "BtnApply_BsodVerbose" "Verbose BSOD" { Enable-BsodVerbose }
+    Register-QuickTweakButton "BtnApply_DisableReservedStorage" "Reclaim Reserved Storage" { Disable-ReservedStorage }
+
+    # Select All / Clear Selection: Gaming Tweaks
+    $gamingCheckboxes = @(
+        $chkGpuAuto, $chkHardwareMsi, $chkDisablePowerSaving, $chkMpo, $chkMouseCurve,
+        $chkInputLatency, $chkCsrssPriority, $chkCpuSystem, $chkSvcHost,
+        $chkNetwork, $chkWifiScan,
+        $chkUltimatePower, $chkStripVisual, $chkEndTask, $chkStickyKeys,
+        $chkDebloatServices, $chkDiskIo, $chkCompactOs, $chkTakeOwnership, $chkJunkTasks, $chkPrivacy
+    )
+    $btnSelectAllGaming = $window.FindName("BtnSelectAllGaming")
+    if ($btnSelectAllGaming) {
+        $btnSelectAllGaming.Add_Click({
+            foreach ($chk in $gamingCheckboxes) { if ($chk) { $chk.IsChecked = $true } }
+            & $script:LogToGui "[*] All Gaming Tweaks selected."
+        })
+    }
+    $btnClearAllGaming = $window.FindName("BtnClearAllGaming")
+    if ($btnClearAllGaming) {
+        $btnClearAllGaming.Add_Click({
+            foreach ($chk in $gamingCheckboxes) { if ($chk) { $chk.IsChecked = $false } }
+            & $script:LogToGui "[*] Gaming Tweaks selection cleared."
+        })
+    }
+
+    # Select All / Clear Selection: Hardening Tweaks
+    $hardeningCheckboxes = @(
+        $chkBlockWpbt, $chkBlockPeripheral, $chkRemoveAi, $chkSecurityUpdatesOnly,
+        $chkClassicContext, $chkDisableBing, $chkDisableAutoDiscovery, $chkShowExtensions,
+        $chkEnableLongPaths, $chkDisableLockScreen, $chkBsodVerbose, $chkDisableReservedStorage
+    )
+    $btnSelectAllHardening = $window.FindName("BtnSelectAllHardening")
+    if ($btnSelectAllHardening) {
+        $btnSelectAllHardening.Add_Click({
+            foreach ($chk in $hardeningCheckboxes) { if ($chk) { $chk.IsChecked = $true } }
+            & $script:LogToGui "[*] All Hardening Tweaks selected."
+        })
+    }
+    $btnClearAllHardening = $window.FindName("BtnClearAllHardening")
+    if ($btnClearAllHardening) {
+        $btnClearAllHardening.Add_Click({
+            foreach ($chk in $hardeningCheckboxes) { if ($chk) { $chk.IsChecked = $false } }
+            & $script:LogToGui "[*] Hardening Tweaks selection cleared."
+        })
+    }
+
     $masAction = {
         & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS) in elevated terminal..."
         Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`"" -Verb RunAs
