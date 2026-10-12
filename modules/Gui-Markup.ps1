@@ -220,7 +220,7 @@ $Global:xamlContent = @'
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Background="#FF7700" CornerRadius="4" Padding="6,2" Margin="0,0,12,0" VerticalAlignment="Center"><TextBlock Text="PKN" FontWeight="Bold" FontSize="16" Foreground="#0F141C"/></Border>
+                    <Image Name="ImgAppLogo" Width="36" Height="36" Margin="0,0,12,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="PUMPKIN" FontSize="20" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center"/>
@@ -345,7 +345,7 @@ $Global:xamlContent = @'
                 </Grid>
             </TabItem>
 
-                                    <!-- TAB 2: GAMING TWEAKS -->
+                                                <!-- TAB 2: GAMING TWEAKS -->
             <TabItem Header="Gaming Tweaks">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
@@ -493,7 +493,7 @@ $Global:xamlContent = @'
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Card: Esports Network Tuning -->
+                                <!-- Card: Esports Network Engine -->
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="ESPORTS NETWORK ENGINE" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
@@ -523,16 +523,6 @@ $Global:xamlContent = @'
                                                 <Button Name="BtnApply_WifiScan" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- COLUMN 2: SYSTEM OPTIMIZATIONS & PRO DEBLOAT -->
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <!-- Card: Full Beast Mode -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="FULL COMPETITIVE SUITE" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
@@ -540,10 +530,33 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Full Beast Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Applies all 20+ competitive low-latency optimizations simultaneously." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="Gaming DNS &amp; Startup Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Configures Cloudflare 1.1.1.1 gaming DNS and cleans startup bloat." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnBeastMode" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_StartupDns" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- COLUMN 2: SYSTEM OPTIMIZATIONS & PRO DEBLOAT -->
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <!-- Card: Esports Priority Hooks -->
+                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="ESPORTS GAME PRIORITY HOOKS" FontWeight="Bold" FontSize="13" Foreground="#00FF88" Margin="0,0,0,10"/>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="Esports Game Priority Hooks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Locks CPU High Priority and GPU High Performance for CS2, Valorant, Apex, Fortnite, COD." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <Button Name="BtnApply_GameHooks" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>

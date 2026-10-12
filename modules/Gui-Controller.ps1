@@ -17,6 +17,28 @@ function Start-PumpkiNGui {
     $xmlReader = [System.Xml.XmlReader]::Create($stringReader)
     $window = [System.Windows.Markup.XamlReader]::Load($xmlReader)
 
+    # Load 3D Pumpkin Brand Logo
+    $imgLogo = $window.FindName("ImgAppLogo")
+    $logoCandidates = @(
+        (Join-Path (Split-Path $PSScriptRoot -Parent) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"),
+        (Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"),
+        "e:\Projects\Win_Optimizer\LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"
+    )
+    foreach ($cand in $logoCandidates) {
+        if ($cand -and (Test-Path $cand)) {
+            try {
+                $bitmap = New-Object System.Windows.Media.Imaging.BitmapImage
+                $bitmap.BeginInit()
+                $bitmap.UriSource = New-Object System.Uri($cand, [System.UriKind]::Absolute)
+                $bitmap.CacheOption = [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad
+                $bitmap.EndInit()
+                if ($imgLogo) { $imgLogo.Source = $bitmap }
+                $window.Icon = $bitmap
+                break
+            } catch {}
+        }
+    }
+
     # Core Controls
     $wrapPackages       = $window.FindName("WrapPackages")
     $txtSearch          = $window.FindName("TxtSearch")
@@ -352,27 +374,30 @@ function Start-PumpkiNGui {
 
     # Tab 2: Tweaks Handlers
     $btnRunAllTweaks.Add_Click({
-        & $script:LogToGui "=== APPLYING ALL GAMING OPTIMIZATIONS ==="
+        & $script:LogToGui "=== APPLYING ALL 23 GAMING OPTIMIZATIONS ==="
         & $script:SetProgress 10
         Optimize-Network
-        & $script:SetProgress 25
+        & $script:SetProgress 20
         Optimize-GpuAuto
-        & $script:SetProgress 40
+        & $script:SetProgress 35
         Optimize-HardwareMsiMode
         Disable-DevicePowerSaving
         Disable-MultiplaneOverlay
         Set-MouseLinearCurve
-        & $script:SetProgress 55
+        & $script:SetProgress 50
         Optimize-LatencyAndInput
         Optimize-CsrssPriority
         Optimize-CpuAndSystem
         Optimize-SvcHostSplitting
-        & $script:SetProgress 70
+        & $script:SetProgress 65
+        Optimize-StartupAndDns
+        Apply-GameHooks
+        & $script:SetProgress 80
         Enable-UltimatePerformancePlan
         Strip-VisualEffects
         Enable-EndTaskRightClick
         Disable-StickyKeysPrompt
-        & $script:SetProgress 85
+        & $script:SetProgress 90
         Debloat-BackgroundServices
         Optimize-DiskIO
         Enable-CompactOS
@@ -380,7 +405,7 @@ function Start-PumpkiNGui {
         Disable-ScheduledJunkTasks
         Harden-PrivacyTelemetry
         & $script:SetProgress 100
-        & $script:LogToGui "[+] ALL GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
+        & $script:LogToGui "[+] ALL 23 GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0
     })
@@ -530,6 +555,8 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_SvcHost" "SvcHost RAM Splitting" { Optimize-SvcHostSplitting }
     Register-QuickTweakButton "BtnApply_Network" "TCP/IP Gaming Stack" { Optimize-Network }
     Register-QuickTweakButton "BtnApply_WifiScan" "Wi-Fi Ping Shield" { Toggle-WifiAutoconfig }
+    Register-QuickTweakButton "BtnApply_StartupDns" "Gaming DNS & Startup Tuning" { Optimize-StartupAndDns }
+    Register-QuickTweakButton "BtnApply_GameHooks" "Esports Game Priority Hooks" { Apply-GameHooks }
     Register-QuickTweakButton "BtnApply_UltimatePower" "Ultimate Power Plan" { Enable-UltimatePerformancePlan }
     Register-QuickTweakButton "BtnApply_StripVisual" "Strip Visual Animations" { Strip-VisualEffects }
     Register-QuickTweakButton "BtnApply_EndTask" "Taskbar End Task" { Enable-EndTaskRightClick }
