@@ -141,6 +141,8 @@ function Show-PumpkiNBanner {
     Write-Host "  [37] Reset DNS to Automatic (DHCP Defaults)" -ForegroundColor DarkYellow
     Write-Host "  [38] Start/Stop Smart Game Booster Daemon (Realtime Process Watcher)" -ForegroundColor Cyan
     Write-Host "  [39] View Live Hardware Telemetry Monitor (Live CPU, RAM, Ping)" -ForegroundColor Green
+    Write-Host "  [40] Activate PumpkiN Esports Ultimate Power Plan (0% Core Parking, Zero Latency)" -ForegroundColor Green
+    Write-Host "  [41] Unpark 100% CPU Cores on Current Scheme & Unhide Power Settings" -ForegroundColor Cyan
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -148,7 +150,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-39]"
+        $choice = Read-Host "Select an option [0-41]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -157,7 +159,8 @@ function Show-ConsoleMenu {
                 Optimize-LatencyAndInput
                 Apply-GameHooks
                 Debloat-BackgroundServices
-                Enable-UltimatePerformancePlan
+                Invoke-PumpkiNEsportsPowerPlan
+                Invoke-CpuCoreUnparking
                 Strip-VisualEffects
                 Harden-PrivacyTelemetry
                 Optimize-DiskIO
@@ -421,6 +424,14 @@ function Show-ConsoleMenu {
                     Write-Host "[$timeStr] CPU: $($t.CpuLoad)% | RAM: $($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%) | Ping: $pingStr | Booster: $($t.BoosterStatus)" -ForegroundColor Cyan
                     Start-Sleep -Seconds 2
                 }
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "40" {
+                Invoke-PumpkiNEsportsPowerPlan
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "41" {
+                Invoke-CpuCoreUnparking
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

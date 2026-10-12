@@ -188,12 +188,16 @@ function Restore-Defaults {
     Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'DisableWebSearch' -ErrorAction SilentlyContinue
     Remove-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search' -Name 'ConnectedSearchUseWeb' -ErrorAction SilentlyContinue
 
-    # Restore Balanced power plan
-    $balanced = powercfg /list | Select-String "Balanced"
-    if ($balanced) {
-        $guid = ($balanced -replace '.*GUID:\s*', '' -replace '\s*\(.*', '').Trim()
-        powercfg /setactive $guid
-        Write-Host "      [+] Balanced power plan restored" -ForegroundColor Green
+    # Restore Balanced power plan & core parking
+    if (Get-Command Restore-CpuCoreParking -ErrorAction SilentlyContinue) {
+        Restore-CpuCoreParking
+    } else {
+        $balanced = powercfg /list | Select-String "Balanced"
+        if ($balanced) {
+            $guid = ($balanced -replace '.*GUID:\s*', '' -replace '\s*\(.*', '').Trim()
+            powercfg /setactive $guid
+            Write-Host "      [+] Balanced power plan restored" -ForegroundColor Green
+        }
     }
     powercfg /hibernate on 2>$null
     bcdedit /deletevalue useplatformtick 2>$null

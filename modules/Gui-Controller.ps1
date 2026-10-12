@@ -652,7 +652,8 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_WifiScan" "Wi-Fi Ping Shield" { Toggle-WifiAutoconfig }
     Register-QuickTweakButton "BtnApply_StartupDns" "Gaming DNS & Startup Tuning" { Optimize-StartupAndDns }
     Register-QuickTweakButton "BtnApply_GameHooks" "Esports Game Priority Hooks" { Apply-GameHooks }
-    Register-QuickTweakButton "BtnApply_UltimatePower" "Ultimate Power Plan" { Enable-UltimatePerformancePlan }
+    Register-QuickTweakButton "BtnApply_UltimatePower" "PumpkiN Esports Power Plan" { Invoke-PumpkiNEsportsPowerPlan }
+    Register-QuickTweakButton "BtnApply_CoreUnpark" "100% CPU Core Unparking" { Invoke-CpuCoreUnparking }
     Register-QuickTweakButton "BtnApply_StripVisual" "Strip Visual Animations" { Strip-VisualEffects }
     Register-QuickTweakButton "BtnApply_EndTask" "Taskbar End Task" { Enable-EndTaskRightClick }
     Register-QuickTweakButton "BtnApply_StickyKeys" "Disable Sticky Keys" { Disable-StickyKeysPrompt }
