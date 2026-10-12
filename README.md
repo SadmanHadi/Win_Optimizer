@@ -1,7 +1,7 @@
-# 🎃 PumpkiN's Ultimate Windows & Gaming Optimizer v4.1
+# 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite v5.0
 
-> **The all-in-one low-latency, high-FPS Windows performance engine for competitive gaming.**  
-> Zero external executable downloads • 100% Native PowerShell & Batch • Safe, modular, and fully reversible.  
+> **The all-in-one low-latency Windows gaming engine and 100+ app package manager.**  
+> 100% Native PowerShell & WPF Architecture • Dark Cyberpunk Desktop GUI & CLI Fallback • Safe, transparent, and 100% reversible.  
 > **Created by PumpkiN | Max FPS - Ultra Low Latency**
 
 ---
@@ -14,134 +14,166 @@ Open **PowerShell** (or Windows Terminal) as **Administrator** and run:
 irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex
 ```
 
-*(If not already running as Administrator, the script will automatically prompt for elevation.)*
+*(Launches the modern WPF Desktop GUI by default. If running in a headless or terminal-only environment, or if you prefer the interactive terminal menu, append `-CLI`)*:
+
+```powershell
+irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex; & ./optimizer.ps1 -CLI
+```
 
 ---
 
-## 💻 Alternative: Offline Double-Click (.BAT)
+## 🖥️ Modern WPF Desktop GUI (Cyberpunk Dark Theme)
 
-1. Download [`PumpkiN_Ultimate_Gaming_Optimizer.bat`](PumpkiN_Ultimate_Gaming_Optimizer.bat) from this repository.
-2. Double-click the file (it will self-elevate to Administrator automatically).
-3. Use the interactive CMD menu to select your desired optimization module.
+PumpkiN's Ultimate Optimizer features a sleek, hardware-accelerated dark desktop interface with real-time logging, dynamic progress indicators, and 4 dedicated operational tabs:
+
+```text
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ [📦 Software Downloader]  [🎮 Gaming Tweaks]  [🚀 Match Booster]  [🛡️ System & Tools] │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                        │
+│  🔍 Search 100+ apps...                      [All] [Browsers] [Comms] [Dev] [Games]... │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌─────────────────┐ │
+│  │ ☑ Brave Browser  │  │ ☑ Discord        │  │ ☑ VS Code        │  │ [⚡ Install]    │ │
+│  │ Fast, ad-free    │  │ Voice & chat     │  │ Code editor      │  │ [🗑️ Uninstall]  │ │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘  │ [🔄 Upgrade All]│ │
+│                                                                    └─────────────────┘ │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ OUTPUT LOG: [12:00:00] PumpkiN Ultimate Gaming Optimizer & Software Suite initialized. │
+│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%      │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+1. **📦 Software Downloader (Install Tab):**
+   - 10 curated categories with 100+ popular applications (Browsers, Communications, Development, Document, Games, Microsoft Tools, Multimedia, Pro Tools, Selfhosted, Utilities).
+   - Real-time search filter and horizontal category chips.
+   - Batch install, silent uninstall, and 1-click system-wide upgrade powered by native Windows WinGet.
+2. **🎮 Gaming Tweaks:**
+   - Categorized optimization panes for GPU & Display, Ultra-Low Latency & Timers, Network Engine, Power & Visuals, and Background Services.
+   - One-click **ENGAGE BEAST MODE** banner applying all 20+ low-latency tweaks in one sweep.
+3. **🚀 Match Booster:**
+   - Real-time Standby List memory purger for stutter-free matches.
+   - Wi-Fi ping spike shield (freezes background network auto-roaming).
+   - High-priority process hooks (IFEO) for Valorant, CS2, Apex, Fortnite, Call of Duty, Rainbow Six Siege, and Overwatch 2.
+4. **🛡️ System & Tools:**
+   - Snappy OS & WinUtil security hardening (UEFI WPBT block, peripheral bloatware auto-install block, Windows AI purge, classic context menu).
+   - 1-Click Microsoft Activation Scripts (MAS) integration.
+   - 1-Click System Restore Point safety backup.
 
 ---
 
 ## 📁 Repository & Architecture Overview
 
-Everything in this repository is cleanly organized and self-contained:
+Everything in this repository is cleanly organized, modular, and self-contained:
 
 ```text
 Win_Optimizer/
-├── PumpkiN_Ultimate_Gaming_Optimizer.bat    # Universal double-clickable CMD menu launcher
-├── optimizer.ps1                            # Core all-in-one PowerShell engine
+├── optimizer.ps1                            # Core all-in-one suite (WPF GUI + WinGet Catalog + CLI)
+├── EmptyStandbyList.exe                     # Native kernel memory management utility (wj32)
 ├── README.md                                # Documentation and quick-start guide
 ├── LICENSE                                  # Open-source MIT License
 │
-├── analysis/                                # Comprehensive technical analysis dossier
-│   ├── PC_OPTIMIZER_ANALYSIS.md             # Deep-dive engineering analysis of all tweaks
-│   ├── HARDWARE_BENCHMARK_PROFILE.md        # Hardware audit & latency improvement matrix
-│   └── NETWORK_LATENCY_REPORT.md            # Netcode, Nagle, delayed ACKs & Wi-Fi scan analysis
-│
 └── modules/                                 # Modular standalone scripts (run individually)
-    ├── Optimize-AmdGpu.ps1                  # Standalone AMD Radeon ULPS & Anti-Lag tool
-    ├── Optimize-NvidiaGpu.ps1               # Standalone NVIDIA PowerMizer P0 tool
-    ├── Optimize-Network.ps1                 # Standalone network & anti-lag suite
-    ├── Optimize-InputLatency.ps1            # Standalone 8000Hz mouse queue & 1:1 raw curve
-    ├── Match-Booster.ps1                    # Pre-match background cleaner & RAM flusher
-    └── Toggle-WifiScan.ps1                  # Wi-Fi background roaming spike toggle
+    ├── Match-Booster.ps1                    # Instant RAM Purge & 5-Min Background Auto-Cleaner
+    ├── Optimize-KernelAndCpu.ps1            # Win32Priority 0x26, FTH Shield, DPC Threading & Quantum
+    ├── Optimize-Network.ps1                 # Nagle off, TCPNoDelay, NDU memory leak fix & DNS
+    ├── Optimize-AmdGpu.ps1                  # AMD Radeon ULPS disable, Shader Cache, Anti-Lag
+    ├── Optimize-NvidiaGpu.ps1               # NVIDIA PowerMizer P0 lock, Max Performance & Cache
+    ├── Optimize-InputLatency.ps1            # 8000Hz mouse queue buffer & 1:1 MarkC raw mouse curve
+    └── Toggle-WifiScan.ps1                  # Wi-Fi background roaming spike toggle (0ms spikes)
 ```
 
 ---
 
-## 🔬 In-Depth Analysis Reports
+## 🚀 Key Features Breakdown
 
-Read our comprehensive technical documentation in the [`analysis/`](analysis/) directory:
-* 📖 [**PC_OPTIMIZER_ANALYSIS.md**](analysis/PC_OPTIMIZER_ANALYSIS.md) — Explains the kernel, driver, and GPU mechanics behind every single tweak.
-* 🖥️ [**HARDWARE_BENCHMARK_PROFILE.md**](analysis/HARDWARE_BENCHMARK_PROFILE.md) — Full hardware specification audit of the test rig (Ryzen 7 5800X3D, RTX 3080, 32GB DDR4) and measured latency reductions.
-* 🌐 [**NETWORK_LATENCY_REPORT.md**](analysis/NETWORK_LATENCY_REPORT.md) — Detailed breakdown of Nagle's algorithm, delayed ACKs, bufferbloat, and Wi-Fi 60-second ping spikes.
+### 📦 1. 10-Category WinGet Software Suite (100+ Applications)
+- **Browsers:** Brave, Chrome, Chromium, Edge, Firefox, Floorp, LibreWolf, Tor, Vivaldi, Waterfox, Zen Browser, Opera GX.
+- **Communications:** Discord, Telegram, Signal, Slack, Teams, WhatsApp, Zoom, Vesktop, TeamSpeak 3, Element.
+- **Development:** VS Code, Cursor AI, Git, GitHub Desktop, Python 3.12, NodeJS LTS, Docker, Rustup, Go, Neovim, Windows Terminal, Notepad++, Sublime Text, DBeaver, Postman.
+- **Document:** Adobe Acrobat Reader, Obsidian, LibreOffice, PDF24 Creator, Sumatra PDF, Joplin, Zotero, Foxit PDF, Calibre, Typora.
+- **Games:** Steam, Epic Games Launcher, Battle.net, EA App, GOG Galaxy, Heroic Games Launcher, Roblox, CurseForge, Playnite, Ubisoft Connect, Prism Launcher, Moonlight.
+- **Microsoft Tools:** Microsoft PowerToys, Windows Terminal, Sysinternals Suite, .NET 8 Runtime, Visual C++ 2015-2022 (x64/x86), DirectX Runtimes, Process Explorer, AutoRuns, PowerShell 7.
+- **Multimedia Tools:** OBS Studio, VLC, HandBrake, Audacity, Blender, GIMP, K-Lite Codec Pack Mega, ShareX, mpv.net, Paint.NET, Foobar2000, Spotify.
+- **Pro Tools:** DDU (Display Driver Uninstaller), CPU-Z, GPU-Z, HWiNFO, HWMonitor, Cinebench R23, Wireshark, PuTTY, Mullvad VPN, Proton VPN, WinSCP, FileZilla.
+- **Selfhosted Tools:** Jellyfin Media Player, Plex Desktop, Sunshine, LocalSend, Syncthing, Tailscale, WireGuard, RustDesk.
+- **Utilities:** MSI Afterburner, 7-Zip, NanaZip, Revo Uninstaller, Process Lasso, Bulk Crap Uninstaller, CrystalDiskInfo, CrystalDiskMark, Rufus, Everything, TreeSize Free, BleachBit, WinDirStat, FastCopy.
 
----
+### 🛡️ 2. WinUtil S-Tier & Snappy OS Hardening
+- **Disable Multiplane Overlay (MPO Fix):** Resolves desktop stuttering, black screens, and Discord/browser hardware acceleration hitching.
+- **1:1 Linear Mouse Curve:** Disables Windows pointer acceleration curves (`SmoothMouseXCurve` / `SmoothMouseYCurve`) for pure 1:1 raw tracking.
+- **Optimize SvcHost Splitting:** Sets `SvcHostSplitThresholdInKB` according to your physical installed RAM (3.5GB+ sets to full RAM capacity), stopping unnecessary memory overhead while preserving process isolation.
+- **Block Peripheral Bloatware:** Employs NTFS deny-execute (`icacls`) on temporary installer paths to prevent Razer Synapse, Armoury Crate, and Alienware bloat from auto-installing upon plugging in mice/keyboards.
+- **Block UEFI WPBT Bloatware:** Disables Windows Platform Binary Table execution (`DisableWpbtExecution = 1`) to prevent motherboard vendor payloads from running silently.
+- **Purge Windows AI Bloatware:** Removes Windows Recall snapshotting, Copilot hooks, and CoreAI background services.
+- **Security-Only Windows Updates:** Defers feature upgrades by 2 years (`DeferFeatureUpdates = 1`, 730 days) while keeping zero-day quality and security patches active.
+- **Enable Classic Context Menu:** Restores the responsive Windows 10 right-click menu on Windows 11.
 
-## 🚀 Key Features in v4.1 Ultimate Edition
-
-### 🔴 1. Dedicated AMD Radeon GPU Optimization Suite
-* **ULPS (Ultra Low Power State) Disabled:** Disables `EnableUlps` and `EnableUlps_NA` across all active display driver registry keys. Eliminates aggressive core power gating that causes frametime drops, 1% low stuttering, and multi-monitor sleep freezes.
-* **Locked Shader Cache:** Forces AMD driver shader caching (`ShaderCache = 1`) to eliminate compilation micro-stutters during intense game moments.
-* **Anti-Lag & Direct DMA Engine:** Sets `AntiLag = 1` and `DisableDMACopy = 1` for direct driver command stream submission.
-* **Deep Sleep Throttle Mitigation:** Disables `PP_ThermalAutoThrottlingEnable` and `PP_MCLKStutterMode` to prevent erratic clock fluctuations.
-* **Shader Cache Cleaning:** Flushes stale AMD DxCache, GLCache, and D3DSCache directories.
-
-### 🟢 2. NVIDIA GeForce Dedicated Suite
-* **PowerMizer P0 Lock:** Locks GPU clocks in the highest performance state (`PowerMizerLevel = 1`, `PowerMizerLevelAC = 1`) to eliminate clock drops between rounds and scene transitions.
-* **NVIDIA DXCache Cleaning:** Flushes fragmented DirectX shader caches to restore smooth frametimes.
-
-### 🧠 3. Smart Hardware Auto-Detection
-* **AMD Ryzen & X3D Tuning:** Detects Ryzen processors (including 5800X3D, 7800X3D, 9800X3D) to unpark 100% of cores and eliminate dynamic tick timer jitter.
-* **Intel Hybrid Architecture (12th–15th Gen):** Prioritizes Performance Cores (P-Cores) over Efficient Cores (E-Cores) for game threads, preventing stutter caused by Windows Thread Director misallocation.
+### 🔴 3. Dedicated AMD Radeon & NVIDIA GeForce Suites
+- **AMD ULPS Disabled:** Eliminates aggressive core power gating causing frametime drops, 1% low stutter, and multi-monitor sleep freezes.
+- **NVIDIA PowerMizer P0 Lock:** Prevents clock drops between rounds and scene transitions.
+- **DirectX Shader Cache Flushing:** Cleans fragmented cache folders to eliminate frame compilation hitching.
 
 ### 📶 4. Wi-Fi Ping Spike Mitigator (0ms Spikes)
-* Windows scans for surrounding wireless networks every 60 seconds in the background, causing catastrophic 100–300ms ping spikes during online gaming.
-* Built-in toggle allows players to **freeze background scanning** while gaming for flat, wired-like ping, and re-enable it whenever they need to search for new networks.
+- Windows scans for wireless networks every 60 seconds in the background, causing periodic 100–300ms ping spikes during online gaming.
+- Built-in toggle allows players to **freeze background scanning** while gaming for flat, wired-like ping, and re-enable it whenever needed.
 
-### 🖱️ 5. Ultra-Low Latency & 8000Hz Input Engine
-* **8000Hz Mouse Buffer:** Increases `MouseDataQueueSize` to 200 (default 100) and `KeyboardDataQueueSize` to 100 to prevent packet drops and DPC spikes with 1000Hz, 4000Hz, and 8000Hz high-polling gaming mice.
-* **MarkC 1:1 Raw Mouse Curve:** Replaces Windows mouse acceleration curves with 100% 1:1 linear registry curves (`SmoothMouseXCurve` / `SmoothMouseYCurve`) to eliminate hidden cursor smoothing.
-* **USB Selective Suspend Disabled:** Locks USB root hubs at 100% bus power to prevent mouse wake lag during flicks.
-
-### 🌐 6. Network & Anti-Lag Suite (0ms Bufferbloat)
-* **Nagle's Algorithm Disabled (`TCPNoDelay = 1`):** Sends game tick packets immediately without waiting for TCP packet coalescing.
-* **Delayed ACKs Disabled (`TcpAckFrequency = 1`):** Removes up to 200ms ACK response delays.
-* **100% Bandwidth Unlocked:** Removes the hidden 20% QoS bandwidth cap (`NonBestEffortLimit = 0`).
-* **ServiceProvider DNS Priorities:** Prioritizes local DNS and hosts resolution ahead of NetBT.
-* **NIC Hardware Power Saving Off:** Disables Interrupt Moderation, Flow Control pause frames, Green Ethernet, and Gigabit Lite.
-
-### ⚡ 7. Kernel RAM Locking & Direct Flip Display Latency
-* **Kernel Locked in Physical RAM (`DisablePagingExecutive = 1`):** Prevents system drivers and DirectX runtime code from being paged to disk/pagefile, eliminating 1% low frame hitching.
-* **Direct Flip / Fullscreen Exclusive Overrides:** Forces games to scan directly to your high-refresh display without DWM composition buffering, saving 1–2 frames of input latency.
-* **Windows Game Mode & 100% Responsiveness:** Sets `SystemResponsiveness = 0` and allocates high CPU thread priority to active game titles.
-
-### 🎯 8. Competitive Match Booster & 12 Esports Hooks (IFEO)
-* **Pre-Match Flush:** Terminates background recording/streaming hogs (SteelSeries Moments, Game Bar) and high-polling RGB software (SignalRGB) to free CPU and NVENC/VCE encoders, followed by a RAM garbage collection.
-* **Esports Process Priority Hooks:** Automatically sets High CPU Priority and High I/O Priority for:
-  - *Valorant* (`VALORANT-Win64-Shipping.exe`)
+### 🎯 5. Competitive Match Booster & Esports Hooks (IFEO)
+- **Pre-Match Flush:** Terminates background recording hogs and high-polling RGB software, followed by an immediate standby memory purge.
+- **Esports Process Priority Hooks:** Permanently sets High CPU Priority and High I/O Priority for:
   - *Counter-Strike 2* (`cs2.exe`)
+  - *Valorant* (`VALORANT-Win64-Shipping.exe`)
   - *Apex Legends* (`r5apex.exe`)
   - *Fortnite* (`FortniteClient-Win64-Shipping.exe`)
-  - *Call of Duty: Warzone* (`cod.exe`)
-  - *Tom Clancy's Rainbow Six Siege* (`RainbowSix.exe` & `RainbowSix_Vulkan.exe`)
+  - *Call of Duty* (`cod.exe`)
+  - *Rainbow Six Siege* (`RainbowSix.exe`)
   - *Overwatch 2* (`Overwatch.exe`)
-  - *PUBG: Battlegrounds* (`PUBG-Win64-Shipping.exe`)
-  - *Deadlock* (`Deadlock.exe`)
-  - *Gameloop Android Emulator* (`AndroidEmulatorEn.exe` & `AndroidEmulator.exe`)
-
-### 🛡️ 9. Safety, Backup & Reversibility
-* **System Restore Point Creator:** Create a `PumpkiN_Gaming_RestorePoint` in Windows System Restore with one click before applying any tweaks.
-* **Zero Third-Party Downloads:** Safe and transparent. No shady `.exe` files injected into `System32`.
-* **One-Click Revert:** Option `[13]` in the menu cleanly restores default Windows settings at any time.
 
 ---
 
-## 📋 Menu Overview
+## 📋 Interactive CLI Menu Overview [0-27]
+
+When launched with the `-CLI` switch or in headless environments, the complete interactive menu is accessible:
 
 ```text
 ================================================================================
-           ULTIMATE GAMING & NETWORK OPTIMIZER v4.1
+           ULTIMATE GAMING & NETWORK OPTIMIZER v5.0
           Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
-
-  [1]  FULL ALL-IN-ONE OPTIMIZATION (Auto-Detects Hardware & Applies All) [BEST]
+  [CPU] AMD Ryzen 7 5800X3D (8C / 16T)
+  [GPU] NVIDIA GeForce RTX 3080
+  [NET] Ethernet [Ethernet (Wired)]
+--------------------------------------------------------------------------------
+  [1]  FULL ALL-IN-ONE OPTIMIZATION (Hardware Auto-Detect + All Tweaks) [BEST]
   [2]  Auto-Detect & Optimize Active GPU (NVIDIA / AMD Radeon)
   [3]  AMD Radeon GPU Dedicated Suite (Disable ULPS, Shader Cache, Anti-Lag)
   [4]  NVIDIA GeForce Dedicated Suite (PowerMizer P0, Max Performance, Cache)
-  [5]  Network & Anti-Lag Suite (Nagle Off, 100% QoS, ServiceProvider DNS)
+  [5]  Network & Anti-Lag Suite (Nagle Off, 100% QoS, NDU Leak Fix, DNS)
   [6]  Wi-Fi Ping Spike Mitigator (Toggle Background Scan for 0ms Spikes)
-  [7]  CPU & System Engine (Kernel RAM Locking, Direct Flip, Core Unparking)
+  [7]  CPU, Kernel & Quantum Engine (Win32Priority 0x26, FTH Off, Core Unpark)
   [8]  Ultra-Low Latency, DPC & 8000Hz Input (StopHighDPC, Raw Mouse Curve)
-  [9]  Competitive Match Booster (Flush Standby RAM, Kill Capture & RGB Hogs)
+  [9]  Competitive Match Booster (Immediate RAM Flush + 5-Min Background Auto-Purge)
   [10] Game-Specific High Priority Hooks (Valorant, CS2, Apex, Fortnite, COD)
   [11] System Health, Live Diagnostics & Hardware Spec Sheet
   [12] Create Windows System Restore Point (Safety Backup)
   [13] Revert All Settings to Windows Defaults
+  [14] Activate Windows (Microsoft Activation Scripts - MAS)
+  ---- BEAST MODE OPTIMIZATIONS ------------------------------------------------
+  [15] Debloat & Disable Background Services (SysMain, Telemetry, Xbox, Cortana)
+  [16] Ultimate Performance Power Plan + HPET/Timer Optimization
+  [17] Strip All Visual Effects & Animations (Pure Performance Mode)
+  [18] Privacy & Telemetry Hardening (Kill All Tracking & Ads)
+  [19] Disk I/O & Storage Optimization (NTFS Tweaks + Temp Cleanup)
+  [20] Disable Junk Scheduled Tasks (Compatibility, Defrag, Diagnostics)
+  [21] Startup Bloat Cleanup & Gaming DNS (Cloudflare 1.1.1.1)
+  ---- PRO TOOLS & HARDENING ---------------------------------------------------
+  [22] WinUtil Tweaks (MPO Fix, Mouse Curve, SvcHost Splitting, End Task)
+  [23] WinGet Software Manager (Install, Update, or Search 100+ Applications)
+  [24] Block Peripheral & UEFI Bloatware (Razer, Armoury Crate icacls deny)
+  [25] Purge Windows AI Bloatware (Recall, Copilot, CoreAI)
+  [26] Security-Only Updates (Defer Feature Builds 2 Years, Keep Quality Updates)
+  [27] Restore Windows 10 Classic Right-Click Menu & File Visibility
   [0]  Exit
 ================================================================================
 ```
