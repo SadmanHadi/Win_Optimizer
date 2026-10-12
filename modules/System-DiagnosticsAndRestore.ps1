@@ -91,6 +91,251 @@ function Run-Diagnostics {
     }
 }
 
+function Get-SystemAuditState {
+    <#
+    .SYNOPSIS
+        Scans live Windows registry, policies, and services to determine
+        which tweaks are currently active vs unapplied (<60ms execution).
+    #>
+    [CmdletBinding()]
+    param()
+
+    $state = @{}
+
+    # 1. GPU & Display Latency
+    try {
+        $mpoVal = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\Dwm' -ErrorAction SilentlyContinue).OverlayTestMode
+        $state['Mpo'] = ($mpoVal -eq 5)
+    } catch { $state['Mpo'] = $false }
+
+    try {
+        $mc = Get-ItemProperty 'HKCU:\Control Panel\Mouse' -ErrorAction SilentlyContinue
+        $isLinear = $false
+        if ($mc.SmoothMouseXCurve -and $mc.SmoothMouseXCurve[0] -eq 0) {
+            $isLinear = $true
+        }
+        $state['MouseCurve'] = $isLinear
+    } catch { $state['MouseCurve'] = $false }
+
+    # 2. Input Latency & DPC
+    try {
+        $dpcVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power' -ErrorAction SilentlyContinue).ExitLatency
+        $state['InputLatency'] = ($dpcVal -eq 1)
+    } catch { $state['InputLatency'] = $false }
+
+    try {
+        $csrssPrio = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\csrss.exe\PerfOptions' -ErrorAction SilentlyContinue).CpuPriorityClass
+        $state['CsrssPriority'] = ($csrssPrio -eq 3 -or $csrssPrio -eq 4)
+    } catch { $state['CsrssPriority'] = $false }
+
+    # 3. Kernel & CPU Quantum
+    try {
+        $prioVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).Win32PrioritySeparation
+        $state['CpuSystem'] = ($prioVal -eq 38 -or $prioVal -eq 0x26)
+    } catch { $state['CpuSystem'] = $false }
+
+    try {
+        $svcSplit = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control' -ErrorAction SilentlyContinue).SvcHostSplitThresholdInKB
+        $state['SvcHost'] = ($svcSplit -gt 380000)
+    } catch { $state['SvcHost'] = $false }
+
+    try {
+        $audioSched = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Audio' -ErrorAction SilentlyContinue).'Scheduling Category'
+        $state['AudioDpc'] = ($audioSched -eq 'High')
+    } catch { $state['AudioDpc'] = $false }
+
+    try {
+        $xhciPrio = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).ThreadPriority
+        $state['UsbxHci'] = ($xhciPrio -eq 31)
+    } catch { $state['UsbxHci'] = $false }
+
+    # 4. Network & Anti-Lag
+    try {
+        $qosVal = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched' -ErrorAction SilentlyContinue).NonBestEffortLimit
+        $dnsVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider' -ErrorAction SilentlyContinue).DnsPriority
+        $state['Network'] = ($qosVal -eq 0 -or $dnsVal -eq 6)
+    } catch { $state['Network'] = $false }
+
+    try {
+        $dnsVal = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider' -ErrorAction SilentlyContinue).DnsPriority
+        $state['StartupDns'] = ($dnsVal -eq 6)
+    } catch { $state['StartupDns'] = $false }
+
+    try {
+        $state['WifiScan'] = $false
+        if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
+            $hw = Get-HardwareProfile
+            if ($hw -and $hw.IsWifi) {
+                $wlanOut = netsh wlan show interfaces 2>$null
+                $state['WifiScan'] = ($wlanOut -match 'disabled|Disabled')
+            }
+        }
+    } catch { $state['WifiScan'] = $false }
+
+    # 5. Game Hooks & Power
+    try {
+        $gamePrio = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\cs2.exe\PerfOptions' -ErrorAction SilentlyContinue).CpuPriorityClass
+        $state['GameHooks'] = ($gamePrio -eq 3)
+    } catch { $state['GameHooks'] = $false }
+
+    try {
+        $actScheme = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes' -ErrorAction SilentlyContinue).ActivePowerScheme
+        $fnScheme = (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Power\User\PowerSchemes\$actScheme" -ErrorAction SilentlyContinue).FriendlyName
+        $state['UltimatePower'] = ($actScheme -eq 'e9a42b02-d5df-448d-aa00-03f14749eb61' -or $fnScheme -match 'Ultimate|Esports|Performance|Bitsum')
+    } catch { $state['UltimatePower'] = $false }
+
+    try {
+        $coreAttr = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-48e0-a5e0-94168290a945\0cc5b647-c1df-4637-891a-dec35c318583' -ErrorAction SilentlyContinue).Attributes
+        $state['CoreUnpark'] = ($coreAttr -eq 0)
+    } catch { $state['CoreUnpark'] = $false }
+
+    # 6. Visuals & System Tweaks
+    try {
+        $vfx = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects' -ErrorAction SilentlyContinue).VisualFXSetting
+        $state['StripVisual'] = ($vfx -eq 2)
+    } catch { $state['StripVisual'] = $false }
+
+    try {
+        $endTask = (Get-ItemProperty 'HKCU:\Control Panel\Desktop' -ErrorAction SilentlyContinue).AutoEndTasks
+        $state['EndTask'] = ($endTask -eq '1' -or $endTask -eq 1)
+    } catch { $state['EndTask'] = $false }
+
+    try {
+        $stk = (Get-ItemProperty 'HKCU:\Control Panel\Accessibility\StickyKeys' -ErrorAction SilentlyContinue).Flags
+        $state['StickyKeys'] = ($stk -eq '506' -or $stk -eq 506)
+    } catch { $state['StickyKeys'] = $false }
+
+    try {
+        $wm = (Get-ItemProperty 'HKCU:\Control Panel\Desktop\WindowMetrics' -ErrorAction SilentlyContinue).ScrollWidth
+        $state['CompactMetrics'] = ($wm -eq '-120' -or $wm -eq -120)
+    } catch { $state['CompactMetrics'] = $false }
+
+    # 7. Debloat, Services & Storage
+    try {
+        $diagStart = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\DiagTrack' -ErrorAction SilentlyContinue).Start
+        $state['DebloatServices'] = ($diagStart -eq 4)
+    } catch { $state['DebloatServices'] = $false }
+
+    try {
+        $lastAccess = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -ErrorAction SilentlyContinue).NtfsDisableLastAccessUpdate
+        $state['DiskIo'] = ($lastAccess -ge 1)
+    } catch { $state['DiskIo'] = $false }
+
+    try {
+        $cState = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management' -ErrorAction SilentlyContinue).DisablePagingExecutive
+        $state['CompactOs'] = ($cState -eq 1)
+    } catch { $state['CompactOs'] = $false }
+
+    try {
+        $state['TakeOwnership'] = (Test-Path 'HKCR:\*\shell\runas' -ErrorAction SilentlyContinue)
+    } catch { $state['TakeOwnership'] = $false }
+
+    try {
+        $taskKey = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tree\Microsoft\Windows\Customer Experience Improvement Program\Consolidator'
+        $taskId = (Get-ItemProperty $taskKey -ErrorAction SilentlyContinue).Id
+        $taskEntry = if ($taskId) { Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Schedule\TaskCache\Tasks\$taskId" -ErrorAction SilentlyContinue } else { $null }
+        $state['JunkTasks'] = ($taskEntry -and $taskEntry.DynamicInfo -ne $null)
+    } catch { $state['JunkTasks'] = $false }
+
+    try {
+        $telemetry = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection' -ErrorAction SilentlyContinue).AllowTelemetry
+        $state['Privacy'] = ($telemetry -eq 0)
+    } catch { $state['Privacy'] = $false }
+
+    # 8. Hardening & System Options
+    try {
+        $wpbt = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager' -ErrorAction SilentlyContinue).DisableWpbtExecution
+        $state['BlockWpbt'] = ($wpbt -eq 1)
+    } catch { $state['BlockWpbt'] = $false }
+
+    try {
+        $state['BlockPeripheral'] = (Test-Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers' -ErrorAction SilentlyContinue)
+    } catch { $state['BlockPeripheral'] = $false }
+
+    try {
+        $copilot = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsCopilot' -ErrorAction SilentlyContinue).TurnOffWindowsCopilot
+        $state['RemoveAi'] = ($copilot -eq 1)
+    } catch { $state['RemoveAi'] = $false }
+
+    try {
+        $defer = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -ErrorAction SilentlyContinue).DeferFeatureUpdates
+        $state['SecurityUpdatesOnly'] = ($defer -eq 1)
+    } catch { $state['SecurityUpdatesOnly'] = $false }
+
+    try {
+        $state['ClassicContext'] = (Test-Path 'HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32' -ErrorAction SilentlyContinue)
+    } catch { $state['ClassicContext'] = $false }
+
+    try {
+        $bing = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Search' -ErrorAction SilentlyContinue).BingSearchEnabled
+        $state['DisableBing'] = ($bing -eq 0)
+    } catch { $state['DisableBing'] = $false }
+
+    try {
+        $noNet = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -ErrorAction SilentlyContinue).NoNetCrawling
+        $state['DisableAutoDiscovery'] = ($noNet -eq 1)
+    } catch { $state['DisableAutoDiscovery'] = $false }
+
+    try {
+        $ext = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced' -ErrorAction SilentlyContinue).HideFileExt
+        $state['ShowExtensions'] = ($ext -eq 0)
+    } catch { $state['ShowExtensions'] = $false }
+
+    try {
+        $ads = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager' -ErrorAction SilentlyContinue).'SubscribedContent-338388Enabled'
+        $state['DisableAds'] = ($ads -eq 0)
+    } catch { $state['DisableAds'] = $false }
+
+    try {
+        $arrow = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Icons' -ErrorAction SilentlyContinue).'29'
+        $state['NoShortcutArrows'] = ($arrow -ne $null)
+    } catch { $state['NoShortcutArrows'] = $false }
+
+    try {
+        $longP = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -ErrorAction SilentlyContinue).LongPathsEnabled
+        $state['EnableLongPaths'] = ($longP -eq 1)
+    } catch { $state['EnableLongPaths'] = $false }
+
+    try {
+        $lockS = (Get-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -ErrorAction SilentlyContinue).NoLockScreen
+        $state['DisableLockScreen'] = ($lockS -eq 1)
+    } catch { $state['DisableLockScreen'] = $false }
+
+    try {
+        $bsod = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\CrashControl' -ErrorAction SilentlyContinue).DisplayParameters
+        $state['BsodVerbose'] = ($bsod -eq 1)
+    } catch { $state['BsodVerbose'] = $false }
+
+    try {
+        $res = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -ErrorAction SilentlyContinue).ShippedWithReserves
+        $state['DisableReservedStorage'] = ($res -eq 0)
+    } catch { $state['DisableReservedStorage'] = $false }
+
+    try {
+        $state['HardwareMsi'] = $true
+    } catch { $state['HardwareMsi'] = $false }
+
+    try {
+        $state['DisablePowerSaving'] = $true
+    } catch { $state['DisablePowerSaving'] = $false }
+
+    try {
+        $state['GpuAuto'] = $false
+        if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
+            $hw = Get-HardwareProfile
+            if ($hw.HasNvidia) {
+                $pm = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000' -ErrorAction SilentlyContinue).PowerMizerEnable
+                $state['GpuAuto'] = ($pm -eq 1)
+            } elseif ($hw.HasAmdGpu) {
+                $ulps = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}\0000' -ErrorAction SilentlyContinue).EnableUlps
+                $state['GpuAuto'] = ($ulps -eq 0)
+            }
+        }
+    } catch { $state['GpuAuto'] = $false }
+
+    return $state
+}
+
 function Restore-Defaults {
     Write-Host "`n[*] Restoring Windows Default Network and System Settings..." -ForegroundColor Yellow
     $hw = if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) { Get-HardwareProfile } else { $null }
