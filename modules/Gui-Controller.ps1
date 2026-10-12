@@ -50,6 +50,8 @@ function Start-PumpkiNGui {
 
     # Tab 2 Checkboxes
     $chkGpuAuto         = $window.FindName("ChkGpuAuto")
+    $chkHardwareMsi     = $window.FindName("ChkHardwareMsi")
+    $chkDisablePowerSaving = $window.FindName("ChkDisablePowerSaving")
     $chkMpo             = $window.FindName("ChkMpo")
     $chkMouseCurve      = $window.FindName("ChkMouseCurve")
     $chkInputLatency    = $window.FindName("ChkInputLatency")
@@ -349,6 +351,8 @@ function Start-PumpkiNGui {
         & $script:SetProgress 10
 
         if ($chkGpuAuto.IsChecked) { & $script:LogToGui "[*] Running GPU Auto-Optimization..."; Optimize-GpuAuto }
+        if ($chkHardwareMsi -and $chkHardwareMsi.IsChecked -and -not $chkGpuAuto.IsChecked) { & $script:LogToGui "[*] Enabling MSI Mode on Hardware Controllers..."; Optimize-HardwareMsiMode }
+        if ($chkDisablePowerSaving -and $chkDisablePowerSaving.IsChecked -and -not $chkGpuAuto.IsChecked) { & $script:LogToGui "[*] Disabling USB & Hardware Power Saving..."; Disable-DevicePowerSaving }
         if ($chkMpo.IsChecked) { & $script:LogToGui "[*] Disabling Multiplane Overlay (MPO)..."; Disable-MultiplaneOverlay }
         if ($chkMouseCurve.IsChecked) { & $script:LogToGui "[*] Setting 1:1 Linear Mouse Curve..."; Set-MouseLinearCurve }
         & $script:SetProgress 30

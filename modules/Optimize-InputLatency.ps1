@@ -45,6 +45,11 @@ function Optimize-LatencyAndInput {
 
     # CSRSS Realtime & Max I/O Priority
     Optimize-CsrssPriority
+
+    # Disable USB & Device Power Saving (Always Full Power)
+    if (Get-Command Disable-DevicePowerSaving -ErrorAction SilentlyContinue) {
+        Disable-DevicePowerSaving
+    }
 }
 
 function Optimize-CsrssPriority {

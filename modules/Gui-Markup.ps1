@@ -336,6 +336,8 @@ $Global:xamlContent = @'
                                     <StackPanel>
                                         <TextBlock Text="GRAPHICS &amp; DISPLAY LATENCY" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
                                         <CheckBox Name="ChkGpuAuto" Content="GPU Auto-Optimization (NVIDIA &amp; AMD Driver Tuning)" IsChecked="True"/>
+                                        <CheckBox Name="ChkHardwareMsi" Content="Hardware MSI Mode (USB &amp; Network Controllers - Lowest DPC Latency)" IsChecked="True"/>
+                                        <CheckBox Name="ChkDisablePowerSaving" Content="Disable USB &amp; Hardware Power Saving (Always Full Power - No Sleep States)" IsChecked="True"/>
                                         <CheckBox Name="ChkMpo" Content="Disable Multiplane Overlay (MPO Fix - Fixes Stutters &amp; Black Screens)" IsChecked="True"/>
                                         <CheckBox Name="ChkMouseCurve" Content="1:1 Linear Mouse Curve (Disables Windows Pointer Acceleration)" IsChecked="True"/>
                                     </StackPanel>
