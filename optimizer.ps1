@@ -26,7 +26,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     } else {
         Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex`"$cliArg" -Verb RunAs
     }
-    return
+    exit
 }
 
 $Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.0"
@@ -468,7 +468,15 @@ function Show-ConsoleMenu {
 # ==============================================================================
 
 if ($CLI) {
-    Show-ConsoleMenu
+    try {
+        Show-ConsoleMenu
+    } finally {
+        try { Stop-SmartGameBoosterDaemon } catch {}
+        try {
+            Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        } catch {}
+        [System.Diagnostics.Process]::GetCurrentProcess().Kill()
+    }
 } else {
     try {
         Start-PumpkiNGui
@@ -476,5 +484,11 @@ if ($CLI) {
         Write-Host "[-] GUI could not be initialized: $($_.Exception.Message)" -ForegroundColor Red
         Write-Host "[*] Launching interactive CLI menu instead..." -ForegroundColor Yellow
         Show-ConsoleMenu
+    } finally {
+        try { Stop-SmartGameBoosterDaemon } catch {}
+        try {
+            Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        } catch {}
+        [System.Diagnostics.Process]::GetCurrentProcess().Kill()
     }
 }

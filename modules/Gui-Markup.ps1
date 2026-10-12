@@ -259,7 +259,8 @@ $Global:xamlContent = @'
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Name="BtnBeastMode" Content="ENGAGE BEAST MODE" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
                     <Button Name="BtnRestorePointTop" Content="Create Restore Point" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                    <Button Name="BtnMasActivateTop" Content="MAS Activation" Style="{StaticResource DarkOutlineButton}"/>
+                    <Button Name="BtnMasActivateTop" Content="MAS Activation" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                    <Button Name="BtnExitTop" Content="Exit" Style="{StaticResource DarkOutlineButton}"/>
                 </StackPanel>
             </Grid>
         </Border>

@@ -79,6 +79,7 @@ function Start-PumpkiNGui {
     $btnRestorePointTop = $window.FindName("BtnRestorePointTop")
     $btnApplyHardening  = $window.FindName("BtnApplyHardening")
     $btnRunDiagnostics  = $window.FindName("BtnRunDiagnostics")
+    $btnExitTop         = $window.FindName("BtnExitTop")
 
     $txtConsole         = $window.FindName("TxtConsole")
     $txtStatus          = $window.FindName("TxtStatus")
@@ -806,6 +807,40 @@ function Start-PumpkiNGui {
     $telemetryTimer.Start()
     & $updateTelemetryAction
 
+    # Complete shutdown and force-close engine (releases 100% of RAM memory)
+    $script:ExitOptimizer = {
+        try {
+            if ($telemetryTimer) { $telemetryTimer.Stop() }
+        } catch {}
+        try {
+            Stop-SmartGameBoosterDaemon
+        } catch {}
+        try {
+            Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        } catch {}
+        try {
+            if ([System.Windows.Application]::Current) {
+                [System.Windows.Application]::Current.Shutdown(0)
+            }
+        } catch {}
+        try {
+            if ($window -and $window.IsVisible) {
+                $window.Close()
+            }
+        } catch {}
+        try {
+            [System.Diagnostics.Process]::GetCurrentProcess().Kill()
+        } catch {
+            Stop-Process -Id $PID -Force
+        }
+    }
+
+    if ($btnExitTop) {
+        $btnExitTop.Add_Click({
+            & $script:ExitOptimizer
+        })
+    }
+
     # Clean shutdown on window close
     $window.Add_Closing({
         try {
@@ -814,8 +849,15 @@ function Start-PumpkiNGui {
         } catch {}
     })
 
+    $window.Add_Closed({
+        & $script:ExitOptimizer
+    })
+
     # Launch GUI Window
     [void]$window.ShowDialog()
+
+    # Guaranteed force-close fallback once window dialog exits
+    & $script:ExitOptimizer
 }
 
 # ==============================================================================
