@@ -139,6 +139,8 @@ function Show-PumpkiNBanner {
     Write-Host "  [35] GPU Shader, Discord & Browser Cache Cleaner (DirectX, NVIDIA, AMD, Chrome)" -ForegroundColor Yellow
     Write-Host "  [36] Gaming DNS Benchmark & 1-Click Fast Switcher (Cloudflare, Google, Quad9, etc.)" -ForegroundColor Cyan
     Write-Host "  [37] Reset DNS to Automatic (DHCP Defaults)" -ForegroundColor DarkYellow
+    Write-Host "  [38] Start/Stop Smart Game Booster Daemon (Realtime Process Watcher)" -ForegroundColor Cyan
+    Write-Host "  [39] View Live Hardware Telemetry Monitor (Live CPU, RAM, Ping)" -ForegroundColor Green
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -146,7 +148,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-37]"
+        $choice = Read-Host "Select an option [0-39]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -393,6 +395,32 @@ function Show-ConsoleMenu {
             }
             "37" {
                 Reset-DnsToAutomatic
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "38" {
+                $stat = Get-SmartGameBoosterStatus
+                Write-Host "`n=== SMART GAME BOOSTER DAEMON ===" -ForegroundColor Cyan
+                Write-Host "Current Status: $($stat.DisplayText)" -ForegroundColor Yellow
+                Write-Host "  [1] Start Daemon (Auto-detects 20+ competitive games in background)"
+                Write-Host "  [2] Stop Daemon"
+                $dChoice = Read-Host "Select option [1-2]"
+                if ($dChoice -eq "1") {
+                    Start-SmartGameBoosterDaemon
+                } elseif ($dChoice -eq "2") {
+                    Stop-SmartGameBoosterDaemon
+                }
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "39" {
+                Write-Host "`n=== LIVE HARDWARE TELEMETRY MONITOR ===" -ForegroundColor Cyan
+                Write-Host "Monitoring telemetry (press Enter when done)...`n" -ForegroundColor Yellow
+                for ($iter = 0; $iter -lt 15; $iter++) {
+                    $t = Get-LiveHardwareTelemetry
+                    $timeStr = (Get-Date).ToString("HH:mm:ss")
+                    $pingStr = if ($t.PingMs -ge 0) { "$($t.PingMs) ms" } else { "TIMEOUT" }
+                    Write-Host "[$timeStr] CPU: $($t.CpuLoad)% | RAM: $($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%) | Ping: $pingStr | Booster: $($t.BoosterStatus)" -ForegroundColor Cyan
+                    Start-Sleep -Seconds 2
+                }
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

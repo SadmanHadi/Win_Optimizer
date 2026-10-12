@@ -165,6 +165,7 @@ function Restore-Defaults {
     
     bcdedit /deletevalue disabledynamictick 2>$null
     Unregister-ScheduledTask -TaskName 'PumpkiN_AutoEmptyStandbyList' -Confirm:$false -ErrorAction SilentlyContinue
+    if (Get-Command Stop-SmartGameBoosterDaemon -ErrorAction SilentlyContinue) { Stop-SmartGameBoosterDaemon }
     Clear-DnsClientCache
     ipconfig /flushdns | Out-Null
     Write-Host "      [OK] Original network and system parameters restored." -ForegroundColor Green

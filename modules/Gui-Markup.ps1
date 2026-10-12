@@ -215,6 +215,7 @@ $Global:xamlContent = @'
         <Border Grid.Row="0" Background="#121822" BorderBrush="#26354A" BorderThickness="0,0,0,1" Padding="20,14">
             <Grid>
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
@@ -233,7 +234,29 @@ $Global:xamlContent = @'
                     </StackPanel>
                 </StackPanel>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <!-- LIVE HARDWARE TELEMETRY HUD -->
+                <Border Grid.Column="1" Background="#0A0E14" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,6" Margin="16,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
+                            <TextBlock Text="CPU: " FontWeight="Bold" FontSize="11" Foreground="#00D2FF"/>
+                            <TextBlock Name="TxtLiveCpu" Text="--%" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
+                            <TextBlock Text="RAM: " FontWeight="Bold" FontSize="11" Foreground="#00FF88"/>
+                            <TextBlock Name="TxtLiveRam" Text="-- GB (--%)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
+                            <TextBlock Text="PING: " FontWeight="Bold" FontSize="11" Foreground="#FF7700"/>
+                            <TextBlock Name="TxtLivePing" Text="-- ms" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="BOOSTER: " FontWeight="Bold" FontSize="11" Foreground="#A855F7"/>
+                            <TextBlock Name="TxtLiveBooster" Text="STANDBY" FontWeight="SemiBold" FontSize="12" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Name="BtnRestorePointTop" Content="Create Restore Point" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                     <Button Name="BtnMasActivateTop" Content="MAS Activation" Style="{StaticResource DarkOutlineButton}"/>
                 </StackPanel>
@@ -791,69 +814,89 @@ $Global:xamlContent = @'
 
             <!-- TAB 3: MATCH BOOSTER -->
             <TabItem Header="Match Booster">
-                <Grid Margin="0,10,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Row="0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                            <!-- Standby Memory Purger Card -->
+                            <Border Grid.Column="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,0,8,0">
+                                <StackPanel>
+                                    <TextBlock Text="STANDBY MEMORY PURGER" FontWeight="Bold" FontSize="14" Foreground="#00D2FF" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Clears cached standby list RAM instantly, preventing stutter during gaming matches." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
+                                    <Button Name="BtnPurgeStandby" Content="Purge Standby Memory (One-Time Run)" Style="{StaticResource CyanButton}" Margin="0,0,0,14"/>
 
-                        <!-- Standby Memory Purger Card -->
-                        <Border Grid.Column="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,0,8,0">
+                                    <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                                        <StackPanel>
+                                            <TextBlock Text="BACKGROUND AUTO-PURGE SCHEDULE" FontWeight="Bold" FontSize="11" Foreground="#00FF88" Margin="0,0,0,6"/>
+                                            <TextBlock Text="Set background Task Scheduler auto-clean interval:" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
+                                            <Grid Margin="0,0,0,8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <ComboBox Name="CmbStandbyInterval" SelectedIndex="0" Background="#161E2B" Foreground="#000000" BorderBrush="#26354A" BorderThickness="1" Padding="6,4" VerticalAlignment="Center">
+                                                    <ComboBoxItem Content="5 Minutes (Esports Default)" Tag="5"/>
+                                                    <ComboBoxItem Content="10 Minutes (Balanced)" Tag="10"/>
+                                                    <ComboBoxItem Content="15 Minutes (Low Overhead)" Tag="15"/>
+                                                    <ComboBoxItem Content="30 Minutes (Standard)" Tag="30"/>
+                                                </ComboBox>
+                                                <Button Name="BtnSetStandbySchedule" Grid.Column="1" Content="Activate" Style="{StaticResource MiniApplyButton}" Margin="6,0,0,0" Padding="10,5" VerticalAlignment="Center"/>
+                                            </Grid>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Name="TxtStandbyTaskStatus" Grid.Column="0" Text="Status: Checking..." FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                                <Button Name="BtnRemoveStandbySchedule" Grid.Column="1" Content="Disable" Style="{StaticResource MiniApplyButton}" Padding="10,5" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                    <TextBlock Text="Uses Win32 memory management API with zero disk wear." FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Wi-Fi Ping Spike Shield Card -->
+                            <Border Grid.Column="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="8,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="WI-FI LATENCY SPIKE SHIELD" FontWeight="Bold" FontSize="14" Foreground="#FF7700" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Toggles WLAN AutoConfig to halt background network roaming scans." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
+                                    <Button Name="BtnToggleWifiScan" Content="Toggle Wi-Fi AutoConfig" Style="{StaticResource OrangeButton}" Margin="0,0,0,10"/>
+                                    <TextBlock Text="Enable before entering matches to stop 60-second periodic 200ms ping spikes." FontSize="11" Foreground="#64748B"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- Smart Game Booster Daemon Card -->
+                        <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,14,0,0">
                             <StackPanel>
-                                <TextBlock Text="STANDBY MEMORY PURGER" FontWeight="Bold" FontSize="14" Foreground="#00D2FF" Margin="0,0,0,6"/>
-                                <TextBlock Text="Clears cached standby list RAM instantly, preventing stutter during gaming matches." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
-                                <Button Name="BtnPurgeStandby" Content="Purge Standby Memory (One-Time Run)" Style="{StaticResource CyanButton}" Margin="0,0,0,14"/>
-
-                                <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
-                                    <StackPanel>
-                                        <TextBlock Text="BACKGROUND AUTO-PURGE SCHEDULE" FontWeight="Bold" FontSize="11" Foreground="#00FF88" Margin="0,0,0,6"/>
-                                        <TextBlock Text="Set background Task Scheduler auto-clean interval:" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <ComboBox Name="CmbStandbyInterval" SelectedIndex="0" Background="#161E2B" Foreground="#000000" BorderBrush="#26354A" BorderThickness="1" Padding="6,4" VerticalAlignment="Center">
-                                                <ComboBoxItem Content="5 Minutes (Esports Default)" Tag="5"/>
-                                                <ComboBoxItem Content="10 Minutes (Balanced)" Tag="10"/>
-                                                <ComboBoxItem Content="15 Minutes (Low Overhead)" Tag="15"/>
-                                                <ComboBoxItem Content="30 Minutes (Standard)" Tag="30"/>
-                                            </ComboBox>
-                                            <Button Name="BtnSetStandbySchedule" Grid.Column="1" Content="Activate" Style="{StaticResource MiniApplyButton}" Margin="6,0,0,0" Padding="10,5" VerticalAlignment="Center"/>
-                                        </Grid>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Name="TxtStandbyTaskStatus" Grid.Column="0" Text="Status: Checking..." FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                            <Button Name="BtnRemoveStandbySchedule" Grid.Column="1" Content="Disable" Style="{StaticResource MiniApplyButton}" Padding="10,5" VerticalAlignment="Center"/>
-                                        </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                        <TextBlock Text="SMART GAME BOOSTER DAEMON (AUTO-DETECTION ENGINE)" FontWeight="Bold" FontSize="14" Foreground="#A855F7" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Watches for 20+ competitive titles (CS2, Valorant, Apex, Fortnite, COD, etc.). When a game launches, instantly purges standby RAM, trims background memory hogs (Chrome/Discord/Spotify), locks High CPU priority, and engages Wi-Fi Ping Shield." Foreground="#94A3B8" FontSize="12" TextWrapping="Wrap"/>
                                     </StackPanel>
-                                </Border>
-                                <TextBlock Text="Uses Win32 memory management API with zero disk wear." FontSize="11" Foreground="#64748B"/>
+                                    <Border Grid.Column="1" Background="#0A0E14" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,6" VerticalAlignment="Center">
+                                        <TextBlock Name="TxtDaemonStatus" Text="Status: INACTIVE (Stopped)" FontSize="12" FontWeight="Bold" Foreground="#94A3B8"/>
+                                    </Border>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Name="BtnStartGameBooster" Content="Start Smart Booster Daemon" Style="{StaticResource CyanButton}" Margin="0,0,10,0"/>
+                                    <Button Name="BtnStopGameBooster" Content="Stop Daemon" Style="{StaticResource DarkOutlineButton}"/>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
 
-                        <!-- Wi-Fi Ping Spike Shield Card -->
-                        <Border Grid.Column="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="8,0,0,0">
-                            <StackPanel>
-                                <TextBlock Text="WI-FI LATENCY SPIKE SHIELD" FontWeight="Bold" FontSize="14" Foreground="#FF7700" Margin="0,0,0,6"/>
-                                <TextBlock Text="Toggles WLAN AutoConfig to halt background network roaming scans." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
-                                <Button Name="BtnToggleWifiScan" Content="Toggle Wi-Fi AutoConfig" Style="{StaticResource OrangeButton}" Margin="0,0,0,10"/>
-                                <TextBlock Text="Enable before entering matches to stop 60-second periodic 200ms ping spikes." FontSize="11" Foreground="#64748B"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-
-                    <!-- Esports Game Priority Hooks Card -->
-                    <Border Grid.Row="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,14,0,0">
+                        <!-- Esports Game Priority Hooks Card -->
+                        <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,14,0,0">
                         <StackPanel>
                             <TextBlock Text="ESPORTS GAME HIGH-PRIORITY HOOKS (IFEO)" FontWeight="Bold" FontSize="14" Foreground="#00FF88" Margin="0,0,0,6"/>
                             <TextBlock Text="Locks CPU High Priority and GPU High Performance for esports titles permanently via Windows IFEO registry:" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,12"/>
@@ -885,7 +928,8 @@ $Global:xamlContent = @'
                             <Button Name="BtnApplyGameHooks" Content="Install Esports Priority Hooks" Style="{StaticResource CyanButton}" HorizontalAlignment="Left"/>
                         </StackPanel>
                     </Border>
-                </Grid>
+                    </StackPanel>
+                </ScrollViewer>
             </TabItem>
 
                                     <!-- TAB 4: SYSTEM & HARDENING TOOLS -->

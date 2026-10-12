@@ -64,7 +64,14 @@ function Start-PumpkiNGui {
     $btnRemoveStandbySchedule = $window.FindName("BtnRemoveStandbySchedule")
     $txtStandbyTaskStatus    = $window.FindName("TxtStandbyTaskStatus")
     $btnToggleWifiScan       = $window.FindName("BtnToggleWifiScan")
-    $btnApplyGameHooks       = $window.FindName("BtnApplyGameHooks")
+        $btnApplyGameHooks       = $window.FindName("BtnApplyGameHooks")
+    $txtLiveCpu              = $window.FindName("TxtLiveCpu")
+    $txtLiveRam              = $window.FindName("TxtLiveRam")
+    $txtLivePing             = $window.FindName("TxtLivePing")
+    $txtLiveBooster          = $window.FindName("TxtLiveBooster")
+    $txtDaemonStatus         = $window.FindName("TxtDaemonStatus")
+    $btnStartGameBooster     = $window.FindName("BtnStartGameBooster")
+    $btnStopGameBooster      = $window.FindName("BtnStopGameBooster")
 
     $btnMasActivate     = $window.FindName("BtnMasActivate")
     $btnMasActivateTop  = $window.FindName("BtnMasActivateTop")
@@ -558,6 +565,39 @@ function Start-PumpkiNGui {
         & $script:LogToGui "[+] Esports Priority Hooks installed for CS2, Valorant, Apex, Fortnite, COD!"
     })
 
+    # Smart Game Booster Daemon Handlers
+    $updateDaemonStatusUI = {
+        if ($txtDaemonStatus) {
+            $dStat = Get-SmartGameBoosterStatus
+            $txtDaemonStatus.Text = "Status: $($dStat.DisplayText)"
+            if ($dStat.IsActive) {
+                $txtDaemonStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+            } else {
+                $txtDaemonStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+            }
+        }
+    }
+
+    if ($btnStartGameBooster) {
+        $btnStartGameBooster.Add_Click({
+            & $script:LogToGui "[*] Starting Smart Game Booster Daemon (Auto-Detection Engine)..."
+            $ok = Start-SmartGameBoosterDaemon
+            & $updateDaemonStatusUI
+            if ($ok) {
+                & $script:LogToGui "[+] Smart Game Booster Daemon is ACTIVE: Monitoring 20+ competitive games!"
+            }
+        })
+    }
+
+    if ($btnStopGameBooster) {
+        $btnStopGameBooster.Add_Click({
+            & $script:LogToGui "[*] Stopping Smart Game Booster Daemon..."
+            $ok = Stop-SmartGameBoosterDaemon
+            & $updateDaemonStatusUI
+            & $script:LogToGui "[+] Smart Game Booster Daemon stopped. Normal settings restored."
+        })
+    }
+
     # Tab 4: System & Hardening Handlers
     $btnApplyHardening.Add_Click({
         & $script:LogToGui "=== APPLYING ALL SYSTEM & HARDENING TWEAKS ==="
@@ -711,6 +751,42 @@ function Start-PumpkiNGui {
     & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v2.5.0 initialized."
     & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"
     & $script:LogToGui "Select tweaks or software to install, then click the action button."
+
+    # Live Hardware Telemetry DispatcherTimer
+    $telemetryTimer = New-Object System.Windows.Threading.DispatcherTimer
+    $telemetryTimer.Interval = [TimeSpan]::FromSeconds(2.5)
+    $updateTelemetryAction = {
+        try {
+            $t = Get-LiveHardwareTelemetry
+            if ($txtLiveCpu) { $txtLiveCpu.Text = "$($t.CpuLoad)%" }
+            if ($txtLiveRam) { $txtLiveRam.Text = "$($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%)" }
+            if ($txtLivePing) {
+                $txtLivePing.Text = if ($t.PingMs -ge 0) { "$($t.PingMs) ms" } else { "--" }
+            }
+            if ($txtLiveBooster) {
+                $txtLiveBooster.Text = $t.BoosterStatus
+                if ($t.BoosterStatus -like "BOOST*") {
+                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+                } elseif ($t.BoosterStatus -like "ACTIVE*") {
+                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#A855F7")
+                } else {
+                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+                }
+            }
+            & $updateDaemonStatusUI
+        } catch {}
+    }
+    $telemetryTimer.Add_Tick($updateTelemetryAction)
+    $telemetryTimer.Start()
+    & $updateTelemetryAction
+
+    # Clean shutdown on window close
+    $window.Add_Closing({
+        try {
+            if ($telemetryTimer) { $telemetryTimer.Stop() }
+            Stop-SmartGameBoosterDaemon
+        } catch {}
+    })
 
     # Launch GUI Window
     [void]$window.ShowDialog()
