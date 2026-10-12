@@ -164,71 +164,83 @@ function Start-PumpkiNGui {
         $txtStatus.Text = "Log cleared"
     })
 
-    # Build Application Cards Dynamically
+    # Build Application Cards Dynamically with Fast [Type]::new() Constructors
     $script:AllAppCards = [System.Collections.Generic.List[PSCustomObject]]::new()
-    $brushNormalBg = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#161E2B")
-    $brushHoverBg  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1E293B")
+    $brushNormalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#161E2B")
+    $brushHoverBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1E293B")
     $brushNormalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#26354A")
     $brushHoverBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-    $brushCyan = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-    $brushTextDim = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-    $brushTextSub = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#64748B")
+    $brushCyan         = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+    $brushTextDim      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+    $brushTextSub      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#64748B")
+    $badgeBg           = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
+    $whiteBrush        = [System.Windows.Media.Brushes]::White
+    $handCursor        = [System.Windows.Input.Cursors]::Hand
+
+    # Reusable layout metrics to eliminate redundant object allocations
+    $thick1      = [System.Windows.Thickness]::new(1)
+    $thick4      = [System.Windows.Thickness]::new(4, 1, 4, 1)
+    $thick5      = [System.Windows.Thickness]::new(5)
+    $thick10     = [System.Windows.Thickness]::new(10)
+    $thickChk    = [System.Windows.Thickness]::new(0, 4, 10, 0)
+    $thickDesc   = [System.Windows.Thickness]::new(0, 3, 0, 0)
+    $thickBadge  = [System.Windows.Thickness]::new(4, 0, 0, 0)
+    $corn6       = [System.Windows.CornerRadius]::new(6)
+    $corn3       = [System.Windows.CornerRadius]::new(3)
+    $starGrid    = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+    $autoGrid    = [System.Windows.GridLength]::Auto
 
     foreach ($app in $Global:AppCatalog) {
-        $card = New-Object System.Windows.Controls.Border
+        $card = [System.Windows.Controls.Border]::new()
         $card.Width = 275
         $card.Height = 110
         $card.Background = $brushNormalBg
         $card.BorderBrush = $brushNormalBorder
-        $card.BorderThickness = New-Object System.Windows.Thickness(1)
-        $card.CornerRadius = New-Object System.Windows.CornerRadius(6)
-        $card.Margin = New-Object System.Windows.Thickness(5)
-        $card.Padding = New-Object System.Windows.Thickness(10)
-        $card.Cursor = [System.Windows.Input.Cursors]::Hand
+        $card.BorderThickness = $thick1
+        $card.CornerRadius = $corn6
+        $card.Margin = $thick5
+        $card.Padding = $thick10
+        $card.Cursor = $handCursor
 
-        $grid = New-Object System.Windows.Controls.Grid
-        $col0 = New-Object System.Windows.Controls.ColumnDefinition
-        $col0.Width = [System.Windows.GridLength]::Auto
-        $col1 = New-Object System.Windows.Controls.ColumnDefinition
-        $col1.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
+        $grid = [System.Windows.Controls.Grid]::new()
+        $col0 = [System.Windows.Controls.ColumnDefinition]::new(); $col0.Width = $autoGrid
+        $col1 = [System.Windows.Controls.ColumnDefinition]::new(); $col1.Width = $starGrid
         [void]$grid.ColumnDefinitions.Add($col0)
         [void]$grid.ColumnDefinitions.Add($col1)
 
-        $chk = New-Object System.Windows.Controls.CheckBox
-        $chk.Margin = New-Object System.Windows.Thickness(0, 4, 10, 0)
+        $chk = [System.Windows.Controls.CheckBox]::new()
+        $chk.Margin = $thickChk
         $chk.Tag = $app.WingetId
         $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
         [System.Windows.Controls.Grid]::SetColumn($chk, 0)
         [void]$grid.Children.Add($chk)
 
-        $sp = New-Object System.Windows.Controls.StackPanel
+        $sp = [System.Windows.Controls.StackPanel]::new()
         [System.Windows.Controls.Grid]::SetColumn($sp, 1)
 
-        $topRow = New-Object System.Windows.Controls.Grid
-        $trCol0 = New-Object System.Windows.Controls.ColumnDefinition
-        $trCol0.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
-        $trCol1 = New-Object System.Windows.Controls.ColumnDefinition
-        $trCol1.Width = [System.Windows.GridLength]::Auto
+        $topRow = [System.Windows.Controls.Grid]::new()
+        $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
+        $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
         [void]$topRow.ColumnDefinitions.Add($trCol0)
         [void]$topRow.ColumnDefinitions.Add($trCol1)
 
-        $titleBlock = New-Object System.Windows.Controls.TextBlock
+        $titleBlock = [System.Windows.Controls.TextBlock]::new()
         $titleBlock.Text = $app.Name
         $titleBlock.FontWeight = [System.Windows.FontWeights]::SemiBold
         $titleBlock.FontSize = 12
-        $titleBlock.Foreground = [System.Windows.Media.Brushes]::White
+        $titleBlock.Foreground = $whiteBrush
         $titleBlock.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
         [System.Windows.Controls.Grid]::SetColumn($titleBlock, 0)
         [void]$topRow.Children.Add($titleBlock)
 
-        $catBadge = New-Object System.Windows.Controls.Border
-        $catBadge.Background = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
+        $catBadge = [System.Windows.Controls.Border]::new()
+        $catBadge.Background = $badgeBg
         $catBadge.BorderBrush = $brushCyan
-        $catBadge.BorderThickness = New-Object System.Windows.Thickness(1)
-        $catBadge.CornerRadius = New-Object System.Windows.CornerRadius(3)
-        $catBadge.Padding = New-Object System.Windows.Thickness(4, 1, 4, 1)
-        $catBadge.Margin = New-Object System.Windows.Thickness(4, 0, 0, 0)
-        $catText = New-Object System.Windows.Controls.TextBlock
+        $catBadge.BorderThickness = $thick1
+        $catBadge.CornerRadius = $corn3
+        $catBadge.Padding = $thick4
+        $catBadge.Margin = $thickBadge
+        $catText = [System.Windows.Controls.TextBlock]::new()
         $catText.Text = $app.Category
         $catText.FontSize = 9
         $catText.Foreground = $brushCyan
@@ -238,21 +250,21 @@ function Start-PumpkiNGui {
 
         [void]$sp.Children.Add($topRow)
 
-        $descBlock = New-Object System.Windows.Controls.TextBlock
+        $descBlock = [System.Windows.Controls.TextBlock]::new()
         $descBlock.Text = $app.Description
         $descBlock.Foreground = $brushTextDim
         $descBlock.FontSize = 10
         $descBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
         $descBlock.MaxHeight = 32
         $descBlock.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
-        $descBlock.Margin = New-Object System.Windows.Thickness(0, 3, 0, 0)
+        $descBlock.Margin = $thickDesc
         [void]$sp.Children.Add($descBlock)
 
-        $idBlock = New-Object System.Windows.Controls.TextBlock
+        $idBlock = [System.Windows.Controls.TextBlock]::new()
         $idBlock.Text = $app.WingetId
         $idBlock.Foreground = $brushTextSub
         $idBlock.FontSize = 9
-        $idBlock.Margin = New-Object System.Windows.Thickness(0, 3, 0, 0)
+        $idBlock.Margin = $thickDesc
         [void]$sp.Children.Add($idBlock)
 
         [void]$grid.Children.Add($sp)
@@ -825,12 +837,12 @@ function Start-PumpkiNGui {
     # Initial Log Greeting & Status
     & $updateStandbyStatus
     $hw = Get-HardwareProfile
-    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v2.5.0 initialized."
+    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.2.0 initialized."
     & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"
     & $script:LogToGui "Select tweaks or software to install, then click the action button."
 
     # Live Hardware Telemetry DispatcherTimer
-    $telemetryTimer = New-Object System.Windows.Threading.DispatcherTimer
+    $telemetryTimer = [System.Windows.Threading.DispatcherTimer]::new()
     $telemetryTimer.Interval = [TimeSpan]::FromSeconds(2.5)
     $updateTelemetryAction = {
         try {
