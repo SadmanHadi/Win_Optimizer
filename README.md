@@ -1,4 +1,4 @@
-# 🎃 PumpkiN's Ultimate Windows & Gaming Optimizer v4.0
+# 🎃 PumpkiN's Ultimate Windows & Gaming Optimizer v4.1
 
 > **The all-in-one low-latency, high-FPS Windows performance engine for competitive gaming.**  
 > Zero external executable downloads • 100% Native PowerShell & Batch • Safe, modular, and fully reversible.  
@@ -26,7 +26,43 @@ irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps
 
 ---
 
-## 🚀 Key Features in v4.0 Ultimate Edition
+## 📁 Repository & Architecture Overview
+
+Everything in this repository is cleanly organized and self-contained:
+
+```text
+Win_Optimizer/
+├── PumpkiN_Ultimate_Gaming_Optimizer.bat    # Universal double-clickable CMD menu launcher
+├── optimizer.ps1                            # Core all-in-one PowerShell engine
+├── README.md                                # Documentation and quick-start guide
+├── LICENSE                                  # Open-source MIT License
+│
+├── analysis/                                # Comprehensive technical analysis dossier
+│   ├── PC_OPTIMIZER_ANALYSIS.md             # Deep-dive engineering analysis of all tweaks
+│   ├── HARDWARE_BENCHMARK_PROFILE.md        # Hardware audit & latency improvement matrix
+│   └── NETWORK_LATENCY_REPORT.md            # Netcode, Nagle, delayed ACKs & Wi-Fi scan analysis
+│
+└── modules/                                 # Modular standalone scripts (run individually)
+    ├── Optimize-AmdGpu.ps1                  # Standalone AMD Radeon ULPS & Anti-Lag tool
+    ├── Optimize-NvidiaGpu.ps1               # Standalone NVIDIA PowerMizer P0 tool
+    ├── Optimize-Network.ps1                 # Standalone network & anti-lag suite
+    ├── Optimize-InputLatency.ps1            # Standalone 8000Hz mouse queue & 1:1 raw curve
+    ├── Match-Booster.ps1                    # Pre-match background cleaner & RAM flusher
+    └── Toggle-WifiScan.ps1                  # Wi-Fi background roaming spike toggle
+```
+
+---
+
+## 🔬 In-Depth Analysis Reports
+
+Read our comprehensive technical documentation in the [`analysis/`](analysis/) directory:
+* 📖 [**PC_OPTIMIZER_ANALYSIS.md**](analysis/PC_OPTIMIZER_ANALYSIS.md) — Explains the kernel, driver, and GPU mechanics behind every single tweak.
+* 🖥️ [**HARDWARE_BENCHMARK_PROFILE.md**](analysis/HARDWARE_BENCHMARK_PROFILE.md) — Full hardware specification audit of the test rig (Ryzen 7 5800X3D, RTX 3080, 32GB DDR4) and measured latency reductions.
+* 🌐 [**NETWORK_LATENCY_REPORT.md**](analysis/NETWORK_LATENCY_REPORT.md) — Detailed breakdown of Nagle's algorithm, delayed ACKs, bufferbloat, and Wi-Fi 60-second ping spikes.
+
+---
+
+## 🚀 Key Features in v4.1 Ultimate Edition
 
 ### 🔴 1. Dedicated AMD Radeon GPU Optimization Suite
 * **ULPS (Ultra Low Power State) Disabled:** Disables `EnableUlps` and `EnableUlps_NA` across all active display driver registry keys. Eliminates aggressive core power gating that causes frametime drops, 1% low stuttering, and multi-monitor sleep freezes.
@@ -87,9 +123,9 @@ irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps
 
 ## 📋 Menu Overview
 
-```
+```text
 ================================================================================
-           ULTIMATE GAMING & NETWORK OPTIMIZER v4.0
+           ULTIMATE GAMING & NETWORK OPTIMIZER v4.1
           Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 
