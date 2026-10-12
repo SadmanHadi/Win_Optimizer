@@ -59,6 +59,16 @@ function Optimize-HardwareMsiMode {
                     $isTarget = $true
                     $targetDesc = "Display GPU"
                 }
+                # Check for High Definition Audio Controllers
+                elseif ($props.Class -eq 'MEDIA' -or $props.ClassGUID -eq '{4d36e96c-e325-11ce-bfc1-08002be10318}' -or $props.Service -match 'HDAudBus|IntcAzAudAddService|Realtek') {
+                    $isTarget = $true
+                    $targetDesc = "Audio Controller"
+                }
+                # Check for NVMe Storage Controllers
+                elseif ($props.Class -eq 'SCSIAdapter' -or $props.ClassGUID -eq '{4d36e97b-e325-11ce-bfc1-08002be10318}' -or $props.Service -match 'stornvme') {
+                    $isTarget = $true
+                    $targetDesc = "NVMe Storage"
+                }
 
                 if ($isTarget) {
                     $devParam = Join-Path $inst.PSPath 'Device Parameters'

@@ -1,6 +1,6 @@
 <#
 ================================================================================
-  PumpkiN's Modular Suite: 8000Hz Input Buffer & 1:1 Raw Mouse Curve Suite
+  PumpkiN's Modular Suite: 8000Hz Input, Audio DPC & Hardware Interrupt Suite
 ================================================================================
 #>
 
@@ -18,7 +18,7 @@ function Optimize-LatencyAndInput {
     # Dynamic Tick Jitter Elimination & x2APIC
     bcdedit /set disabledynamictick yes | Out-Null
     bcdedit /set x2apicpolicy Enable | Out-Null
-    bcdedit /deletevalue useplatformclock | Out-Null
+    bcdedit /deletevalue useplatformclock 2>$null | Out-Null
     Write-Host "      [+] StopHighDPC active + x2APIC enabled + dynamic tick jitter eliminated" -ForegroundColor Green
 
     # Input Queues for High-Polling Gaming Mice (Up to 8000Hz)
@@ -61,14 +61,274 @@ function Optimize-CsrssPriority {
     Write-Host "      [+] CSRSS Hooked -> Realtime CPU Priority (4) & Max I/O Priority (4)" -ForegroundColor Green
 }
 
+function Optimize-AudioDpcLatency {
+    <#
+    .SYNOPSIS
+        Tuning Windows Audio MMCSS, Network Throttling, and Hardware MSI Mode for Audio Controllers.
+    .DESCRIPTION
+        Eliminates audio pops, latency spikes, and buffer dropouts during competitive gaming.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Optimizing Audio DPC Latency, MMCSS Priority & Controller IRQs..." -ForegroundColor Yellow
+
+    # Multimedia SystemProfile Network Throttling & Responsiveness
+    $sysProf = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile'
+    if (-not (Test-Path $sysProf)) { New-Item -Path $sysProf -Force | Out-Null }
+    Set-ItemProperty -Path $sysProf -Name 'NetworkThrottlingIndex' -Value 0xFFFFFFFF -Type DWord
+    Set-ItemProperty -Path $sysProf -Name 'SystemResponsiveness' -Value 0 -Type DWord
+
+    # Multimedia Audio Task Scheduling
+    $audioTask = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Audio'
+    if (-not (Test-Path $audioTask)) { New-Item -Path $audioTask -Force | Out-Null }
+    Set-ItemProperty -Path $audioTask -Name 'Affinity' -Value 0 -Type DWord
+    Set-ItemProperty -Path $audioTask -Name 'Background Only' -Value 'False' -Type String
+    Set-ItemProperty -Path $audioTask -Name 'Clock Rate' -Value 10000 -Type DWord
+    Set-ItemProperty -Path $audioTask -Name 'GPU Priority' -Value 8 -Type DWord
+    Set-ItemProperty -Path $audioTask -Name 'Priority' -Value 6 -Type DWord
+    Set-ItemProperty -Path $audioTask -Name 'Scheduling Category' -Value 'High' -Type String
+    Set-ItemProperty -Path $audioTask -Name 'SFIO Priority' -Value 'High' -Type String
+    Write-Host "      [+] Audio MMCSS Task configured: High Scheduling Category & Priority 6" -ForegroundColor Green
+
+    # High Definition Audio Controller MSI Mode & High Priority
+    $pciBase = 'HKLM:\SYSTEM\CurrentControlSet\Enum\PCI'
+    $audioCount = 0
+    if (Test-Path $pciBase) {
+        $pciDevices = Get-ChildItem -Path $pciBase -ErrorAction SilentlyContinue
+        foreach ($dev in $pciDevices) {
+            $instances = Get-ChildItem -Path $dev.PSPath -ErrorAction SilentlyContinue
+            foreach ($inst in $instances) {
+                $props = Get-ItemProperty -Path $inst.PSPath -ErrorAction SilentlyContinue
+                if (-not $props) { continue }
+
+                if ($props.Class -eq 'MEDIA' -or $props.ClassGUID -eq '{4d36e96c-e325-11ce-bfc1-08002be10318}' -or $props.Service -match 'HDAudBus|IntcAzAudAddService|Realtek') {
+                    $devParam = Join-Path $inst.PSPath 'Device Parameters'
+                    $intMgmt = Join-Path $devParam 'Interrupt Management'
+                    $msiProps = Join-Path $intMgmt 'MessageSignaledInterruptProperties'
+                    $affPolicy = Join-Path $intMgmt 'Affinity Policy'
+
+                    if (-not (Test-Path $msiProps)) { New-Item -Path $msiProps -Force | Out-Null }
+                    Set-ItemProperty -Path $msiProps -Name 'MSISupported' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+                    if (-not (Test-Path $affPolicy)) { New-Item -Path $affPolicy -Force | Out-Null }
+                    Set-ItemProperty -Path $affPolicy -Name 'DevicePriority' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+
+                    $name = if ($props.DeviceDesc) { ($props.DeviceDesc -replace ';.*', '') } else { "Audio Controller" }
+                    Write-Host "      [+] Audio Controller MSI Mode & High Priority: $name" -ForegroundColor Green
+                    $audioCount++
+                }
+            }
+        }
+    }
+
+    Write-Host "      [OK] Audio DPC Latency optimization applied ($audioCount Audio Controllers hooked)!" -ForegroundColor Green
+    return $true
+}
+
+function Optimize-UsbLatencyAndBuffers {
+    <#
+    .SYNOPSIS
+        Sets real-time USB xHCI thread priority, enables MSI Mode on USB controllers, and maximizes input buffers.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Tuning USB xHCI Realtime Thread Priority & Polling Queues..." -ForegroundColor Yellow
+
+    # USBXHCI Realtime ThreadPriority
+    $xhciKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\USBXHCI\Parameters'
+    if (-not (Test-Path $xhciKey)) { New-Item -Path $xhciKey -Force | Out-Null }
+    Set-ItemProperty -Path $xhciKey -Name 'ThreadPriority' -Value 31 -Type DWord
+    Write-Host "      [+] USBXHCI ThreadPriority set to 31 (Realtime Kernel Execution)" -ForegroundColor Green
+
+    # High-Polling Input Queues
+    $mouKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\mouclass\Parameters'
+    if (Test-Path $mouKey) { Set-ItemProperty -Path $mouKey -Name 'MouseDataQueueSize' -Value 200 -Type DWord }
+    $kbdKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters'
+    if (Test-Path $kbdKey) { Set-ItemProperty -Path $kbdKey -Name 'KeyboardDataQueueSize' -Value 100 -Type DWord }
+
+    # USB Host Controllers MSI Mode & High Priority
+    $pciBase = 'HKLM:\SYSTEM\CurrentControlSet\Enum\PCI'
+    $usbCount = 0
+    if (Test-Path $pciBase) {
+        $pciDevices = Get-ChildItem -Path $pciBase -ErrorAction SilentlyContinue
+        foreach ($dev in $pciDevices) {
+            $instances = Get-ChildItem -Path $dev.PSPath -ErrorAction SilentlyContinue
+            foreach ($inst in $instances) {
+                $props = Get-ItemProperty -Path $inst.PSPath -ErrorAction SilentlyContinue
+                if (-not $props) { continue }
+
+                if ($props.Class -eq 'USB' -or $props.ClassGUID -eq '{36fc9e60-c465-11cf-8056-444553540000}' -or $props.Service -match 'USBXHCI|usbehci') {
+                    $devParam = Join-Path $inst.PSPath 'Device Parameters'
+                    $intMgmt = Join-Path $devParam 'Interrupt Management'
+                    $msiProps = Join-Path $intMgmt 'MessageSignaledInterruptProperties'
+                    $affPolicy = Join-Path $intMgmt 'Affinity Policy'
+
+                    if (-not (Test-Path $msiProps)) { New-Item -Path $msiProps -Force | Out-Null }
+                    Set-ItemProperty -Path $msiProps -Name 'MSISupported' -Value 1 -Type DWord -ErrorAction SilentlyContinue
+
+                    if (-not (Test-Path $affPolicy)) { New-Item -Path $affPolicy -Force | Out-Null }
+                    Set-ItemProperty -Path $affPolicy -Name 'DevicePriority' -Value 3 -Type DWord -ErrorAction SilentlyContinue
+
+                    $name = if ($props.DeviceDesc) { ($props.DeviceDesc -replace ';.*', '') } else { "USB Controller" }
+                    Write-Host "      [+] USB Controller MSI Mode & High Priority: $name" -ForegroundColor Green
+                    $usbCount++
+                }
+            }
+        }
+    }
+
+    if (Get-Command Disable-DevicePowerSaving -ErrorAction SilentlyContinue) {
+        Disable-DevicePowerSaving
+    }
+
+    Write-Host "      [OK] USB xHCI latency and buffer tuning complete ($usbCount USB Controllers hooked)!" -ForegroundColor Green
+    return $true
+}
+
+function Get-HardwareInterruptReport {
+    <#
+    .SYNOPSIS
+        Scans all critical PCI controllers and returns MSI Mode and Priority statuses.
+    #>
+    [CmdletBinding()]
+    param()
+
+    $pciBase = 'HKLM:\SYSTEM\CurrentControlSet\Enum\PCI'
+    $report = @()
+    if (Test-Path $pciBase) {
+        $pciDevices = Get-ChildItem -Path $pciBase -ErrorAction SilentlyContinue
+        foreach ($dev in $pciDevices) {
+            $instances = Get-ChildItem -Path $dev.PSPath -ErrorAction SilentlyContinue
+            foreach ($inst in $instances) {
+                $props = Get-ItemProperty -Path $inst.PSPath -ErrorAction SilentlyContinue
+                if (-not $props) { continue }
+
+                $cat = $null
+                if ($props.Class -eq 'Display' -or $props.ClassGUID -eq '{4d36e968-e325-11ce-bfc1-08002be10318}') {
+                    $cat = "GPU"
+                } elseif ($props.Class -eq 'USB' -or $props.ClassGUID -eq '{36fc9e60-c465-11cf-8056-444553540000}' -or $props.Service -match 'USBXHCI|usbehci') {
+                    $cat = "USB"
+                } elseif ($props.Class -eq 'Net' -or $props.ClassGUID -eq '{4d36e972-e325-11ce-bfc1-08002be10318}') {
+                    $cat = "Network"
+                } elseif ($props.Class -eq 'MEDIA' -or $props.ClassGUID -eq '{4d36e96c-e325-11ce-bfc1-08002be10318}' -or $props.Service -match 'HDAudBus|IntcAzAudAddService|Realtek') {
+                    $cat = "Audio"
+                } elseif ($props.Class -eq 'SCSIAdapter' -or $props.ClassGUID -eq '{4d36e97b-e325-11ce-bfc1-08002be10318}' -or $props.Service -match 'stornvme') {
+                    $cat = "NVMe"
+                }
+
+                if ($cat) {
+                    $devParam = Join-Path $inst.PSPath 'Device Parameters'
+                    $intMgmt = Join-Path $devParam 'Interrupt Management'
+                    $msiProps = Join-Path $intMgmt 'MessageSignaledInterruptProperties'
+                    $affPolicy = Join-Path $intMgmt 'Affinity Policy'
+
+                    $msiVal = 0
+                    if (Test-Path $msiProps) {
+                        $m = Get-ItemProperty -Path $msiProps -ErrorAction SilentlyContinue
+                        if ($m -and $m.MSISupported -ne $null) { $msiVal = $m.MSISupported }
+                    }
+
+                    $prioVal = 0
+                    if (Test-Path $affPolicy) {
+                        $p = Get-ItemProperty -Path $affPolicy -ErrorAction SilentlyContinue
+                        if ($p -and $p.DevicePriority -ne $null) { $prioVal = $p.DevicePriority }
+                    }
+
+                    $prioText = switch ($prioVal) {
+                        3 { "High" }
+                        2 { "Normal" }
+                        1 { "Low" }
+                        default { "Undefined" }
+                    }
+
+                    $desc = if ($props.DeviceDesc) { ($props.DeviceDesc -replace ';.*', '') } else { $cat }
+                    $report += [PSCustomObject]@{
+                        Category     = $cat
+                        DeviceName   = $desc
+                        MSISupported = ($msiVal -eq 1)
+                        Priority     = $prioText
+                        PriorityVal  = $prioVal
+                    }
+                }
+            }
+        }
+    }
+    return $report
+}
+
+function Restore-AudioDpcAndUsbLatency {
+    <#
+    .SYNOPSIS
+        Restores Windows default MMCSS audio task and input settings.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n[*] Restoring Windows Default Audio MMCSS & Input Settings..." -ForegroundColor Yellow
+
+    # Restore Multimedia SystemProfile defaults
+    $sysProf = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile'
+    if (Test-Path $sysProf) {
+        Set-ItemProperty -Path $sysProf -Name 'NetworkThrottlingIndex' -Value 10 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $sysProf -Name 'SystemResponsiveness' -Value 20 -Type DWord -ErrorAction SilentlyContinue
+    }
+
+    # Restore Audio MMCSS Task defaults
+    $audioTask = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Audio'
+    if (Test-Path $audioTask) {
+        Set-ItemProperty -Path $audioTask -Name 'Background Only' -Value 'True' -Type String -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $audioTask -Name 'Clock Rate' -Value 10000 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $audioTask -Name 'GPU Priority' -Value 8 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $audioTask -Name 'Priority' -Value 6 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $audioTask -Name 'Scheduling Category' -Value 'Medium' -Type String -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $audioTask -Name 'SFIO Priority' -Value 'Normal' -Type String -ErrorAction SilentlyContinue
+    }
+
+    # Remove USBXHCI ThreadPriority override
+    $xhciKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\USBXHCI\Parameters'
+    if (Test-Path $xhciKey) {
+        Remove-ItemProperty -Path $xhciKey -Name 'ThreadPriority' -ErrorAction SilentlyContinue
+    }
+
+    # Reset DataQueueSizes to 100
+    $mouKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\mouclass\Parameters'
+    if (Test-Path $mouKey) { Set-ItemProperty -Path $mouKey -Name 'MouseDataQueueSize' -Value 100 -Type DWord -ErrorAction SilentlyContinue }
+    $kbdKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\kbdclass\Parameters'
+    if (Test-Path $kbdKey) { Set-ItemProperty -Path $kbdKey -Name 'KeyboardDataQueueSize' -Value 100 -Type DWord -ErrorAction SilentlyContinue }
+
+    # Reset bcdedit dynamic tick
+    bcdedit /deletevalue disabledynamictick 2>$null | Out-Null
+
+    Write-Host "      [OK] Windows Audio MMCSS and USB Input settings restored to defaults." -ForegroundColor Green
+    return $true
+}
+
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
         Write-Host "[!] Administrator privileges required. Elevating..." -ForegroundColor Yellow
-        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File "$PSCommandPath"" -Verb RunAs
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs
         exit
     }
-    Optimize-LatencyAndInput
-    Read-Host "
-Press Enter to exit"
+    Write-Host "=== PUMPKIN DPC LATENCY & HARDWARE INTERRUPT SUITE ===" -ForegroundColor Cyan
+    Write-Host "1. Full 8000Hz Input Buffer & Latency Optimization"
+    Write-Host "2. Low-Latency Audio & Anti-Popping (MMCSS & Audio MSI Mode)"
+    Write-Host "3. USB xHCI Realtime Thread Priority & Polling Queues"
+    Write-Host "4. View Hardware Interrupt & MSI Report"
+    Write-Host "5. Restore Default Audio MMCSS & Input Settings"
+    $ans = Read-Host "Select option [1-5]"
+    switch ($ans) {
+        "1" { Optimize-LatencyAndInput }
+        "2" { Optimize-AudioDpcLatency }
+        "3" { Optimize-UsbLatencyAndBuffers }
+        "4" {
+            $rep = Get-HardwareInterruptReport
+            Write-Host "`nHardware Interrupt & MSI Status:" -ForegroundColor Cyan
+            $rep | Format-Table -AutoSize | Out-Host
+        }
+        "5" { Restore-AudioDpcAndUsbLatency }
+    }
+    Read-Host "`nPress Enter to exit"
 }

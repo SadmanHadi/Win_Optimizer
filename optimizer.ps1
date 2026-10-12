@@ -143,6 +143,9 @@ function Show-PumpkiNBanner {
     Write-Host "  [39] View Live Hardware Telemetry Monitor (Live CPU, RAM, Ping)" -ForegroundColor Green
     Write-Host "  [40] Activate PumpkiN Esports Ultimate Power Plan (0% Core Parking, Zero Latency)" -ForegroundColor Green
     Write-Host "  [41] Unpark 100% CPU Cores on Current Scheme & Unhide Power Settings" -ForegroundColor Cyan
+    Write-Host "  [42] Low-Latency Audio & Anti-Popping (MMCSS Audio High Priority & MSI Mode)" -ForegroundColor Magenta
+    Write-Host "  [43] USB xHCI Thread Priority & 8000Hz Buffers (ThreadPriority 31)" -ForegroundColor Yellow
+    Write-Host "  [44] Inspect Hardware MSI & Interrupt Audit Report (GPU, USB, Audio, Net, NVMe)" -ForegroundColor Cyan
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -150,13 +153,15 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-41]"
+        $choice = Read-Host "Select an option [0-44]"
         switch ($choice) {
             "1" {
                 Optimize-Network
                 Optimize-GpuAuto
                 Optimize-CpuAndSystem
                 Optimize-LatencyAndInput
+                Optimize-AudioDpcLatency
+                Optimize-UsbLatencyAndBuffers
                 Apply-GameHooks
                 Debloat-BackgroundServices
                 Invoke-PumpkiNEsportsPowerPlan
@@ -432,6 +437,21 @@ function Show-ConsoleMenu {
             }
             "41" {
                 Invoke-CpuCoreUnparking
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "42" {
+                Optimize-AudioDpcLatency
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "43" {
+                Optimize-UsbLatencyAndBuffers
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "44" {
+                Write-Host "`n=== HARDWARE MSI & INTERRUPT AUDIT REPORT ===" -ForegroundColor Cyan
+                $report = Get-HardwareInterruptReport
+                $report | Format-Table -AutoSize | Out-Host
+                Write-Host "[OK] Audited $($report.Count) total hardware controllers." -ForegroundColor Green
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

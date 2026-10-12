@@ -283,6 +283,9 @@ function Restore-Defaults {
     Remove-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate' -Recurse -Force -ErrorAction SilentlyContinue
     Restore-RecycleBinDefaultIcon
     Remove-StandbyListScheduledTask
+    if (Get-Command Restore-AudioDpcAndUsbLatency -ErrorAction SilentlyContinue) {
+        Restore-AudioDpcAndUsbLatency
+    }
     Write-Host "      [+] WinUtil hardening & Snappy OS tweaks reverted to Windows defaults" -ForegroundColor Green
 
     Write-Host "      [OK] ALL settings restored to Windows defaults!" -ForegroundColor Green

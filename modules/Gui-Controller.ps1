@@ -665,7 +665,30 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_Privacy" "Disable Telemetry" { Harden-PrivacyTelemetry }
     Register-QuickTweakButton "BtnApply_DeepCache" "Deep Cache & Event Cleaner" { Invoke-DeepCacheCleaner }
     Register-QuickTweakButton "BtnApply_ShaderCache" "GPU Shader & Browser Cache Purge" { Invoke-ShaderAndBrowserCacheCleaner }
+    Register-QuickTweakButton "BtnApply_AudioDpc" "Audio DPC & Anti-Popping" { Optimize-AudioDpcLatency }
+    Register-QuickTweakButton "BtnApply_UsbxHci" "USB xHCI Realtime Thread" { Optimize-UsbLatencyAndBuffers }
     Register-QuickTweakButton "BtnResetDns" "Reset DNS to DHCP Defaults" { Reset-DnsToAutomatic }
+
+    # Hardware MSI & Interrupt Audit Report
+    $btnReportInterrupts = $window.FindName("BtnReport_Interrupts")
+    if ($btnReportInterrupts) {
+        $btnReportInterrupts.Add_Click({
+            & $script:LogToGui "`n=== HARDWARE MSI & INTERRUPT AUDIT REPORT ==="
+            try {
+                $report = Get-HardwareInterruptReport
+                & $script:LogToGui ("{0,-12} | {1,-5} | {2,-10} | {3}" -f "CATEGORY", "MSI", "PRIORITY", "CONTROLLER")
+                & $script:LogToGui ("----------------------------------------------------------------------")
+                foreach ($r in $report) {
+                    $msiStr = if ($r.MSISupported) { "YES" } else { "NO" }
+                    & $script:LogToGui ("{0,-12} | {1,-5} | {2,-10} | {3}" -f $r.Category, $msiStr, $r.Priority, $r.DeviceName)
+                }
+                & $script:LogToGui ("======================================================================")
+                & $script:LogToGui "[OK] Hardware interrupt audit complete. Total controllers inspected: $($report.Count)"
+            } catch {
+                & $script:LogToGui "[!] Interrupt report error: $($_.Exception.Message)"
+            }
+        })
+    }
 
     # Gaming DNS Benchmark & Auto-Apply Winner
     $btnBenchmarkDns = $window.FindName("BtnBenchmarkDns")
