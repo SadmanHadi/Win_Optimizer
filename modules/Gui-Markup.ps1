@@ -8,7 +8,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.1.0"
+    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.2.0"
     Height="840" Width="1240"
     MinHeight="700" MinWidth="1000"
     WindowStartupLocation="CenterScreen"
@@ -227,7 +227,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="20" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center"/>
                             <TextBlock Text=" ULTIMATE OPTIMIZER" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.1.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
+                                <TextBlock Text="v5.2.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Ultra Low-Latency Windows Kernel Engine &amp; 10-Category WinGet Software Suite" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>

@@ -6,8 +6,8 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-           ULTIMATE GAMING & NETWORK OPTIMIZER v5.1.0
-          Created by PumpkiN | Max FPS - Ultra Low Latency
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.2.0
+           Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
 irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex
@@ -29,7 +29,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.1.0"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.2.0"
 
 # ==============================================================================
 # 2. MODULAR LOADER ENGINE (LOCAL + REMOTE GITHUB FALLBACK)
@@ -55,6 +55,26 @@ $ModuleList = @(
 
 $moduleBaseDir = if ($PSScriptRoot) { Join-Path $PSScriptRoot "modules" } else { Join-Path (Get-Location) "modules" }
 $rawGithubBase = "https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/modules"
+$rawBundleUrl  = "https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/dist/optimizer.ps1"
+
+# Fast single-request remote execution: stream pre-compiled bundle if modules not local
+$hasLocalModules = Test-Path (Join-Path $moduleBaseDir "Hardware-Detection.ps1")
+if (-not $hasLocalModules) {
+    try {
+        Write-Host "[*] Streaming all-in-one optimizer bundle from GitHub..." -ForegroundColor Cyan
+        $wc = New-Object System.Net.WebClient
+        $bundleCode = $wc.DownloadString($rawBundleUrl)
+        $sb = [scriptblock]::Create($bundleCode)
+        if ($CLI) {
+            & $sb -CLI
+        } else {
+            & $sb
+        }
+        exit
+    } catch {
+        Write-Warning "Bundle stream failed ($($_.Exception.Message)). Falling back to individual modules..."
+    }
+}
 
 foreach ($modName in $ModuleList) {
     $localPath = Join-Path $moduleBaseDir "$modName.ps1"
@@ -85,7 +105,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.1.0"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.2.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'

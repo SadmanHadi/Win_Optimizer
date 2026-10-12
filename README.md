@@ -1,4 +1,4 @@
-# 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite v5.1.0
+# 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite v5.2.0
 
 > **The all-in-one low-latency Windows gaming engine and 100+ app package manager.**  
 > 100% Native PowerShell & WPF Architecture • Dark Cyberpunk Desktop GUI & CLI Fallback • Safe, transparent, and 100% reversible.  
@@ -6,8 +6,13 @@
 
 ---
 
-## ⚡ Quick Start: One-Line Run (PowerShell)
+## ⚡ Quick Start: 1-Click Launch or Remote Stream
 
+### Method 1: 1-Click Double-Click Launcher (No Command Line Needed)
+If you have cloned or downloaded the repository, simply **double-click** [Run-Optimizer.cmd](file:///e:/Projects/Win_Optimizer/Run-Optimizer.cmd).  
+It automatically self-elevates with Administrator rights and launches the optimizer without any ExecutionPolicy restrictions or antivirus warnings.
+
+### Method 2: One-Line Remote Run (PowerShell)
 Open **PowerShell** (or Windows Terminal) as **Administrator** and run:
 
 ```powershell
@@ -28,7 +33,7 @@ PumpkiN's Ultimate Optimizer features a sleek, hardware-accelerated dark desktop
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.1.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
+│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.2.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ [📦 Software Downloader]  [🎮 Gaming Tweaks]  [🚀 Match Booster]  [🛡️ System & Tools] │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
@@ -70,10 +75,15 @@ Everything in this repository is cleanly organized, modular, and self-contained:
 
 ```text
 Win_Optimizer/
-├── optimizer.ps1                            # Master orchestrator & CLI/GUI launcher (~330 lines)
+├── Run-Optimizer.cmd                        # 1-Click Administrative double-click launcher
+├── optimizer.ps1                            # Master orchestrator & CLI/GUI launcher (~350 lines)
+├── Build-Bundle.ps1                         # Production bundler (combines modules into dist/optimizer.ps1)
 ├── EmptyStandbyList.exe                     # Native kernel memory management utility (wj32)
 ├── README.md                                # Documentation and quick-start guide
 ├── LICENSE                                  # Open-source MIT License
+│
+├── dist/                                    # Pre-compiled standalone release bundles
+│   └── optimizer.ps1                        # Standalone all-in-one distribution bundle
 │
 └── modules/                                 # Modular standalone scripts (clean & decoupled)
     ├── App-Catalog.ps1                      # $Global:AppCatalog (100+ packages) & WinGet runners
