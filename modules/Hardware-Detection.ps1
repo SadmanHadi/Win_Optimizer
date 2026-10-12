@@ -10,7 +10,10 @@ function Get-HardwareProfile {
 
     $cpu = Get-CimInstance Win32_Processor -ErrorAction SilentlyContinue | Select-Object -First 1
     $gpus = Get-CimInstance Win32_VideoController -ErrorAction SilentlyContinue
-    $adapter = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notlike '*Virtual*' -and $_.InterfaceDescription -notlike '*VPN*' } | Select-Object -First 1
+    $adapter = Get-NetAdapter -Physical -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
+    if (-not $adapter) {
+        $adapter = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notlike '*Virtual*' -and $_.InterfaceDescription -notlike '*VPN*' -and $_.InterfaceDescription -notlike '*Tunnel*' } | Select-Object -First 1
+    }
     $ram = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue | Measure-Object -Property Capacity -Sum
     $totalRamGb = [math]::Round($ram.Sum / 1GB, 1)
 
@@ -18,7 +21,7 @@ function Get-HardwareProfile {
         CpuName     = $cpu.Name
         CpuCores    = "$($cpu.NumberOfCores)C / $($cpu.NumberOfLogicalProcessors)T"
         IsAmdCpu    = ($cpu.Name -match 'AMD|Ryzen')
-        IsIntelCpu  = ($cpu.Name -match 'Intel|Core')
+        IsIntelCpu  = ($cpu.Name -match 'Intel' -and $cpu.Name -notmatch 'AMD|Ryzen')
         Gpus        = $gpus
         HasNvidia   = ($gpus | Where-Object { $_.Name -match 'NVIDIA|GeForce' }) -ne $null
         HasAmdGpu   = ($gpus | Where-Object { $_.Name -match 'AMD|Radeon' }) -ne $null

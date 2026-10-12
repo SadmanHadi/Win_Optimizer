@@ -19,10 +19,10 @@ function Start-PumpkiNGui {
 
     # Load 3D Pumpkin Brand Logo
     $imgLogo = $window.FindName("ImgAppLogo")
+    $baseDir = if ($PSScriptRoot) { Split-Path $PSScriptRoot -Parent } else { Get-Location }
     $logoCandidates = @(
-        (Join-Path (Split-Path $PSScriptRoot -Parent) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"),
-        (Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"),
-        "e:\Projects\Win_Optimizer\LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"
+        (Join-Path $baseDir "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"),
+        (Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png")
     )
     foreach ($cand in $logoCandidates) {
         if ($cand -and (Test-Path $cand)) {
@@ -477,37 +477,39 @@ function Start-PumpkiNGui {
         })
     }
 
-    $btnBeastMode.Add_Click({
-        & $script:LogToGui "[*] ENGAGING FULL BEAST MODE SUITE..."
-        & $script:SetProgress 15
-        Optimize-Network
-        & $script:SetProgress 30
-        Optimize-GpuAuto
-        & $script:SetProgress 45
-        Optimize-CpuAndSystem
-        & $script:SetProgress 60
-        Optimize-LatencyAndInput
-        & $script:SetProgress 75
-        Apply-GameHooks
-        & $script:SetProgress 85
-        Debloat-BackgroundServices
-        Enable-UltimatePerformancePlan
-        Harden-PrivacyTelemetry
-        Optimize-DiskIO
-        Disable-ScheduledJunkTasks
-        Optimize-StartupAndDns
-        Disable-MultiplaneOverlay
-        Set-MouseLinearCurve
-        Optimize-SvcHostSplitting
-        Enable-EndTaskRightClick
-        Disable-StickyKeysPrompt
-        & $script:SetProgress 100
-        & $script:LogToGui "================================================================================"
-        & $script:LogToGui "[OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
-        & $script:LogToGui "================================================================================"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
+    if ($btnBeastMode) {
+        $btnBeastMode.Add_Click({
+            & $script:LogToGui "[*] ENGAGING FULL BEAST MODE SUITE..."
+            & $script:SetProgress 15
+            Optimize-Network
+            & $script:SetProgress 30
+            Optimize-GpuAuto
+            & $script:SetProgress 45
+            Optimize-CpuAndSystem
+            & $script:SetProgress 60
+            Optimize-LatencyAndInput
+            & $script:SetProgress 75
+            Apply-GameHooks
+            & $script:SetProgress 85
+            Debloat-BackgroundServices
+            Enable-UltimatePerformancePlan
+            Harden-PrivacyTelemetry
+            Optimize-DiskIO
+            Disable-ScheduledJunkTasks
+            Optimize-StartupAndDns
+            Disable-MultiplaneOverlay
+            Set-MouseLinearCurve
+            Optimize-SvcHostSplitting
+            Enable-EndTaskRightClick
+            Disable-StickyKeysPrompt
+            & $script:SetProgress 100
+            & $script:LogToGui "================================================================================"
+            & $script:LogToGui "[OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
+            & $script:LogToGui "================================================================================"
+            Start-Sleep -Milliseconds 300
+            & $script:SetProgress 0
+        })
+    }
 
     # Tab 3: Match Booster Handlers
     $updateStandbyStatus = {
