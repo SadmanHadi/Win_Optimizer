@@ -352,41 +352,35 @@ function Start-PumpkiNGui {
 
     # Tab 2: Tweaks Handlers
     $btnRunAllTweaks.Add_Click({
-        & $script:LogToGui "=== APPLYING SELECTED GAMING OPTIMIZATIONS ==="
+        & $script:LogToGui "=== APPLYING ALL GAMING OPTIMIZATIONS ==="
         & $script:SetProgress 10
-
-        if ($chkGpuAuto.IsChecked) { & $script:LogToGui "[*] Running GPU Auto-Optimization..."; Optimize-GpuAuto }
-        if ($chkHardwareMsi -and $chkHardwareMsi.IsChecked -and -not $chkGpuAuto.IsChecked) { & $script:LogToGui "[*] Enabling MSI Mode on Hardware Controllers..."; Optimize-HardwareMsiMode }
-        if ($chkDisablePowerSaving -and $chkDisablePowerSaving.IsChecked -and -not $chkGpuAuto.IsChecked) { & $script:LogToGui "[*] Disabling USB & Hardware Power Saving..."; Disable-DevicePowerSaving }
-        if ($chkMpo.IsChecked) { & $script:LogToGui "[*] Disabling Multiplane Overlay (MPO)..."; Disable-MultiplaneOverlay }
-        if ($chkMouseCurve.IsChecked) { & $script:LogToGui "[*] Setting 1:1 Linear Mouse Curve..."; Set-MouseLinearCurve }
-        & $script:SetProgress 30
-
-        if ($chkInputLatency.IsChecked) { & $script:LogToGui "[*] Optimizing 8000Hz Input & Timers..."; Optimize-LatencyAndInput }
-        if ($chkCsrssPriority -and $chkCsrssPriority.IsChecked) { & $script:LogToGui "[*] Setting CSRSS to Realtime & Max I/O Priority..."; Optimize-CsrssPriority }
-        if ($chkCpuSystem.IsChecked) { & $script:LogToGui "[*] Optimizing CPU Scheduling & Quantum..."; Optimize-CpuAndSystem }
-        if ($chkSvcHost.IsChecked) { & $script:LogToGui "[*] Tuning SvcHost Process Splitting..."; Optimize-SvcHostSplitting }
+        Optimize-Network
+        & $script:SetProgress 25
+        Optimize-GpuAuto
+        & $script:SetProgress 40
+        Optimize-HardwareMsiMode
+        Disable-DevicePowerSaving
+        Disable-MultiplaneOverlay
+        Set-MouseLinearCurve
         & $script:SetProgress 55
-
-        if ($chkNetwork.IsChecked) { & $script:LogToGui "[*] Optimizing TCP/IP Network Stack..."; Optimize-Network }
-        if ($chkWifiScan.IsChecked) { & $script:LogToGui "[*] Disabling Wi-Fi Background Scanning..."; Toggle-WifiAutoconfig }
+        Optimize-LatencyAndInput
+        Optimize-CsrssPriority
+        Optimize-CpuAndSystem
+        Optimize-SvcHostSplitting
         & $script:SetProgress 70
-
-        if ($chkUltimatePower.IsChecked) { & $script:LogToGui "[*] Activating Ultimate Performance Power Plan..."; Enable-UltimatePerformancePlan }
-        if ($chkStripVisual.IsChecked) { & $script:LogToGui "[*] Stripping Visual Effects..."; Strip-VisualEffects }
-        if ($chkEndTask.IsChecked) { & $script:LogToGui "[*] Enabling Taskbar End Task..."; Enable-EndTaskRightClick }
-        if ($chkStickyKeys.IsChecked) { & $script:LogToGui "[*] Disabling Sticky Keys Popups..."; Disable-StickyKeysPrompt }
+        Enable-UltimatePerformancePlan
+        Strip-VisualEffects
+        Enable-EndTaskRightClick
+        Disable-StickyKeysPrompt
         & $script:SetProgress 85
-
-        if ($chkDebloatServices.IsChecked) { & $script:LogToGui "[*] Debloating Background Services..."; Debloat-BackgroundServices }
-        if ($chkDiskIo.IsChecked) { & $script:LogToGui "[*] Optimizing Disk I/O..."; Optimize-DiskIO }
-        if ($chkCompactOs -and $chkCompactOs.IsChecked) { & $script:LogToGui "[*] Compacting Windows with LZX (CompactOS)..."; Enable-CompactOS }
-        if ($chkTakeOwnership -and $chkTakeOwnership.IsChecked) { & $script:LogToGui "[*] Adding Take Ownership context menu..."; Enable-TakeOwnershipMenu }
-        if ($chkJunkTasks.IsChecked) { & $script:LogToGui "[*] Disabling Junk Scheduled Tasks..."; Disable-ScheduledJunkTasks }
-        if ($chkPrivacy.IsChecked) { & $script:LogToGui "[*] Hardening Privacy & Disabling Telemetry..."; Harden-PrivacyTelemetry }
-
+        Debloat-BackgroundServices
+        Optimize-DiskIO
+        Enable-CompactOS
+        Enable-TakeOwnershipMenu
+        Disable-ScheduledJunkTasks
+        Harden-PrivacyTelemetry
         & $script:SetProgress 100
-        & $script:LogToGui "[+] ALL SELECTED GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
+        & $script:LogToGui "[+] ALL GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
         Start-Sleep -Milliseconds 300
         & $script:SetProgress 0
     })
@@ -486,20 +480,26 @@ function Start-PumpkiNGui {
 
     # Tab 4: System & Hardening Handlers
     $btnApplyHardening.Add_Click({
-        & $script:LogToGui "=== APPLYING SYSTEM & HARDENING TWEAKS ==="
-        if ($chkBlockWpbt.IsChecked) { Block-WpbtExecution }
-        if ($chkBlockPeripheral.IsChecked) { Block-PeripheralBloat }
-        if ($chkRemoveAi.IsChecked) { Remove-WindowsAI }
-        if ($chkSecurityUpdatesOnly.IsChecked) { Set-SecurityUpdatesOnly }
-        if ($chkClassicContext.IsChecked) { Enable-ClassicContextMenu }
-        if ($chkDisableBing.IsChecked) { Disable-StartMenuBing }
-        if ($chkDisableAutoDiscovery.IsChecked) { Disable-ExplorerAutoDiscovery }
-        if ($chkShowExtensions.IsChecked) { Set-ShowFileExtensionsAndHidden }
-        if ($chkEnableLongPaths.IsChecked) { Enable-LongPaths }
-        if ($chkDisableLockScreen.IsChecked) { Disable-LockScreen }
-        if ($chkBsodVerbose.IsChecked) { Enable-BsodVerbose }
-        if ($chkDisableReservedStorage.IsChecked) { Disable-ReservedStorage }
-        & $script:LogToGui "[+] Selected hardening tweaks applied successfully!"
+        & $script:LogToGui "=== APPLYING ALL SYSTEM & HARDENING TWEAKS ==="
+        & $script:SetProgress 20
+        Block-WpbtExecution
+        Block-PeripheralBloat
+        Remove-WindowsAI
+        Set-SecurityUpdatesOnly
+        & $script:SetProgress 50
+        Enable-ClassicContextMenu
+        Disable-StartMenuBing
+        Disable-ExplorerAutoDiscovery
+        Set-ShowFileExtensionsAndHidden
+        & $script:SetProgress 75
+        Enable-LongPaths
+        Disable-LockScreen
+        Enable-BsodVerbose
+        Disable-ReservedStorage
+        & $script:SetProgress 100
+        & $script:LogToGui "[+] All hardening tweaks applied successfully!"
+        Start-Sleep -Milliseconds 300
+        & $script:SetProgress 0
     })
 
     # Individual 1-Click Tweak Action Helper
@@ -554,50 +554,6 @@ function Start-PumpkiNGui {
     Register-QuickTweakButton "BtnApply_DisableLockScreen" "Disable Lock Screen" { Disable-LockScreen }
     Register-QuickTweakButton "BtnApply_BsodVerbose" "Verbose BSOD" { Enable-BsodVerbose }
     Register-QuickTweakButton "BtnApply_DisableReservedStorage" "Reclaim Reserved Storage" { Disable-ReservedStorage }
-
-    # Select All / Clear Selection: Gaming Tweaks
-    $gamingCheckboxes = @(
-        $chkGpuAuto, $chkHardwareMsi, $chkDisablePowerSaving, $chkMpo, $chkMouseCurve,
-        $chkInputLatency, $chkCsrssPriority, $chkCpuSystem, $chkSvcHost,
-        $chkNetwork, $chkWifiScan,
-        $chkUltimatePower, $chkStripVisual, $chkEndTask, $chkStickyKeys,
-        $chkDebloatServices, $chkDiskIo, $chkCompactOs, $chkTakeOwnership, $chkJunkTasks, $chkPrivacy
-    )
-    $btnSelectAllGaming = $window.FindName("BtnSelectAllGaming")
-    if ($btnSelectAllGaming) {
-        $btnSelectAllGaming.Add_Click({
-            foreach ($chk in $gamingCheckboxes) { if ($chk) { $chk.IsChecked = $true } }
-            & $script:LogToGui "[*] All Gaming Tweaks selected."
-        })
-    }
-    $btnClearAllGaming = $window.FindName("BtnClearAllGaming")
-    if ($btnClearAllGaming) {
-        $btnClearAllGaming.Add_Click({
-            foreach ($chk in $gamingCheckboxes) { if ($chk) { $chk.IsChecked = $false } }
-            & $script:LogToGui "[*] Gaming Tweaks selection cleared."
-        })
-    }
-
-    # Select All / Clear Selection: Hardening Tweaks
-    $hardeningCheckboxes = @(
-        $chkBlockWpbt, $chkBlockPeripheral, $chkRemoveAi, $chkSecurityUpdatesOnly,
-        $chkClassicContext, $chkDisableBing, $chkDisableAutoDiscovery, $chkShowExtensions,
-        $chkEnableLongPaths, $chkDisableLockScreen, $chkBsodVerbose, $chkDisableReservedStorage
-    )
-    $btnSelectAllHardening = $window.FindName("BtnSelectAllHardening")
-    if ($btnSelectAllHardening) {
-        $btnSelectAllHardening.Add_Click({
-            foreach ($chk in $hardeningCheckboxes) { if ($chk) { $chk.IsChecked = $true } }
-            & $script:LogToGui "[*] All Hardening Tweaks selected."
-        })
-    }
-    $btnClearAllHardening = $window.FindName("BtnClearAllHardening")
-    if ($btnClearAllHardening) {
-        $btnClearAllHardening.Add_Click({
-            foreach ($chk in $hardeningCheckboxes) { if ($chk) { $chk.IsChecked = $false } }
-            & $script:LogToGui "[*] Hardening Tweaks selection cleared."
-        })
-    }
 
     $masAction = {
         & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS) in elevated terminal..."

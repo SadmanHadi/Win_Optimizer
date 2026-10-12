@@ -345,7 +345,7 @@ $Global:xamlContent = @'
                 </Grid>
             </TabItem>
 
-                        <!-- TAB 2: GAMING TWEAKS -->
+                                    <!-- TAB 2: GAMING TWEAKS -->
             <TabItem Header="Gaming Tweaks">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
@@ -366,79 +366,69 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="GRAPHICS &amp; DISPLAY LATENCY" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkGpuAuto" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="GPU Auto-Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Optimizes NVIDIA and AMD driver settings for maximum frame rates." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_GpuAuto" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_GpuAuto" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkHardwareMsi" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Hardware MSI Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Switches USB and network adapters to MSI for lowest DPC latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_HardwareMsi" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_HardwareMsi" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDisablePowerSaving" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable USB Sleep" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Stops Windows from throttling USB controllers and gaming peripherals." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisablePowerSaving" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DisablePowerSaving" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkMpo" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable MPO" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables Multiplane Overlay to eliminate micro-stutters and black screens." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_Mpo" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_Mpo" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkMouseCurve" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Raw Mouse Input" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables Windows pointer acceleration for true 1:1 sensor tracking." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_MouseCurve" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_MouseCurve" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -448,64 +438,56 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="INPUT &amp; TIMER RESOLUTION" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkInputLatency" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="8000Hz Input Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Optimizes keyboard buffers and high-polling mouse latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_InputLatency" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_InputLatency" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkCsrssPriority" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="CSRSS Realtime I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Sets Windows subsystem to Realtime priority for lowest input latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CsrssPriority" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_CsrssPriority" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkCpuSystem" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="CPU Gaming Quantum" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Prioritizes foreground games and MMCSS multimedia threads." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CpuSystem" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_CpuSystem" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkSvcHost" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="SvcHost RAM Splitting" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Isolates Windows services into dedicated RAM pools for stability." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_SvcHost" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_SvcHost" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -515,34 +497,30 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="ESPORTS NETWORK ENGINE" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkNetwork" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="TCP/IP Gaming Stack" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables Nagle algorithm and packet delays for online gaming." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_Network" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_Network" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkWifiScan" IsChecked="False" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Wi-Fi Ping Shield" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Blocks background roaming scans that cause periodic 200ms ping spikes." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_WifiScan" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_WifiScan" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -551,68 +529,80 @@ $Global:xamlContent = @'
 
                             <!-- COLUMN 2: SYSTEM OPTIMIZATIONS & PRO DEBLOAT -->
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <!-- Card: Full Beast Mode -->
+                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="FULL COMPETITIVE SUITE" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
+                                                    <TextBlock Text="Full Beast Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <TextBlock Text="Applies all 20+ competitive low-latency optimizations simultaneously." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                </StackPanel>
+                                                <Button Name="BtnBeastMode" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
+
                                 <!-- Card: Performance Power & Visuals -->
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="POWER &amp; SYSTEM VISUALS" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkUltimatePower" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Ultimate Power Plan" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Unlocks the 0% CPU core-parking Ultimate Performance power scheme." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_UltimatePower" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_UltimatePower" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkStripVisual" IsChecked="False" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Strip Visual Animations" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Removes desktop animations and window shadows for maximum FPS." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_StripVisual" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_StripVisual" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkEndTask" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Taskbar End Task" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Adds instant force-close to right-clicked taskbar app icons." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_EndTask" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_EndTask" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkStickyKeys" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable Sticky Keys" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Stops annoying accessibility popups when pressing Shift repeatedly." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_StickyKeys" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_StickyKeys" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -622,112 +612,85 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="SYSTEM DEBLOAT &amp; STORAGE" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDebloatServices" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Debloat Services" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables telemetry, diagnostic tracking, and background services." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DebloatServices" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DebloatServices" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDiskIo" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Optimize Disk I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables NTFS last-access timestamps and optimizes disk buffers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DiskIo" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DiskIo" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkCompactOs" IsChecked="False" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="CompactOS Compression" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Compresses Windows system binaries using LZX to reclaim 3-6 GB on SSD." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CompactOs" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_CompactOs" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkTakeOwnership" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Take Ownership Menu" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Adds a 1-click Take Ownership shortcut to Explorer right-click menu." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_TakeOwnership" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_TakeOwnership" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkJunkTasks" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable Junk Tasks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables CEIP, feedback, and telemetry background scheduled tasks." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_JunkTasks" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_JunkTasks" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkPrivacy" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable Telemetry" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Hardens privacy by disabling telemetry and background diagnostics." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_Privacy" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_Privacy" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
-                                </Border>
-
-                                <!-- Beast Mode Banner -->
-                                <Border Background="#1F1626" BorderBrush="#FF7700" BorderThickness="1" CornerRadius="6" Padding="14">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0">
-                                            <TextBlock Text="FULL BEAST MODE" FontSize="14" FontWeight="Bold" Foreground="#FF7700"/>
-                                            <TextBlock Text="Applies all 20+ competitive low-latency optimizations simultaneously." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                                        </StackPanel>
-                                        <Button Name="BtnBeastMode" Grid.Column="1" Content="ENGAGE BEAST MODE" Style="{StaticResource OrangeButton}" VerticalAlignment="Center"/>
-                                    </Grid>
                                 </Border>
                             </StackPanel>
                         </Grid>
@@ -740,17 +703,13 @@ $Global:xamlContent = @'
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Name="BtnSelectAllGaming" Content="Select All" Style="{StaticResource DarkOutlineButton}" Margin="0,0,8,0" Padding="10,5" FontSize="12"/>
-                                <Button Name="BtnClearAllGaming" Content="Clear Selection" Style="{StaticResource DarkOutlineButton}" Margin="0,0,12,0" Padding="10,5" FontSize="12"/>
-                                <TextBlock Text="Select options above or click [Apply] on any tweak." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            </StackPanel>
+                            <TextBlock Text="Click [Apply] next to any tweak to run it individually, or run all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
                             <StackPanel Grid.Column="1" Orientation="Horizontal">
                                 <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnInstallVcRedistAio" Content="VC++ AIO (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
                                 <Button Name="BtnRevertDefaults" Content="Revert to Windows Defaults" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnRunAllTweaks" Content="Apply Selected Tweaks" Style="{StaticResource CyanButton}"/>
+                                <Button Name="BtnRunAllTweaks" Content="Apply All Gaming Tweaks" Style="{StaticResource CyanButton}"/>
                             </StackPanel>
                         </Grid>
                     </Border>
@@ -828,7 +787,7 @@ $Global:xamlContent = @'
                 </Grid>
             </TabItem>
 
-                        <!-- TAB 4: SYSTEM & HARDENING TOOLS -->
+                                    <!-- TAB 4: SYSTEM & HARDENING TOOLS -->
             <TabItem Header="System &amp; Hardening">
                 <Grid Margin="0,10,0,0">
                     <Grid.RowDefinitions>
@@ -848,64 +807,56 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="SECURITY &amp; BLOATWARE MITIGATION" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkBlockWpbt" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Block WPBT Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Prevents motherboard UEFI from auto-install OEM bloatware." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                                    <TextBlock Text="Prevents motherboard UEFI from auto-installing OEM bloatware." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_BlockWpbt" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_BlockWpbt" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkBlockPeripheral" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Block Peripheral Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Blocks auto-install of Razer Synapse, Armoury Crate, and vendor tools." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_BlockPeripheral" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_BlockPeripheral" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkRemoveAi" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Purge Windows AI" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Removes Recall, Copilot, and CoreAI background services." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_RemoveAi" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_RemoveAi" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkSecurityUpdatesOnly" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Security-Only Updates" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Defers feature upgrade builds while keeping security patches active." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_SecurityUpdatesOnly" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_SecurityUpdatesOnly" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -914,64 +865,56 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="WINDOWS EXPLORER &amp; DESKTOP" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkClassicContext" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Classic Right-Click" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Restores the classic Windows 10 right-click menu on Windows 11." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_ClassicContext" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_ClassicContext" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDisableBing" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable Web Search" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Stops Start Menu from sending keystrokes to Bing web search." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableBing" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DisableBing" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDisableAutoDiscovery" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable Auto-Discovery" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Halts background network broadcast polling for local file shares." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableAutoDiscovery" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DisableAutoDiscovery" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkShowExtensions" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Show File Extensions" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Shows file extensions (.exe, .ps1) and hidden system files." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_ShowExtensions" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_ShowExtensions" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -983,64 +926,56 @@ $Global:xamlContent = @'
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="KERNEL &amp; STORAGE HARDENING" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkEnableLongPaths" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Enable Long Paths" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Removes the 260-character file path limit for modding and dev tools." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_EnableLongPaths" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_EnableLongPaths" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDisableLockScreen" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Disable Lock Screen" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Skips the swipe-up lock screen directly to the password prompt." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableLockScreen" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DisableLockScreen" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkBsodVerbose" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Verbose BSOD" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Enables detailed crash diagnostic text on blue screens." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_BsodVerbose" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_BsodVerbose" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,6">
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox Name="ChkDisableReservedStorage" IsChecked="True" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
                                                     <TextBlock Text="Reclaim Reserved Storage" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
                                                     <TextBlock Text="Disables 7GB of reserved update storage and returns it to drive C:." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableReservedStorage" Grid.Column="2" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <Button Name="BtnApply_DisableReservedStorage" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -1064,12 +999,8 @@ $Global:xamlContent = @'
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Name="BtnSelectAllHardening" Content="Select All" Style="{StaticResource DarkOutlineButton}" Margin="0,0,8,0" Padding="10,5" FontSize="12"/>
-                                <Button Name="BtnClearAllHardening" Content="Clear Selection" Style="{StaticResource DarkOutlineButton}" Margin="0,0,12,0" Padding="10,5" FontSize="12"/>
-                                <TextBlock Text="Select hardening options above or click [Apply] on any item." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            </StackPanel>
-                            <Button Name="BtnApplyHardening" Grid.Column="1" Content="Apply Selected Hardening" Style="{StaticResource CyanButton}"/>
+                            <TextBlock Text="Click [Apply] next to any hardening tweak, or apply all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
+                            <Button Name="BtnApplyHardening" Grid.Column="1" Content="Apply All Hardening" Style="{StaticResource CyanButton}"/>
                         </Grid>
                     </Border>
                 </Grid>
