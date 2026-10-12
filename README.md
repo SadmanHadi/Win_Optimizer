@@ -69,19 +69,27 @@ Everything in this repository is cleanly organized, modular, and self-contained:
 
 ```text
 Win_Optimizer/
-├── optimizer.ps1                            # Core all-in-one suite (WPF GUI + WinGet Catalog + CLI)
+├── optimizer.ps1                            # Master orchestrator & CLI/GUI launcher (~330 lines)
 ├── EmptyStandbyList.exe                     # Native kernel memory management utility (wj32)
 ├── README.md                                # Documentation and quick-start guide
 ├── LICENSE                                  # Open-source MIT License
 │
-└── modules/                                 # Modular standalone scripts (run individually)
+└── modules/                                 # Modular standalone scripts (clean & decoupled)
+    ├── App-Catalog.ps1                      # $Global:AppCatalog (100+ packages) & WinGet runners
+    ├── Gui-Markup.ps1                       # Cyberpunk Dark WPF (XAML) UI Markup
+    ├── Gui-Controller.ps1                   # Desktop GUI Event Controller & Async Engine
+    ├── Hardware-Detection.ps1               # Hardware profiler (CPU/GPU/RAM/Network auto-detect)
     ├── Match-Booster.ps1                    # Instant RAM Purge & 5-Min Background Auto-Cleaner
     ├── Optimize-KernelAndCpu.ps1            # Win32Priority 0x26, FTH Shield, DPC Threading & Quantum
     ├── Optimize-Network.ps1                 # Nagle off, TCPNoDelay, NDU memory leak fix & DNS
     ├── Optimize-AmdGpu.ps1                  # AMD Radeon ULPS disable, Shader Cache, Anti-Lag
     ├── Optimize-NvidiaGpu.ps1               # NVIDIA PowerMizer P0 lock, Max Performance & Cache
+    ├── Optimize-GpuAuto.ps1                 # Smart GPU detection & automatic routing
     ├── Optimize-InputLatency.ps1            # 8000Hz mouse queue buffer & 1:1 MarkC raw mouse curve
-    └── Toggle-WifiScan.ps1                  # Wi-Fi background roaming spike toggle (0ms spikes)
+    ├── Toggle-WifiScan.ps1                  # Wi-Fi background roaming spike toggle (0ms spikes)
+    ├── Optimize-Hardening.ps1               # WinUtil S-Tier & Snappy OS hardening (MPO, AI, WPBT)
+    ├── Optimize-SystemAndDebloat.ps1        # Background services debloat, power plans & storage
+    └── System-DiagnosticsAndRestore.ps1     # Esports IFEO hooks, diagnostics & full rollback
 ```
 
 ---
