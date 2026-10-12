@@ -58,9 +58,13 @@ function Start-PumpkiNGui {
     $btnInstallVcRedistAio = $window.FindName("BtnInstallVcRedistAio")
     $btnBeastMode       = $window.FindName("BtnBeastMode")
 
-    $btnPurgeStandby    = $window.FindName("BtnPurgeStandby")
-    $btnToggleWifiScan  = $window.FindName("BtnToggleWifiScan")
-    $btnApplyGameHooks  = $window.FindName("BtnApplyGameHooks")
+    $btnPurgeStandby         = $window.FindName("BtnPurgeStandby")
+    $cmbStandbyInterval      = $window.FindName("CmbStandbyInterval")
+    $btnSetStandbySchedule   = $window.FindName("BtnSetStandbySchedule")
+    $btnRemoveStandbySchedule = $window.FindName("BtnRemoveStandbySchedule")
+    $txtStandbyTaskStatus    = $window.FindName("TxtStandbyTaskStatus")
+    $btnToggleWifiScan       = $window.FindName("BtnToggleWifiScan")
+    $btnApplyGameHooks       = $window.FindName("BtnApplyGameHooks")
 
     $btnMasActivate     = $window.FindName("BtnMasActivate")
     $btnMasActivateTop  = $window.FindName("BtnMasActivateTop")
@@ -499,11 +503,49 @@ function Start-PumpkiNGui {
     })
 
     # Tab 3: Match Booster Handlers
+    $updateStandbyStatus = {
+        if ($txtStandbyTaskStatus) {
+            $st = Get-StandbyListScheduledTaskStatus
+            $txtStandbyTaskStatus.Text = "Status: $($st.DisplayText)"
+            if ($st.IsActive) {
+                $txtStandbyTaskStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+            } else {
+                $txtStandbyTaskStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+            }
+        }
+    }
+
     $btnPurgeStandby.Add_Click({
-        & $script:LogToGui "[*] Purging Windows Standby List Cache..."
-        Boost-CompetitiveMatch
-        & $script:LogToGui "[+] Standby memory purged successfully! Memory freed for game."
+        & $script:LogToGui "[*] Running One-Time Purge of Windows Standby List Cache..."
+        Invoke-EmptyStandbyListOneTime
+        & $script:LogToGui "[+] Standby memory purged successfully! Memory returned to free pool."
     })
+
+    if ($btnSetStandbySchedule) {
+        $btnSetStandbySchedule.Add_Click({
+            $mins = 5
+            if ($cmbStandbyInterval -and $cmbStandbyInterval.SelectedItem -and $cmbStandbyInterval.SelectedItem.Tag) {
+                $mins = [int]$cmbStandbyInterval.SelectedItem.Tag
+            }
+            & $script:LogToGui "[*] Setting Background Auto-Cleaner schedule (Every $mins minutes)..."
+            $ok = Set-StandbyListScheduledTask -IntervalMinutes $mins
+            & $updateStandbyStatus
+            if ($ok) {
+                & $script:LogToGui "[+] PumpkiN_AutoEmptyStandbyList scheduled to run every $mins minutes!"
+            } else {
+                & $script:LogToGui "[!] Failed to configure scheduled task. Ensure running as Administrator."
+            }
+        })
+    }
+
+    if ($btnRemoveStandbySchedule) {
+        $btnRemoveStandbySchedule.Add_Click({
+            & $script:LogToGui "[*] Disabling Background Auto-Cleaner schedule..."
+            Remove-StandbyListScheduledTask
+            & $updateStandbyStatus
+            & $script:LogToGui "[+] Background Auto-Cleaner schedule removed/disabled."
+        })
+    }
 
     $btnToggleWifiScan.Add_Click({
         Toggle-WifiAutoconfig
@@ -618,7 +660,8 @@ function Start-PumpkiNGui {
         Run-Diagnostics
     })
 
-    # Initial Log Greeting
+    # Initial Log Greeting & Status
+    & $updateStandbyStatus
     $hw = Get-HardwareProfile
     & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v2.5.0 initialized."
     & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"

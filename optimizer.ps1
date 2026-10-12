@@ -108,7 +108,7 @@ function Show-PumpkiNBanner {
     Write-Host "  [6]  Wi-Fi Ping Spike Mitigator (Toggle Background Scan for 0ms Spikes)"
     Write-Host "  [7]  CPU, Kernel & Quantum Engine (Win32Priority 0x26, FTH Off, Core Unpark)"
     Write-Host "  [8]  Ultra-Low Latency, DPC & 8000Hz Input (StopHighDPC, Raw Mouse Curve)"
-    Write-Host "  [9]  Competitive Match Booster (Immediate RAM Flush + 5-Min Background Auto-Purge)" -ForegroundColor Cyan
+    Write-Host "  [9]  Competitive Match Booster (One-Time Purge & Background Auto-Scheduler)" -ForegroundColor Cyan
     Write-Host "  [10] Game-Specific High Priority Hooks (Valorant, CS2, Apex, Fortnite, COD)"
     Write-Host "  [11] System Health, Live Diagnostics & Hardware Spec Sheet"
     Write-Host "  [12] Create Windows System Restore Point (Safety Backup)" -ForegroundColor Cyan
@@ -207,8 +207,31 @@ function Show-ConsoleMenu {
                 Read-Host "`nPress Enter to return to menu"
             }
             "9" {
-                Boost-CompetitiveMatch
-                Write-Host "`n[OK] Competitive Match Booster applied!" -ForegroundColor Green
+                Write-Host "`n=== COMPETITIVE MATCH BOOSTER & STANDBY CLEANER ===" -ForegroundColor Cyan
+                $stat = Get-StandbyListScheduledTaskStatus
+                Write-Host "Current Schedule Status: $($stat.DisplayText)" -ForegroundColor Yellow
+                Write-Host "  [1] Purge Standby Memory Now (One-Time Run)"
+                Write-Host "  [2] Set Background Task Schedule: Every 5 Minutes (Esports Default)"
+                Write-Host "  [3] Set Background Task Schedule: Every 10 Minutes (Balanced)"
+                Write-Host "  [4] Set Background Task Schedule: Every 15 Minutes (Low Overhead)"
+                Write-Host "  [5] Set Background Task Schedule: Custom Minutes"
+                Write-Host "  [6] Disable / Remove Background Task Schedule"
+                $mbChoice = Read-Host "Select option [1-6]"
+                switch ($mbChoice) {
+                    "1" { Invoke-EmptyStandbyListOneTime }
+                    "2" { Set-StandbyListScheduledTask -IntervalMinutes 5 }
+                    "3" { Set-StandbyListScheduledTask -IntervalMinutes 10 }
+                    "4" { Set-StandbyListScheduledTask -IntervalMinutes 15 }
+                    "5" {
+                        $cust = Read-Host "Enter interval in minutes (e.g. 5, 10, 15, 30)"
+                        if ($cust -as [int] -and [int]$cust -gt 0) {
+                            Set-StandbyListScheduledTask -IntervalMinutes ([int]$cust)
+                        } else {
+                            Write-Host "[!] Invalid minute interval." -ForegroundColor Red
+                        }
+                    }
+                    "6" { Remove-StandbyListScheduledTask }
+                }
                 Read-Host "`nPress Enter to return to menu"
             }
             "10" {
