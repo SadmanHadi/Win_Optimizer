@@ -17,7 +17,7 @@ if %errorLevel% == 0 (
 
 :Elevate
 echo [*] Requesting Administrator privileges...
-powershell.exe -NoProfile -NoLogo -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -ArgumentList '-NoProfile -NoLogo -ExecutionPolicy Bypass -File \"\"%~dp0optimizer.ps1\"\" %*' -Verb RunAs"
+powershell.exe -NoProfile -NoLogo -ExecutionPolicy Bypass -Command "Start-Process powershell.exe -ArgumentList '-NoProfile -NoLogo -ExecutionPolicy Bypass -File \"\"%~dp0optimizer.ps1\"\" %*' -WorkingDirectory \"\"%~dp0\"\" -Verb RunAs"
 exit /b
 
 :RunElevated

@@ -19,15 +19,25 @@ function Start-PumpkiNGui {
 
     # Load 3D Pumpkin Brand Logo & Window Icon (.ico / .png)
     $imgLogo = $window.FindName("ImgAppLogo")
-    $baseDir = if ($PSScriptRoot) { Split-Path $PSScriptRoot -Parent } else { Get-Location }
+    $projectRoot = $null
+    if ($Global:OptimizerProjectRoot -and (Test-Path $Global:OptimizerProjectRoot)) {
+        $projectRoot = $Global:OptimizerProjectRoot
+    } elseif ($PSScriptRoot -and (Test-Path (Split-Path $PSScriptRoot -Parent))) {
+        $projectRoot = Split-Path $PSScriptRoot -Parent
+    } elseif (Test-Path "E:\Projects\Win_Optimizer") {
+        $projectRoot = "E:\Projects\Win_Optimizer"
+    } else {
+        $projectRoot = (Get-Location).Path
+    }
+
     $logoCandidates = [System.Collections.Generic.List[string]]::new()
-    $logoCandidates.Add((Join-Path $baseDir "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
+    $logoCandidates.Add((Join-Path $projectRoot "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
+    $logoCandidates.Add("E:\Projects\Win_Optimizer\LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico")
     $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
-    $logoCandidates.Add((Join-Path $baseDir "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
+    $logoCandidates.Add((Join-Path $projectRoot "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
     $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
 
-    # Dynamic search in LOGO directories for any .ico or .png
-    $logoDirs = @((Join-Path $baseDir "LOGO"), (Join-Path (Get-Location) "LOGO"))
+    $logoDirs = @((Join-Path $projectRoot "LOGO"), "E:\Projects\Win_Optimizer\LOGO", (Join-Path (Get-Location) "LOGO"))
     foreach ($ld in $logoDirs) {
         if ($ld -and (Test-Path $ld)) {
             $discovered = Get-ChildItem -Path $ld -Filter "*.ico" -ErrorAction SilentlyContinue
@@ -44,6 +54,7 @@ function Start-PumpkiNGui {
         }
     }
 
+    $logoLoaded = $false
     foreach ($cand in $logoCandidates) {
         if ($cand -and (Test-Path $cand)) {
             try {
@@ -54,12 +65,35 @@ function Start-PumpkiNGui {
                 $bitmap.EndInit()
                 if ($imgLogo) { $imgLogo.Source = $bitmap }
                 $window.Icon = $bitmap
+                $logoLoaded = $true
                 break
-            } catch {
+            } catch {}
+
+            if (-not $logoLoaded) {
                 try {
-                    $frame = [System.Windows.Media.Imaging.BitmapFrame]::Create((New-Object System.Uri($cand, [System.UriKind]::Absolute)))
+                    $stream = [System.IO.File]::OpenRead($cand)
+                    $decoder = New-Object System.Windows.Media.Imaging.IconBitmapDecoder($stream, [System.Windows.Media.Imaging.BitmapCreateOptions]::PreservePixelFormat, [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad)
+                    $frame = $decoder.Frames[0]
+                    $stream.Close()
                     if ($imgLogo) { $imgLogo.Source = $frame }
                     $window.Icon = $frame
+                    $logoLoaded = $true
+                    break
+                } catch {}
+            }
+
+            if (-not $logoLoaded) {
+                try {
+                    Add-Type -AssemblyName System.Drawing
+                    $drawingIcon = New-Object System.Drawing.Icon($cand)
+                    $bmpSource = [System.Windows.Interop.Imaging]::CreateBitmapSourceFromHIcon(
+                        $drawingIcon.Handle,
+                        [System.Windows.Int32Rect]::Empty,
+                        [System.Windows.Media.Imaging.BitmapSizeOptions]::FromEmptyOptions()
+                    )
+                    if ($imgLogo) { $imgLogo.Source = $bmpSource }
+                    $window.Icon = $bmpSource
+                    $logoLoaded = $true
                     break
                 } catch {}
             }
@@ -702,19 +736,19 @@ function Start-PumpkiNGui {
     # Master Tweak Registry: Schema maps Audit Keys to Apply, Rollback, Badges and Buttons
     $script:TweakDefinitions = @(
         # 1. Gaming & Hardware Performance
-        @{ Key="GpuAuto"; Title="GPU Auto-Tuning"; Category="Gaming"; Apply={ Optimize-GpuAuto }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_GpuAuto"; RollbackBtn="BtnRollback_GpuAuto"; Badge="Badge_GpuAuto"; TxtBadge="TxtBadge_GpuAuto" },
-        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_HardwareMsi"; RollbackBtn="BtnRollback_HardwareMsi"; Badge="Badge_HardwareMsi"; TxtBadge="TxtBadge_HardwareMsi" },
-        @{ Key="DisablePowerSaving"; Title="Disable USB Sleep"; Category="Gaming"; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_DisablePowerSaving"; RollbackBtn="BtnRollback_DisablePowerSaving"; Badge="Badge_DisablePowerSaving"; TxtBadge="TxtBadge_DisablePowerSaving" },
+        @{ Key="GpuAuto"; Title="GPU Auto-Tuning"; Category="Gaming"; Apply={ Optimize-GpuAuto }; Rollback={ Restore-GpuAuto }; ApplyBtn="BtnApply_GpuAuto"; RollbackBtn="BtnRollback_GpuAuto"; Badge="Badge_GpuAuto"; TxtBadge="TxtBadge_GpuAuto" },
+        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-HardwareMsiMode }; ApplyBtn="BtnApply_HardwareMsi"; RollbackBtn="BtnRollback_HardwareMsi"; Badge="Badge_HardwareMsi"; TxtBadge="TxtBadge_HardwareMsi" },
+        @{ Key="DisablePowerSaving"; Title="Disable USB Sleep"; Category="Gaming"; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-DevicePowerSaving }; ApplyBtn="BtnApply_DisablePowerSaving"; RollbackBtn="BtnRollback_DisablePowerSaving"; Badge="Badge_DisablePowerSaving"; TxtBadge="TxtBadge_DisablePowerSaving" },
         @{ Key="Mpo"; Title="Disable MPO"; Category="Gaming"; Apply={ Disable-MultiplaneOverlay }; Rollback={ Restore-MultiplaneOverlay }; ApplyBtn="BtnApply_Mpo"; RollbackBtn="BtnRollback_Mpo"; Badge="Badge_Mpo"; TxtBadge="TxtBadge_Mpo" },
         @{ Key="MouseCurve"; Title="Raw Mouse Input"; Category="Gaming"; Apply={ Set-MouseLinearCurve }; Rollback={ Restore-MouseLinearCurve }; ApplyBtn="BtnApply_MouseCurve"; RollbackBtn="BtnRollback_MouseCurve"; Badge="Badge_MouseCurve"; TxtBadge="TxtBadge_MouseCurve" },
         @{ Key="InputLatency"; Title="8000Hz Input Tuning"; Category="Gaming"; Apply={ Optimize-LatencyAndInput }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_InputLatency"; RollbackBtn="BtnRollback_InputLatency"; Badge="Badge_InputLatency"; TxtBadge="TxtBadge_InputLatency" },
         @{ Key="CsrssPriority"; Title="CSRSS Realtime I/O"; Category="Gaming"; Apply={ Optimize-CsrssPriority }; Rollback={ Restore-CsrssPriority }; ApplyBtn="BtnApply_CsrssPriority"; RollbackBtn="BtnRollback_CsrssPriority"; Badge="Badge_CsrssPriority"; TxtBadge="TxtBadge_CsrssPriority" },
         @{ Key="CpuSystem"; Title="CPU Gaming Quantum"; Category="Gaming"; Apply={ Optimize-CpuAndSystem }; Rollback={ Restore-CpuAndSystem }; ApplyBtn="BtnApply_CpuSystem"; RollbackBtn="BtnRollback_CpuSystem"; Badge="Badge_CpuSystem"; TxtBadge="TxtBadge_CpuSystem" },
         @{ Key="SvcHost"; Title="SvcHost RAM Splitting"; Category="Gaming"; Apply={ Optimize-SvcHostSplitting }; Rollback={ Restore-SvcHostSplitting }; ApplyBtn="BtnApply_SvcHost"; RollbackBtn="BtnRollback_SvcHost"; Badge="Badge_SvcHost"; TxtBadge="TxtBadge_SvcHost" },
-        @{ Key="Network"; Title="TCP/IP Gaming Stack"; Category="Gaming"; Apply={ Optimize-Network }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_Network"; RollbackBtn="BtnRollback_Network"; Badge="Badge_Network"; TxtBadge="TxtBadge_Network" },
+        @{ Key="Network"; Title="TCP/IP Gaming Stack"; Category="Gaming"; Apply={ Optimize-Network }; Rollback={ Restore-Network }; ApplyBtn="BtnApply_Network"; RollbackBtn="BtnRollback_Network"; Badge="Badge_Network"; TxtBadge="TxtBadge_Network" },
         @{ Key="WifiScan"; Title="Wi-Fi Ping Shield"; Category="Gaming"; Apply={ Toggle-WifiAutoconfig }; Rollback={ Toggle-WifiAutoconfig }; ApplyBtn="BtnApply_WifiScan"; RollbackBtn="BtnRollback_WifiScan"; Badge="Badge_WifiScan"; TxtBadge="TxtBadge_WifiScan" },
         @{ Key="StartupDns"; Title="Gaming DNS & Startup Tuning"; Category="Gaming"; Apply={ Optimize-StartupAndDns }; Rollback={ Reset-DnsToAutomatic }; ApplyBtn="BtnApply_StartupDns"; RollbackBtn="BtnRollback_StartupDns"; Badge="Badge_StartupDns"; TxtBadge="TxtBadge_StartupDns" },
-        @{ Key="GameHooks"; Title="Esports Game Priority Hooks"; Category="Gaming"; Apply={ Apply-GameHooks }; Rollback={ Restore-Defaults }; ApplyBtn="BtnApply_GameHooks"; RollbackBtn="BtnRollback_GameHooks"; Badge="Badge_GameHooks"; TxtBadge="TxtBadge_GameHooks" },
+        @{ Key="GameHooks"; Title="Esports Game Priority Hooks"; Category="Gaming"; Apply={ Apply-GameHooks }; Rollback={ Restore-GameHooks }; ApplyBtn="BtnApply_GameHooks"; RollbackBtn="BtnRollback_GameHooks"; Badge="Badge_GameHooks"; TxtBadge="TxtBadge_GameHooks" },
         @{ Key="UltimatePower"; Title="PumpkiN Esports Power Plan"; Category="Gaming"; Apply={ Invoke-PumpkiNEsportsPowerPlan }; Rollback={ Restore-BalancedPowerPlan }; ApplyBtn="BtnApply_UltimatePower"; RollbackBtn="BtnRollback_UltimatePower"; Badge="Badge_UltimatePower"; TxtBadge="TxtBadge_UltimatePower" },
         @{ Key="CoreUnpark"; Title="100% CPU Core Unparking"; Category="Gaming"; Apply={ Invoke-CpuCoreUnparking }; Rollback={ Restore-CpuCoreParking }; ApplyBtn="BtnApply_CoreUnpark"; RollbackBtn="BtnRollback_CoreUnpark"; Badge="Badge_CoreUnpark"; TxtBadge="TxtBadge_CoreUnpark" },
         @{ Key="StripVisual"; Title="Strip Visual Animations"; Category="Gaming"; Apply={ Strip-VisualEffects }; Rollback={ Restore-VisualEffects }; ApplyBtn="BtnApply_StripVisual"; RollbackBtn="BtnRollback_StripVisual"; Badge="Badge_StripVisual"; TxtBadge="TxtBadge_StripVisual" },
@@ -791,17 +825,36 @@ function Start-PumpkiNGui {
     $script:UpdateGuiAuditStatus = {
         try {
             $audit = Get-SystemAuditState
-            $scorePctText = "$($audit.ScorePercent)%"
+            $scorePct = [int]$audit.ScorePercent
+            $scorePctText = "$scorePct%"
             $gradeText    = "$($audit.ScoreGrade)"
             $ratioText    = "[Active: $($audit.ScoreApplied) / $($audit.ScoreTotal)]"
 
-            if ($txtScorePercent) { $txtScorePercent.Text = $scorePctText }
+            $brushGauge = if ($scorePct -ge 80) { $brushOptimalBorder } elseif ($scorePct -ge 50) { $brushNeededText } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700") }
+
+            if ($txtScorePercent) {
+                $txtScorePercent.Text = $scorePctText
+                $txtScorePercent.Foreground = $brushGauge
+            }
             if ($txtScoreGrade)   { $txtScoreGrade.Text   = $gradeText }
             if ($txtActiveTweakRatio) { $txtActiveTweakRatio.Text = $ratioText }
 
-            if ($txtScorePercentTab4) { $txtScorePercentTab4.Text = $scorePctText }
+            $borderGauge = $window.FindName("BorderScoreGauge")
+            if ($borderGauge) {
+                $borderGauge.BorderBrush = $brushGauge
+            }
+
+            if ($txtScorePercentTab4) {
+                $txtScorePercentTab4.Text = $scorePctText
+                $txtScorePercentTab4.Foreground = $brushGauge
+            }
             if ($txtScoreGradeTab4)   { $txtScoreGradeTab4.Text   = $gradeText }
             if ($txtActiveTweakRatioTab4) { $txtActiveTweakRatioTab4.Text = $ratioText }
+
+            $borderGaugeTab4 = $window.FindName("BorderScoreGaugeTab4")
+            if ($borderGaugeTab4) {
+                $borderGaugeTab4.BorderBrush = $brushGauge
+            }
 
             foreach ($tw in $script:TweakDefinitions) {
                 $isApplied = ($audit.State[$tw.Key] -eq $true)
@@ -812,13 +865,42 @@ function Start-PumpkiNGui {
                         if ($isApplied) {
                             $b.Background = $brushOptimalBg
                             $b.BorderBrush = $brushOptimalBorder
-                            $tb.Text = "Optimal [v]"
+                            $tb.Text = "Applied [v]"
                             $tb.Foreground = $brushOptimalText
                         } else {
                             $b.Background = $brushNeededBg
                             $b.BorderBrush = $brushNeededBorder
                             $tb.Text = "Needed"
                             $tb.Foreground = $brushNeededText
+                        }
+                    }
+                }
+
+                if ($tw.ApplyBtn) {
+                    $btnApp = $window.FindName($tw.ApplyBtn)
+                    if ($btnApp) {
+                        if ($isApplied) {
+                            $btnApp.Content = "Applied [v]"
+                            $btnApp.Opacity = 0.75
+                            $btnApp.ToolTip = "Already applied. Click to re-apply if desired."
+                        } else {
+                            $btnApp.Content = "Apply"
+                            $btnApp.Opacity = 1.0
+                            $btnApp.ToolTip = "Click to apply this optimization."
+                        }
+                    }
+                }
+
+                if ($tw.RollbackBtn) {
+                    $btnRoll = $window.FindName($tw.RollbackBtn)
+                    if ($btnRoll) {
+                        if ($isApplied) {
+                            $btnRoll.IsEnabled = $true
+                            $btnRoll.Opacity = 1.0
+                            $btnRoll.ToolTip = "Click to rollback this tweak to Windows default."
+                        } else {
+                            $btnRoll.Opacity = 0.5
+                            $btnRoll.ToolTip = "Tweak is not currently applied."
                         }
                     }
                 }
@@ -916,6 +998,94 @@ function Start-PumpkiNGui {
             & $script:LogToGui "[+] Default Recycle Bin icon restored."
         })
     }
+
+    # Equicord Quick-Action Handlers
+    $btnInstallEquicord = $window.FindName("BtnInstallEquicord")
+    if ($btnInstallEquicord) {
+        $btnInstallEquicord.Add_Click({
+            & $script:LogToGui "[*] Installing Equicord client via WinGet (Equicord.Equilotl)..."
+            & $script:SetProgress 30
+            Install-WinGetPackage -PackageId "Equicord.Equilotl" -LogCallback { param($m) & $script:LogToGui $m }
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+        })
+    }
+
+    $btnOpenEquicordSite = $window.FindName("BtnOpenEquicordSite")
+    if ($btnOpenEquicordSite) {
+        $btnOpenEquicordSite.Add_Click({
+            & $script:LogToGui "[*] Opening Equicord download page: https://equicord.org/download"
+            Start-Process "https://equicord.org/download"
+        })
+    }
+
+    # --------------------------------------------------------------------------
+    # Custom Gaming Cursors Controller
+    # --------------------------------------------------------------------------
+    $cmbCursors = $window.FindName("CmbCursorSchemes")
+    $btnInstallCursor = $window.FindName("BtnInstallCursor")
+    $btnRestoreCursor = $window.FindName("BtnRestoreCursor")
+    $txtActiveCursor = $window.FindName("TxtActiveCursorScheme")
+
+    if ($cmbCursors) {
+        try {
+            $cursorSchemes = Get-AvailableCursorSchemes
+            $cmbCursors.ItemsSource = $cursorSchemes
+            $cmbCursors.DisplayMemberPath = "Name"
+            $cmbCursors.SelectedValuePath = "FolderPath"
+            if ($cursorSchemes.Count -gt 0) {
+                $cmbCursors.SelectedIndex = 0
+            }
+
+            $currentScheme = Get-ActiveCursorSchemeName
+            if ($txtActiveCursor) {
+                $txtActiveCursor.Text = "Active: $currentScheme"
+            }
+        } catch {
+            Write-Verbose "Cursor initialization failed: $($_.Exception.Message)"
+        }
+    }
+
+    if ($btnInstallCursor -and $cmbCursors) {
+        $btnInstallCursor.Add_Click({
+            $selected = $cmbCursors.SelectedItem
+            if (-not $selected) {
+                & $script:LogToGui "[-] Please select a cursor scheme from the dropdown list." "WARN"
+                return
+            }
+            & $script:LogToGui "[*] Installing custom cursor scheme: $($selected.Name)..."
+            & $script:SetProgress 40
+            $success = Install-CursorScheme -SchemeName $selected.Name
+            & $script:SetProgress 100
+            if ($success) {
+                & $script:LogToGui "[+] Successfully applied cursor scheme: $($selected.Name)!"
+                if ($txtActiveCursor) {
+                    $txtActiveCursor.Text = "Active: $($selected.Name)"
+                }
+            } else {
+                & $script:LogToGui "[-] Failed to apply cursor scheme: $($selected.Name)." "WARN"
+            }
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+        })
+    }
+
+    if ($btnRestoreCursor) {
+        $btnRestoreCursor.Add_Click({
+            & $script:LogToGui "[*] Restoring Windows default cursor scheme..."
+            & $script:SetProgress 40
+            Restore-DefaultCursors
+            & $script:SetProgress 100
+            & $script:LogToGui "[+] Windows default cursors restored successfully!"
+            if ($txtActiveCursor) {
+                $txtActiveCursor.Text = "Active: Windows Default"
+            }
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+        })
+    }
+
 
     # Action Dashboard Banners: Live Audit Scanner
     $scanAction = {
@@ -1362,7 +1532,7 @@ function Start-PumpkiNGui {
                 [void]$sb.AppendLine("  Battery Device:  $($p.BatteryName)")
                 [void]$sb.AppendLine("  Charge Level:    $($p.BatteryPercent)")
                 [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("Generated by PumpkiN Ultimate Windows Optimizer v5.4.0")
+                [void]$sb.AppendLine("Generated by PumpkiN Ultimate Windows Optimizer v5.5.0")
 
                 [System.Windows.Clipboard]::SetText($sb.ToString())
                 & $script:LogToGui "[+] Complete Device Specifications report copied to clipboard!"
@@ -1385,7 +1555,7 @@ function Start-PumpkiNGui {
     # Initial Log Greeting & Status
     & $updateStandbyStatus
     $hw = Get-HardwareProfile
-    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.4.0 initialized."
+    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.5.0 initialized."
     & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"
     & $script:LogToGui "Select tweaks or software to install, then click the action button."
     if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }

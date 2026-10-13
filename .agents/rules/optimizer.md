@@ -4,7 +4,7 @@ trigger: always_on
 
 # AGENTS.md
 
-Operating instructions and development standards for coding agents working on **PumpkiN's Ultimate Windows Optimizer & Software Suite v5.4.0** (`Win_Optimizer`). Read this file before every task.
+Operating instructions and development standards for coding agents working on **PumpkiN's Ultimate Windows Optimizer & Software Suite v5.5.0** (`Win_Optimizer`). Read this file before every task.
 
 **Working code only. Finish the job. Plausibility is not correctness.**
 
@@ -33,7 +33,7 @@ These rules override everything else in this file when in conflict:
 
 ## 1. Architecture & Module Map
 
-The codebase is organized into an orchestrator and 17 dedicated modules:
+The codebase is organized into an orchestrator and 18 dedicated modules:
 
 ### Root Orchestrator
 - **`optimizer.ps1`**: Master entry point. Handles admin elevation check, CLI argument parsing (`-CLI`), module loader (local dot-sourcing with automatic fallback to GitHub raw web streaming for portable `irm ... | iex` usage), and GUI launcher.
@@ -59,6 +59,7 @@ The codebase is organized into an orchestrator and 17 dedicated modules:
 15. **`System-DiagnosticsAndRestore.ps1`**: System Restore point creation, DISM health restore, SFC scannow, and full symmetrical `Restore-Defaults`. Exports `New-SystemRestorePointSafe`, `Repair-SystemHealth`, and `Restore-Defaults`.
 16. **`Optimize-Windows11AndShell.ps1`**: Windows 11 exclusives and shell usability tweaks (VBS security disable, taskbar alignment, Recommended section, Chat, Compact Mode, Snap Assist, Stickers, Edge Discover, Copy/Move menu, Dark Mode, Verbose Logon). Symmetrical rollbacks for every tweak.
 17. **`Optimize-PrivacyAndTelemetry.ps1`**: Comprehensive privacy protection and third-party app telemetry removal (Edge, Chrome, Firefox, VS, Nvidia, Bluetooth, Cloud Content, CDP, Speech, ARSO, Typing collection, Clipboard sync, SafeSearch, Crash dumps, System timeouts). Symmetrical rollbacks for every tweak.
+18. **`Install-CustomCursors.ps1`**: Custom cursor schemes manager (23 gaming cursor packs from `Cursors` folder). INF and CRS parser, live scheme installer, registry updater, and symmetrical rollback. Exports `Get-AvailableCursorSchemes`, `Install-CursorScheme`, and `Restore-DefaultCursors`.
 
 ---
 

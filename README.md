@@ -1,14 +1,14 @@
 <div align="center">
 
 # 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite
-### *v5.4.0 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
+### *v5.5.0 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
 
 <p align="center" style="font-size: 1.15rem; color: #00FFCC; font-weight: bold;">
   <strong>Streamline • Optimize • Dominate</strong><br>
-  <span style="font-size: 0.95rem; color: #8892B0; font-weight: normal;">Hardware-Probed Performance • 100% Symmetrical Rollback Guarantee • Zero Bloatware • 100+ App Catalog</span>
+  <span style="font-size: 0.95rem; color: #8892B0; font-weight: normal;">Hardware-Probed Performance • 100% Symmetrical Rollback Guarantee • Zero Bloatware • 115+ App Catalog • 23 Custom Gaming Cursors</span>
 </p>
 
-[![Release](https://img.shields.io/badge/Release-v5.4.0-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
+[![Release](https://img.shields.io/badge/Release-v5.5.0-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207+-5391FE?style=for-the-badge&logo=powershell&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![Reversibility](https://img.shields.io/badge/Reversibility-100%25%20Symmetrical-FF0055?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
@@ -60,11 +60,11 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\optimizer.ps1 -CLI
 
 ## 🖥️ Modern WPF Desktop GUI (Cyberpunk Dark Theme)
 
-PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dark desktop interface with real-time audit scoring, live tweak status badges, and 4 dedicated operational tabs:
+PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dark desktop interface with real-time audit scoring, live tweak status badges, and 5 dedicated operational tabs:
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.4.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
+│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.5.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ [📦 Software]  [🎮 Gaming]  [🚀 Match Booster]  [🛡️ System & Tools]  [💻 Device Details]│
 ├────────────────────────────────────────────────────────────────────────────────────────┤
@@ -78,25 +78,25 @@ PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dar
 │                                                                                        │
 │  🎮 GAMING & LOW LATENCY TWEAKS:                                                       │
 │  ┌──────────────────────────────────────────────────────────────────────────────────┐  │
-│  │ [Optimal ✓] Win32Priority Separation (0x26)    [Apply]  [↺ Rollback]              │  │
-│  │ [Optimal ✓] Device Manager High-Latency Tuning [Apply]  [↺ Rollback]              │  │
-│  │ [Optimal ✓] Turn Off BitLocker Permanently     [Apply]  [↺ Rollback]              │  │
-│  │ [Optimal ✓] Multiplane Overlay (MPO) Fix       [Apply]  [↺ Rollback]              │  │
-│  │ [Optimal ✓] 1:1 Raw Mouse Linear Curve         [Apply]  [↺ Rollback]              │  │
-│  │ [Needed]    8000Hz USB Keyboard Response Rate  [Apply]  [↺ Rollback]              │  │
-│  │ [Optimal ✓] TCP / IP NoDelay & Anti-Lag Engine [Apply]  [↺ Rollback]              │  │
+│  │ [Applied ✓] Win32Priority Separation (0x26)    [Applied ✓]  [↺ Rollback]          │  │
+│  │ [Applied ✓] Device Manager High-Latency Tuning [Applied ✓]  [↺ Rollback]          │  │
+│  │ [Applied ✓] Turn Off BitLocker Permanently     [Applied ✓]  [↺ Rollback]          │  │
+│  │ [Applied ✓] Multiplane Overlay (MPO) Fix       [Applied ✓]  [↺ Rollback]          │  │
+│  │ [Applied ✓] 1:1 Raw Mouse Linear Curve         [Applied ✓]  [↺ Rollback]          │  │
+│  │ [Needed]    8000Hz USB Keyboard Response Rate  [Apply]      [↺ Rollback]          │  │
+│  │ [Applied ✓] TCP / IP NoDelay & Anti-Lag Engine [Applied ✓]  [↺ Rollback]          │  │
 │  └──────────────────────────────────────────────────────────────────────────────────┘  │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ OUTPUT LOG: [12:00:00] PumpkiN Ultimate Gaming Optimizer v5.4.0 initialized.           │
+│ OUTPUT LOG: [12:00:00] PumpkiN Ultimate Gaming Optimizer v5.5.0 initialized.           │
 │ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%      │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Dashboard Tabs Overview
-1. **📦 Software Downloader:** Curated 10-category catalog containing 100+ popular applications powered by Windows WinGet. Real-time search filter, category chips, batch installation, silent uninstaller, and 1-click upgrade.
-2. **🎮 Gaming Tweaks:** System debloat, kernel scheduler (0x26), Device Manager tuning (HPET, SMBus, System Speaker, Timers), DPC latency, 8000Hz raw mouse curves, TCP NoDelay, GPU suites, and individual 1-click apply and rollback buttons.
+1. **📦 Software Downloader:** Curated 10-category catalog containing 115+ popular applications powered by Windows WinGet (including Equicord Equilotl/Equibop Discord client quick installer and website launcher). Real-time search filter, category chips, batch installation, silent uninstaller, and 1-click upgrade.
+2. **🎮 Gaming Tweaks:** System debloat, kernel scheduler (0x26), Device Manager tuning (HPET, SMBus, System Speaker, Timers), DPC latency, 8000Hz raw mouse curves, TCP NoDelay, GPU suites, live state detection (`Applied [✓]` vs `Needed`), and individual symmetrical 1-click apply and rollback buttons for every single tweak.
 3. **🚀 Match Booster:** Standby list memory purger, Wi-Fi 0ms ping spike shield, and esports process priority hooks (Valorant, CS2, Apex, Fortnite, PUBG, COD, Overwatch 2).
-4. **🛡️ System & Tools:** Live System Audit Dashboard with percentage score, Windows 11 Exclusives Suite, Advanced 3rd-Party App Telemetry Killer, permanent BitLocker & device encryption disable, UEFI WPBT & peripheral block, TrafficMonitor telemetry suite, and Microsoft Activation Scripts (MAS).
+4. **🛡️ System & Tools:** Live System Audit Dashboard with percentage score, Windows 11 Exclusives Suite, Advanced 3rd-Party App Telemetry Killer, permanent BitLocker & device encryption disable, UEFI WPBT & peripheral block, TrafficMonitor telemetry suite, Microsoft Activation Scripts (MAS), and **Custom Gaming Cursors Manager** (23 handpicked cursor schemes with 1-click install and live reload without restart).
 5. **💻 Device Details:** Real-time hardware spec sheet displaying Master PC Banner, OS, CPU (cores/cache), GPU, RAM, Storage (physical drives & volume capacities), Network, and Battery with collapsible cards and 1-click clipboard copying.
 
 ---
@@ -274,6 +274,7 @@ When running with `-CLI` or in a terminal session, the complete interactive menu
   [52] Advanced Privacy & App Telemetry Suite (Edge, Chrome, VS, Nvidia, SafeSearch)
   [53] Device Manager Tuning (Disable HPET, SMBus, System Speaker & Legacy Timers)
   [54] Turn Off BitLocker Permanently (Disable Encryption, BDESVC & Decrypt Drives)
+  [55] Custom Gaming Cursors Manager (23 Packs - 1-Click Install & Rollback)
   [0]  Exit
 ================================================================================
 ```

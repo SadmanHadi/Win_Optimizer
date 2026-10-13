@@ -50,6 +50,44 @@ function Optimize-Network {
     Write-Host "      [+] ServiceProvider priorities set + 100% bandwidth unreserved + DNS flushed" -ForegroundColor Green
 }
 
+function Restore-Network {
+    Write-Host "`n[*] Restoring Network Settings to Windows Defaults..." -ForegroundColor Yellow
+    $hw = if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) { Get-HardwareProfile } else { $null }
+    $adapter = if ($hw) { $hw.Adapter } else { $null }
+    if ($adapter) {
+        $guid = $adapter.InterfaceGuid
+        $tcpKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\$guid"
+        if (Test-Path $tcpKey) {
+            Remove-ItemProperty -Path $tcpKey -Name 'TcpAckFrequency' -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path $tcpKey -Name 'TCPNoDelay' -ErrorAction SilentlyContinue
+            Remove-ItemProperty -Path $tcpKey -Name 'TcpDelAckTicks' -ErrorAction SilentlyContinue
+        }
+        netsh int tcp set global rsc=default 2>$null | Out-Null
+        netsh int tcp set global rss=default 2>$null | Out-Null
+        netsh int tcp set global autotuninglevel=normal 2>$null | Out-Null
+    }
+
+    # Restore NDU service
+    Set-ItemProperty -Path 'HKLM:\SYSTEM\ControlSet001\Services\Ndu' -Name 'Start' -Value 2 -ErrorAction SilentlyContinue
+
+    # Restore default QoS bandwidth reservation
+    $psched = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Psched'
+    if (Test-Path $psched) {
+        Remove-ItemProperty -Path $psched -Name 'NonBestEffortLimit' -ErrorAction SilentlyContinue
+    }
+
+    # Restore ServiceProvider Priorities
+    $spKey = 'HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip\ServiceProvider'
+    Set-ItemProperty -Path $spKey -Name 'LocalPriority' -Value 499 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $spKey -Name 'HostsPriority' -Value 500 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $spKey -Name 'DnsPriority' -Value 2000 -Type DWord -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $spKey -Name 'NetbtPriority' -Value 2001 -Type DWord -ErrorAction SilentlyContinue
+
+    Clear-DnsClientCache
+    ipconfig /flushdns 2>$null | Out-Null
+    Write-Host "      [OK] TCP/IP and Network stack restored to Windows defaults!" -ForegroundColor Green
+}
+
 function Test-GamingDnsBenchmark {
     <#
     .SYNOPSIS

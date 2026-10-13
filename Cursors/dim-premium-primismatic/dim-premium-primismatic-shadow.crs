@@ -1,0 +1,51 @@
+﻿[Arrow]
+Path=DIM Premium Primismatic Normal Select.ani
+
+[Help]
+Path=DIM Premium Primismatic Help select.ani
+
+[AppStarting]
+Path=DIM Premium Primismatic Working in Background.ani
+
+[Wait]
+Path=DIM Premium Primismatic Busy.ani
+
+[Crosshair]
+Path=DIM Premium Primismatic Precision Select.ani
+
+[IBeam]
+Path=DIM Premium Primismatic Text Select.ani
+
+[NWPen]
+Path=DIM Premium Primismatic Handwriting.ani
+
+[No]
+Path=DIM Premium Primismatic Unavailable.ani
+
+[SizeNS]
+Path=DIM Premium Primismatic VerticalResize.ani
+
+[SizeWE]
+Path=DIM Premium Primismatic Horizontal Resize.ani
+
+[SizeNWSE]
+Path=DIM Premium Primismatic Diagonal Resize 1.ani
+
+[SizeNESW]
+Path=DIM Premium Primismatic Diagonal Resize 2.ani
+
+[SizeAll]
+Path=DIM Premium Primismatic Move.ani
+
+[UpArrow]
+Path=DIM Premium Primismatic Alternate Select.ani
+
+[Hand]
+Path=DIM Premium Primismatic Link Select.ani
+
+[Person]
+Path=DIM Premium Primismatic Person Select.ani
+
+[Pin]
+Path=DIM Premium Primismatic Location Select.ani
+

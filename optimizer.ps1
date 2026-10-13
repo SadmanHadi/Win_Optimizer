@@ -6,8 +6,8 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-            ULTIMATE GAMING & NETWORK OPTIMIZER v5.3.0
-           Created by PumpkiN | Max FPS - Ultra Low Latency
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.5.0
+            Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
 irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex
@@ -17,19 +17,21 @@ param(
     [switch]$CLI
 )
 
+$Global:OptimizerProjectRoot = if ($PSScriptRoot) { $PSScriptRoot } elseif (Test-Path "E:\Projects\Win_Optimizer") { "E:\Projects\Win_Optimizer" } else { (Get-Location).Path }
+
 # 1. Administrator Elevation Check
 if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
     Write-Host "[!] Administrator privileges required. Elevating..." -ForegroundColor Yellow
     $cliArg = if ($CLI) { " -CLI" } else { "" }
     if ($PSCommandPath) {
-        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"$cliArg" -Verb RunAs
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"$cliArg" -WorkingDirectory "$Global:OptimizerProjectRoot" -Verb RunAs
     } else {
-        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex`"$cliArg" -Verb RunAs
+        Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/SadmanHadi/Win_Optimizer/main/optimizer.ps1 | iex`"$cliArg" -WorkingDirectory "$Global:OptimizerProjectRoot" -Verb RunAs
     }
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.4.0"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.5.0"
 
 # ==============================================================================
 # 2. MODULAR LOADER ENGINE (LOCAL + REMOTE GITHUB FALLBACK)
@@ -52,6 +54,7 @@ $ModuleList = @(
     "Optimize-SystemAndDebloat",
     "Optimize-Windows11AndShell",
     "Optimize-PrivacyAndTelemetry",
+    "Install-CustomCursors",
     "System-DiagnosticsAndRestore"
 )
 
@@ -107,7 +110,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.4.0"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.5.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -183,6 +186,7 @@ function Show-PumpkiNBanner {
     Write-Host "  [52] Advanced Privacy & Third-Party App Telemetry Suite" -ForegroundColor Magenta
     Write-Host "  [53] Device Manager Tuning (Disable HPET, SMBus, System Speaker & Legacy Timers)" -ForegroundColor Yellow
     Write-Host "  [54] Turn Off BitLocker Permanently (Disable Encryption, BDESVC & Decrypt Drives)" -ForegroundColor Red
+    Write-Host "  [55] Custom Gaming Cursors Manager (23 Packs - 1-Click Install & Rollback)" -ForegroundColor Magenta
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -190,7 +194,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-54]"
+        $choice = Read-Host "Select an option [0-55]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -603,6 +607,28 @@ function Show-ConsoleMenu {
             }
             "54" {
                 Disable-BitLockerPermanently
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "55" {
+                Write-Host "`n=== Custom Gaming Cursors Manager ===" -ForegroundColor Magenta
+                $schemes = Get-AvailableCursorSchemes
+                if ($schemes.Count -eq 0) {
+                    Write-Host "[-] No cursor schemes found in Cursors folder." -ForegroundColor Yellow
+                } else {
+                    Write-Host "[*] Found $($schemes.Count) available cursor packs:" -ForegroundColor Cyan
+                    for ($i = 0; $i -lt $schemes.Count; $i++) {
+                        Write-Host "  [$($i+1)] $($schemes[$i].Name)"
+                    }
+                    Write-Host "  [R] Restore Windows Default Cursors" -ForegroundColor Yellow
+                    Write-Host "  [0] Back to Menu" -ForegroundColor Gray
+                    $cChoice = Read-Host "Select cursor pack [1-$($schemes.Count), R, 0]"
+                    if ($cChoice -eq "R" -or $cChoice -eq "r") {
+                        Restore-DefaultCursors
+                    } elseif ($cChoice -match '^\d+$' -and [int]$cChoice -ge 1 -and [int]$cChoice -le $schemes.Count) {
+                        $selected = $schemes[[int]$cChoice - 1]
+                        Install-CursorScheme -SchemeName $selected.Name
+                    }
+                }
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {

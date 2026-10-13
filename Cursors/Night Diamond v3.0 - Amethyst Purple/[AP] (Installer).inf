@@ -1,0 +1,57 @@
+;Night Diamond - Amethyst Purple v3.0 by TheBlueGuy07
+
+[Version]
+signature="$CHICAGO$"
+
+[DefaultInstall]
+CopyFiles = Scheme.Cur, 
+AddReg    = Scheme.Reg
+
+[DestinationDirs]
+Scheme.Cur = 10,"%CUR_DIR%"
+Scheme.Txt = 10,"%CUR_DIR%"
+
+[Scheme.Reg]
+HKCU,"Control Panel\Cursors\Schemes","%SCHEME_NAME%",,"%10%\%CUR_DIR%\%pointer%,%10%\%CUR_DIR%\%help%,%10%\%CUR_DIR%\%work%,%10%\%CUR_DIR%\%busy%,%10%\%CUR_DIR%\%Cross%,%10%\%CUR_DIR%\%Text%,%10%\%CUR_DIR%\%Hand%,%10%\%CUR_DIR%\%Unavailiable%,%10%\%CUR_DIR%\%Vert%,%10%\%CUR_DIR%\%Horz%,%10%\%CUR_DIR%\%Dgn1%,%10%\%CUR_DIR%\%Dgn2%,%10%\%CUR_DIR%\%move%,%10%\%CUR_DIR%\%alternate%,%10%\%CUR_DIR%\%link%,%10%\%CUR_DIR%\%pin%,%10%\%CUR_DIR%\%person%"
+
+; -- Common Information
+
+[Scheme.Cur]
+"[AP] Normal Select v3.0.ani"
+"[AP] Help Select v3.0.ani"
+"[AP] Working In Background v3.0.ani"
+"[AP] Busy v3.0.ani"
+"[AP] Precision Select v3.0.ani"
+"[AP] Text Select v3.0.ani"
+"[AP] Handwriting v3.0.ani"
+"[AP] Unavailable v3.0.ani"
+"[AP] Vertical Resize v3.0.ani"
+"[AP] Horizontal Resize v3.0.ani"
+"[AP] Diagonal Resize 1 v3.0.ani"
+"[AP] Diagonal Resize 2 v3.0.ani"
+"[AP] Move v3.0.ani"
+"[AP] Alternate Select v3.0.ani"
+"[AP] Link Select v3.0.ani"
+"[AP] Location Select v3.0.ani"
+"[AP] Person Select v3.0.ani"
+
+[Strings]
+CUR_DIR                    = "Cursors\Night Diamond - Amethyst Purple v3.0"
+SCHEME_NAME        = "Night Diamond - Amethyst Purple v3.0"
+pointer		= "[AP] Normal Select v3.0.ani"
+help		= "[AP] Help Select v3.0.ani"
+work		= "[AP] Working In Background v3.0.ani"
+busy		= "[AP] Busy v3.0.ani"
+cross		= "[AP] Precision Select v3.0.ani"
+text		= "[AP] Text Select v3.0.ani"
+hand		= "[AP] Handwriting v3.0.ani"
+unavailiable	= "[AP] Unavailable v3.0.ani"
+vert		= "[AP] Vertical Resize v3.0.ani"
+horz		= "[AP] Horizontal Resize v3.0.ani"
+dgn1		= "[AP] Diagonal Resize 1 v3.0.ani"
+dgn2		= "[AP] Diagonal Resize 2 v3.0.ani"
+move		= "[AP] Move v3.0.ani"
+alternate	                  = "[AP] Alternate Select v3.0.ani"
+link		= "[AP] Link Select v3.0.ani"
+pin		= "[AP] Location Select v3.0.ani"
+person		= "[AP] Person Select v3.0.ani"

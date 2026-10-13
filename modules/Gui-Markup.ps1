@@ -8,13 +8,17 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.4.0"
+    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.5.0"
     Height="840" Width="1240"
     MinHeight="700" MinWidth="1000"
     WindowStartupLocation="CenterScreen"
     Background="#0F141C"
     Foreground="#F1F5F9"
-    FontFamily="Segoe UI">
+    FontFamily="Segoe UI Variable Text, Segoe UI, Arial"
+    TextOptions.TextFormattingMode="Display"
+    TextOptions.TextRenderingMode="ClearType"
+    SnapsToDevicePixels="True"
+    UseLayoutRounding="True">
 
     <Window.Resources>
         <!-- Dark Cyberpunk Styles -->
@@ -282,13 +286,15 @@ $Global:xamlContent = @'
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Name="ImgAppLogo" Width="36" Height="36" Margin="0,0,12,0" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Border Width="40" Height="40" CornerRadius="8" Background="#161E2B" BorderBrush="#00D2FF" BorderThickness="1" Margin="0,0,12,0" VerticalAlignment="Center">
+                        <Image Name="ImgAppLogo" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="PUMPKIN" FontSize="20" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center"/>
                             <TextBlock Text=" ULTIMATE OPTIMIZER" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.4.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
+                                <TextBlock Text="v5.5.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Ultra Low-Latency Windows Kernel Engine &amp; 10-Category WinGet Software Suite" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
@@ -412,6 +418,20 @@ $Global:xamlContent = @'
                                 <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,10"/>
                                 <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
                                 <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,14"/>
+                                <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,14">
+                                    <StackPanel>
+                                        <TextBlock Text="EQUICORD CLIENT" FontSize="11" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Enhanced Discord client with 100+ plugins &amp; themes." FontSize="10" Foreground="#94A3B8" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Name="BtnInstallEquicord" Grid.Column="0" Content="Install" Style="{StaticResource CyanButton}" Padding="4,4" FontSize="11" Margin="0,0,3,0"/>
+                                            <Button Name="BtnOpenEquicordSite" Grid.Column="1" Content="Website" Style="{StaticResource DarkOutlineButton}" Padding="4,4" FontSize="11" Margin="3,0,0,0"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
 
                             <Separator Grid.Row="1" Background="#26354A" Margin="0,0,0,14"/>
@@ -450,7 +470,7 @@ $Global:xamlContent = @'
                             </Grid.ColumnDefinitions>
 
                             <!-- Circular Radial Score Gauge -->
-                            <Border Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00D2FF" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <Border Name="BorderScoreGauge" Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00D2FF" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Name="TxtScorePercent" Text="100%" FontSize="18" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
                                     <TextBlock Name="TxtScoreGrade" Text="A+ Optimal" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
@@ -462,10 +482,10 @@ $Global:xamlContent = @'
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <WrapPanel Margin="0,0,0,6">
                                     <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Text="[田 Usability &amp; Shell Features]" FontSize="11" FontWeight="SemiBold" Foreground="#00D2FF"/>
+                                        <TextBlock Text="[Usability &amp; Shell Features]" FontSize="11" FontWeight="SemiBold" Foreground="#00D2FF"/>
                                     </Border>
                                     <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Name="TxtSystemSpecBadge" Text="[💻 Windows Optimization Suite]" FontSize="11" Foreground="#CBD5E1"/>
+                                        <TextBlock Name="TxtSystemSpecBadge" Text="[Windows Optimization Suite]" FontSize="11" Foreground="#CBD5E1"/>
                                     </Border>
                                     <Border Background="#0B2518" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="4" Padding="6,2">
                                         <TextBlock Name="TxtActiveTweakRatio" Text="[Active: 50 / 75]" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
@@ -473,7 +493,7 @@ $Global:xamlContent = @'
                                 </WrapPanel>
 
                                 <TextBlock Text="Streamline. Optimize. Dominate. 100% reversible live Windows tuning with individual rollbacks." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
-                                <TextBlock Name="TxtScoreSubtitle" Text="✓ Recommended: Ready   ↶ Rollbacks: Ready   ℹ 1-Click Control" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
+                                <TextBlock Name="TxtScoreSubtitle" Text="[OK] Recommended: Ready   [&lt;] Rollbacks: Ready   [*] 1-Click Control" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
                             </StackPanel>
 
                             <!-- Right Controls -->
@@ -483,10 +503,10 @@ $Global:xamlContent = @'
                                     <Button Name="BtnFilterSafe" Content="Safe" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
                                     <Button Name="BtnFilterAdv" Content="Adv" Style="{StaticResource MiniApplyButton}"/>
                                 </StackPanel>
-                                <Button Name="BtnApplyUnappliedBanner" Content="Apply Unapplied Only ✓" Style="{StaticResource CyanButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
+                                <Button Name="BtnApplyUnappliedBanner" Content="Apply Unapplied Only" Style="{StaticResource CyanButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Name="BtnScanSystemStateBanner" Content="⚡ Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
-                                    <Button Name="BtnRevertDefaultsBanner" Content="↶ Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
+                                    <Button Name="BtnScanSystemStateBanner" Content="Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
+                                    <Button Name="BtnRevertDefaultsBanner" Content="Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -512,10 +532,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="GPU Auto-Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="GPU Auto-Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_GpuAuto" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_GpuAuto" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Optimizes NVIDIA and AMD driver settings for maximum frame rates." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_GpuAuto" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_GpuAuto" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_GpuAuto" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -525,10 +553,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Hardware MSI Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Hardware MSI Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_HardwareMsi" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_HardwareMsi" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Switches USB and network adapters to MSI for lowest DPC latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_HardwareMsi" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_HardwareMsi" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_HardwareMsi" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -538,10 +574,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable USB Sleep" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable USB Sleep" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DisablePowerSaving" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DisablePowerSaving" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Stops Windows from throttling USB controllers and gaming peripherals." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisablePowerSaving" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DisablePowerSaving" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DisablePowerSaving" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -551,10 +595,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable MPO" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable MPO" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_Mpo" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_Mpo" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables Multiplane Overlay to eliminate micro-stutters and black screens." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_Mpo" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_Mpo" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_Mpo" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -564,10 +616,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Raw Mouse Input" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Raw Mouse Input" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_MouseCurve" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_MouseCurve" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables Windows pointer acceleration for true 1:1 sensor tracking." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_MouseCurve" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_MouseCurve" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_MouseCurve" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -584,10 +644,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="8000Hz Input Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="8000Hz Input Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_InputLatency" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_InputLatency" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Optimizes keyboard buffers and high-polling mouse latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_InputLatency" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_InputLatency" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_InputLatency" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -597,10 +665,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="CSRSS Realtime I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="CSRSS Realtime I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CsrssPriority" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CsrssPriority" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Sets Windows subsystem to Realtime priority for lowest input latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CsrssPriority" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_CsrssPriority" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_CsrssPriority" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -610,10 +686,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="CPU Gaming Quantum" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="CPU Gaming Quantum" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CpuSystem" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CpuSystem" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Prioritizes foreground games and MMCSS multimedia threads." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CpuSystem" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_CpuSystem" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_CpuSystem" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -623,10 +707,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="SvcHost RAM Splitting" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="SvcHost RAM Splitting" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_SvcHost" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_SvcHost" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Isolates Windows services into dedicated RAM pools for stability." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_SvcHost" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_SvcHost" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_SvcHost" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -643,10 +735,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Low-Latency Audio &amp; Anti-Popping" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Low-Latency Audio &amp; Anti-Popping" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_AudioDpc" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_AudioDpc" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="MMCSS Audio High priority, Realtek/HD Audio MSI mode, zero audio drops." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_AudioDpc" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_AudioDpc" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_AudioDpc" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -656,10 +756,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="USB xHCI Thread Priority" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="USB xHCI Thread Priority" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_UsbxHci" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_UsbxHci" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Kernel Thread Priority 31 for USB 3.x controller and 200-depth mouse buffers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_UsbxHci" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_UsbxHci" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_UsbxHci" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -710,10 +818,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="TCP/IP Gaming Stack" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="TCP/IP Gaming Stack" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_Network" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_Network" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables Nagle algorithm and packet delays for online gaming." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_Network" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_Network" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_Network" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -723,10 +839,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Wi-Fi Ping Shield" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Wi-Fi Ping Shield" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_WifiScan" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_WifiScan" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Blocks background roaming scans that cause periodic 200ms ping spikes." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_WifiScan" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_WifiScan" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_WifiScan" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -736,10 +860,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Gaming DNS &amp; Startup Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Gaming DNS &amp; Startup Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_StartupDns" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_StartupDns" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Configures Cloudflare 1.1.1.1 gaming DNS and cleans startup bloat." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_StartupDns" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_StartupDns" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_StartupDns" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -792,10 +924,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Esports Game Priority Hooks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Esports Game Priority Hooks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_GameHooks" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_GameHooks" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Locks CPU High Priority and GPU High Performance for CS2, Valorant, Apex, PUBG, Fortnite, COD." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_GameHooks" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_GameHooks" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_GameHooks" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -812,10 +952,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="PumpkiN Esports Ultimate Power Plan" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="PumpkiN Esports Ultimate Power Plan" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_UltimatePower" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_UltimatePower" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Activates custom low-latency scheme with 0% core parking, 0ms DPC transition, and USB/PCIe sleep off." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_UltimatePower" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_UltimatePower" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_UltimatePower" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -825,10 +973,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="100% CPU Core Unparking" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="100% CPU Core Unparking" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CoreUnpark" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CoreUnpark" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Unparks all logical CPU cores, forces instant frequency ramp-up, and unmasks core parking in Power Options." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CoreUnpark" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_CoreUnpark" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_CoreUnpark" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -838,10 +994,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Strip Visual Animations" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Strip Visual Animations" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_StripVisual" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_StripVisual" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Removes desktop animations and window shadows for maximum FPS." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_StripVisual" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_StripVisual" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_StripVisual" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -851,10 +1015,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Taskbar End Task" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Taskbar End Task" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_EndTask" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_EndTask" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Adds instant force-close to right-clicked taskbar app icons." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_EndTask" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_EndTask" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_EndTask" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -864,10 +1036,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable Sticky Keys" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Sticky Keys" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_StickyKeys" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_StickyKeys" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Stops annoying accessibility popups when pressing Shift repeatedly." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_StickyKeys" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_StickyKeys" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_StickyKeys" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -877,12 +1057,17 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Compact Window Metrics" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Compact Window Metrics" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CompactMetrics" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CompactMetrics" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="8px thin scrollbars (-120), 1px border (-15), 0px padding, and 10px compact title bar (-150)." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CompactMetrics" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,6,0"/>
-                                                    <Button Name="BtnReset_CompactMetrics" Content="Default" Style="{StaticResource MiniApplyButton}"/>
+                                                    <Button Name="BtnApply_CompactMetrics" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnReset_CompactMetrics" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -900,10 +1085,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Debloat Services" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Debloat Services" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DebloatServices" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DebloatServices" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables telemetry, diagnostic tracking, and background services." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DebloatServices" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DebloatServices" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DebloatServices" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -913,10 +1106,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Optimize Disk I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Optimize Disk I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DiskIo" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DiskIo" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables NTFS last-access timestamps and optimizes disk buffers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DiskIo" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DiskIo" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DiskIo" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -926,10 +1127,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="CompactOS Compression" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="CompactOS Compression" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_CompactOs" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_CompactOs" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Compresses Windows system binaries using LZX to reclaim 3-6 GB on SSD." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_CompactOs" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_CompactOs" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_CompactOs" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -939,10 +1148,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Take Ownership Menu" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Take Ownership Menu" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_TakeOwnership" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_TakeOwnership" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Adds a 1-click Take Ownership shortcut to Explorer right-click menu." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_TakeOwnership" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_TakeOwnership" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_TakeOwnership" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -952,10 +1169,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable Junk Tasks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Junk Tasks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_JunkTasks" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_JunkTasks" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables CEIP, feedback, and telemetry background scheduled tasks." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_JunkTasks" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_JunkTasks" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_JunkTasks" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -965,10 +1190,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable Telemetry" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Telemetry" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_Privacy" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_Privacy" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Hardens privacy by disabling telemetry and background diagnostics." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_Privacy" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_Privacy" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_Privacy" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1167,7 +1400,7 @@ $Global:xamlContent = @'
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Border Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00FF88" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <Border Name="BorderScoreGaugeTab4" Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00FF88" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
                                 <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <TextBlock Name="TxtScorePercentTab4" Text="100%" FontSize="18" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
                                     <TextBlock Name="TxtScoreGradeTab4" Text="A+ Optimal" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
@@ -1178,24 +1411,24 @@ $Global:xamlContent = @'
                             <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                 <WrapPanel Margin="0,0,0,6">
                                     <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Text="[🛡 Security &amp; Privacy Shield]" FontSize="11" FontWeight="SemiBold" Foreground="#00FF88"/>
+                                        <TextBlock Text="[Security &amp; Privacy Shield]" FontSize="11" FontWeight="SemiBold" Foreground="#00FF88"/>
                                     </Border>
                                     <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Text="[💻 Windows 11 Hardening Suite]" FontSize="11" Foreground="#CBD5E1"/>
+                                        <TextBlock Text="[Windows 11 Hardening Suite]" FontSize="11" Foreground="#CBD5E1"/>
                                     </Border>
                                     <Border Background="#0B2518" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="4" Padding="6,2">
                                         <TextBlock Name="TxtActiveTweakRatioTab4" Text="[Active: 50 / 75]" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
                                     </Border>
                                 </WrapPanel>
                                 <TextBlock Text="Enterprise-grade telemetry strip, OEM bloatware immunization, and Windows 11 desktop refinements." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
-                                <TextBlock Text="✓ Symmetrical 1-Click Rollbacks for Every Individual Tweak" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
+                                <TextBlock Text="[OK] Symmetrical 1-Click Rollbacks for Every Individual Tweak" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
-                                <Button Name="BtnApplyUnappliedHardeningBanner" Content="Apply Unapplied Only ✓" Style="{StaticResource OrangeButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
+                                <Button Name="BtnApplyUnappliedHardeningBanner" Content="Apply Unapplied Only" Style="{StaticResource OrangeButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Name="BtnScanSystemStateTab4Banner" Content="⚡ Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
-                                    <Button Name="BtnRevertDefaultsTab4" Content="↶ Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
+                                    <Button Name="BtnScanSystemStateTab4Banner" Content="Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
+                                    <Button Name="BtnRevertDefaultsTab4" Content="Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
@@ -1436,10 +1669,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Block WPBT Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Block WPBT Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_BlockWpbt" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_BlockWpbt" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Prevents motherboard UEFI from auto-installing OEM bloatware." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_BlockWpbt" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_BlockWpbt" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_BlockWpbt" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1449,10 +1690,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Block Peripheral Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Block Peripheral Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_BlockPeripheral" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_BlockPeripheral" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Blocks auto-install of Razer Synapse, Armoury Crate, and vendor tools." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_BlockPeripheral" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_BlockPeripheral" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_BlockPeripheral" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1462,10 +1711,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Purge Windows AI" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Purge Windows AI" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_RemoveAi" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_RemoveAi" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Removes Recall, Copilot, and CoreAI background services." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_RemoveAi" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_RemoveAi" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_RemoveAi" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1475,10 +1732,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Security-Only Updates" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Security-Only Updates" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_SecurityUpdatesOnly" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_SecurityUpdatesOnly" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Defers feature upgrade builds while keeping security patches active." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_SecurityUpdatesOnly" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_SecurityUpdatesOnly" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_SecurityUpdatesOnly" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </StackPanel>
@@ -1494,10 +1759,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Classic Right-Click" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Classic Right-Click" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_ClassicContext" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_ClassicContext" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Restores the classic Windows 10 right-click menu on Windows 11." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_ClassicContext" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_ClassicContext" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_ClassicContext" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1507,10 +1780,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable Web Search" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Web Search" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DisableBing" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DisableBing" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Stops Start Menu from sending keystrokes to Bing web search." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableBing" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DisableBing" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DisableBing" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1520,10 +1801,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable Auto-Discovery" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Auto-Discovery" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DisableAutoDiscovery" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DisableAutoDiscovery" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Halts background network broadcast polling for local file shares." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableAutoDiscovery" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DisableAutoDiscovery" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DisableAutoDiscovery" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1533,10 +1822,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Show File Extensions" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Show File Extensions" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_ShowExtensions" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_ShowExtensions" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Shows file extensions (.exe, .ps1) and hidden system files." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_ShowExtensions" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_ShowExtensions" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_ShowExtensions" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1562,12 +1859,17 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable All Windows Ads" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable All Windows Ads" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DisableAds" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DisableAds" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Kills Lock Screen ads, Start suggestions, Explorer sync ads, and Settings promotions." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisableAds" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,6,0"/>
-                                                    <Button Name="BtnReset_DisableAds" Content="Default" Style="{StaticResource MiniApplyButton}"/>
+                                                    <Button Name="BtnApply_DisableAds" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnReset_DisableAds" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -1578,12 +1880,17 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Remove Shortcut Arrows" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Remove Shortcut Arrows" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_NoShortcutArrows" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_NoShortcutArrows" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Removes shortcut arrow badge overlays for clean desktop icons (No Arrow)." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
                                                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_NoShortcutArrows" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,6,0"/>
-                                                    <Button Name="BtnReset_ShortcutArrows" Content="Default" Style="{StaticResource MiniApplyButton}"/>
+                                                    <Button Name="BtnApply_NoShortcutArrows" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnReset_ShortcutArrows" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
                                                 </StackPanel>
                                             </Grid>
                                         </Border>
@@ -1603,10 +1910,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Enable Long Paths" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Enable Long Paths" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_EnableLongPaths" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_EnableLongPaths" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Removes the 260-character file path limit for modding and dev tools." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_EnableLongPaths" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_EnableLongPaths" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_EnableLongPaths" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1616,10 +1931,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Disable Lock Screen" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Disable Lock Screen" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DisableLockScreen" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DisableLockScreen" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Skips the swipe-up lock screen directly to the password prompt." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableLockScreen" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DisableLockScreen" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DisableLockScreen" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1629,10 +1952,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Verbose BSOD" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Verbose BSOD" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_BsodVerbose" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_BsodVerbose" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Enables detailed crash diagnostic text on blue screens." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_BsodVerbose" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_BsodVerbose" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_BsodVerbose" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1642,10 +1973,18 @@ $Global:xamlContent = @'
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
                                                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Reclaim Reserved Storage" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Reclaim Reserved Storage" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                                        <Border Name="Badge_DisableReservedStorage" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Name="TxtBadge_DisableReservedStorage" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock Text="Disables 7GB of reserved update storage and returns it to drive C:." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
                                                 </StackPanel>
-                                                <Button Name="BtnApply_DisableReservedStorage" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Name="BtnApply_DisableReservedStorage" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
+                                                    <Button Name="BtnRollback_DisableReservedStorage" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                         <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
@@ -1681,6 +2020,44 @@ $Global:xamlContent = @'
                                     </StackPanel>
                                 </Border>
 
+                                <!-- Card: 1-Click Custom Gaming Cursors Manager -->
+                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <TextBlock Text="CUSTOM GAMING CURSORS (23 PACKS)" FontWeight="Bold" FontSize="13" Foreground="#00FF88"/>
+                                                <TextBlock Text="Instant live 1-click cursor schemes from Cursors folder without reboot." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#0C1017" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
+                                                <TextBlock Name="TxtActiveCursorScheme" Text="Active: Windows Default" FontSize="10" FontWeight="SemiBold" Foreground="#00D2FF"/>
+                                            </Border>
+                                        </Grid>
+
+                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,10">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid Grid.Row="0" Margin="0,0,0,8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <ComboBox Name="CmbCursorSchemes" Grid.Column="0" Height="30" Background="#161E2B" Foreground="#FFFFFF" BorderBrush="#26354A" Margin="0,0,8,0" VerticalContentAlignment="Center" FontSize="12"/>
+                                                    <Button Name="BtnInstallCursor" Grid.Column="1" Content="Install Cursor" Style="{StaticResource CyanButton}" Padding="14,5" FontSize="11" Margin="0,0,6,0"/>
+                                                    <Button Name="BtnRestoreCursor" Grid.Column="2" Content="Default Cursors" Style="{StaticResource DarkOutlineButton}" Padding="12,5" FontSize="11"/>
+                                                </Grid>
+                                                <TextBlock Grid.Row="1" Text="Select from 23 animated and precision schemes (DIM v3.2, Android Material, Neon, Crosshair, etc.). Instant broadcast." FontSize="11" Foreground="#64748B"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </Border>
                                 <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="TRAFFICMONITOR &amp; TASKBAR TELEMETRY" FontWeight="Bold" FontSize="13" Foreground="#A855F7" Margin="0,0,0,6"/>
@@ -1959,7 +2336,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevOs" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevOs" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevOs" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevOs" Margin="30,12,0,4">
@@ -1990,7 +2367,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevCpu" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevCpu" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevCpu" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevCpu" Margin="30,12,0,4">
@@ -2021,7 +2398,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevGpu" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevGpu" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevGpu" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevGpu" Margin="30,12,0,4">
@@ -2050,7 +2427,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevRam" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevRam" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevRam" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevRam" Margin="30,12,0,4">
@@ -2078,7 +2455,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevStorage" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevStorage" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevStorage" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevStorage" Margin="30,12,0,4">
@@ -2102,7 +2479,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevNet" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevNet" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevNet" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevNet" Margin="30,12,0,4">
@@ -2130,7 +2507,7 @@ $Global:xamlContent = @'
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Name="BtnCopy_DevBattery" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevBattery" Content="▲" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                            <Button Name="BtnToggle_DevBattery" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
                                     <StackPanel Name="Panel_DevBattery" Margin="30,12,0,4">
@@ -2176,3 +2553,7 @@ $Global:xamlContent = @'
     </Grid>
 </Window>
 '@
+
+function Get-OptimizerXamlMarkup {
+    return $Global:xamlContent
+}

@@ -351,6 +351,13 @@ function Restore-LegacyBootMenu {
     } catch {}
 }
 
+# Compatibility Aliases for GUI & CLI Dispatchers
+function Set-TaskbarLeftAlign { Set-TaskbarAlignmentLeft }
+function Disable-RecommendedStartSection { Disable-StartMenuRecommended }
+function Disable-DesktopStickers { Disable-WindowsStickers }
+function Enable-CopyMoveToContextMenu { Enable-CopyMoveContextMenu }
+function Enable-SystemDarkMode { Set-WindowsDarkMode }
+
 # Standalone execution check
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {

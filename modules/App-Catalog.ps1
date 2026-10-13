@@ -31,6 +31,8 @@ $Global:AppCatalog = @(
     @{ Key = "whatsapp"; Name = "WhatsApp"; Category = "Communications"; WingetId = "WhatsApp.WhatsApp"; Description = "Popular worldwide messaging desktop app" },
     @{ Key = "zoom"; Name = "Zoom Workplace"; Category = "Communications"; WingetId = "Zoom.Zoom"; Description = "Video meetings and webinars" },
     @{ Key = "vesktop"; Name = "Vesktop"; Category = "Communications"; WingetId = "Vencord.Vesktop"; Description = "Lightweight Discord desktop client with Vencord" },
+    @{ Key = "equicord"; Name = "Equicord (Equilotl)"; Category = "Communications"; WingetId = "Equicord.Equilotl"; Description = "Enhanced Discord client with 100+ plugins (equicord.org/download)" },
+    @{ Key = "equibop"; Name = "Equibop"; Category = "Communications"; WingetId = "Equicord.Equibop"; Description = "Custom Discord client with built-in Equicord plugins" },
     @{ Key = "teamspeak"; Name = "TeamSpeak 3"; Category = "Communications"; WingetId = "TeamSpeak-Systems.TeamSpeakClient"; Description = "Low-latency VoIP client for esports teams" },
     @{ Key = "element"; Name = "Element"; Category = "Communications"; WingetId = "Element.Element"; Description = "Decentralized, encrypted Matrix client" },
 
@@ -711,5 +713,15 @@ function Install-TrafficMonitorSuite {
     return ($ok1 -and $ok2 -and $ok3)
 }
 
+function Get-AppCatalog {
+    return $Global:AppCatalog
+}
+
+function Get-AppCatalogCategories {
+    if ($Global:AppCatalog) {
+        return @($Global:AppCatalog | ForEach-Object { $_.Category } | Where-Object { $_ } | Select-Object -Unique | Sort-Object)
+    }
+    return @()
+}
 
 # ==============================================================================

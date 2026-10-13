@@ -39,6 +39,7 @@ $ModuleList = @(
     "Optimize-SystemAndDebloat",
     "Optimize-Windows11AndShell",
     "Optimize-PrivacyAndTelemetry",
+    "Install-CustomCursors",
     "System-DiagnosticsAndRestore"
 )
 

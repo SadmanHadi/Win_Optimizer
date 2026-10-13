@@ -32,6 +32,34 @@ function Apply-GameHooks {
     }
 }
 
+function Restore-GameHooks {
+    Write-Host "`n[*] Restoring Game IFEO Priorities to Defaults..." -ForegroundColor Yellow
+    $games = @(
+        'VALORANT-Win64-Shipping.exe',
+        'cs2.exe',
+        'r5apex.exe',
+        'FortniteClient-Win64-Shipping.exe',
+        'cod.exe',
+        'RainbowSix.exe',
+        'RainbowSix_Vulkan.exe',
+        'Overwatch.exe',
+        'TslGame.exe',
+        'PUBG.exe',
+        'PUBGLite.exe',
+        'PUBG-Win64-Shipping.exe',
+        'Deadlock.exe',
+        'AndroidEmulatorEn.exe',
+        'AndroidEmulator.exe'
+    )
+    foreach ($g in $games) {
+        $path = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\$g\PerfOptions"
+        if (Test-Path $path) {
+            Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+    Write-Host "      [OK] Game IFEO CPU and I/O priority hooks removed." -ForegroundColor Green
+}
+
 function Create-RestorePoint {
     Write-Host "`n[*] Creating Windows System Restore Point..." -ForegroundColor Yellow
     try {
@@ -529,10 +557,10 @@ function Get-SystemAuditState {
         if ($state[$k] -eq $true) { $appliedCount++ }
     }
     $scorePct = if ($totalCount -gt 0) { [math]::Round(($appliedCount / $totalCount) * 100) } else { 0 }
-    $scoreGrade = if ($scorePct -ge 95) { "100% A+ Excellent" }
-                  elseif ($scorePct -ge 80) { "$scorePct% A Optimal" }
-                  elseif ($scorePct -ge 60) { "$scorePct% B Good" }
-                  else { "$scorePct% C Needs Tuning" }
+    $scoreGrade = if ($scorePct -ge 90) { "A+ Excellent" }
+                  elseif ($scorePct -ge 75) { "A Optimal" }
+                  elseif ($scorePct -ge 50) { "B Good" }
+                  else { "C Needs Tuning" }
 
     $state['ScoreApplied'] = $appliedCount
     $state['ScoreTotal']   = $totalCount

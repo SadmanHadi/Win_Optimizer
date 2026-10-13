@@ -133,6 +133,65 @@ function Optimize-GpuAuto {
     }
 }
 
+function Restore-DevicePowerSaving {
+    Write-Host "`n[*] Restoring USB & Hardware Device Power Saving Defaults..." -ForegroundColor Yellow
+    try {
+        $powerDevices = Get-CimInstance -ClassName MSPower_DeviceEnable -Namespace root\wmi -ErrorAction SilentlyContinue
+        foreach ($dev in $powerDevices) {
+            if ($dev.InstanceName -match 'USB|PCI|ROOT_HUB') {
+                Set-CimInstance -InputObject $dev -Property @{ Enable = $true } -ErrorAction SilentlyContinue
+            }
+        }
+    } catch {}
+
+    $usbHub = 'HKLM:\SYSTEM\CurrentControlSet\Services\USB'
+    if (Test-Path $usbHub) {
+        Remove-ItemProperty -Path $usbHub -Name 'DisableSelectiveSuspend' -ErrorAction SilentlyContinue
+    }
+    Write-Host "      [OK] USB selective suspend and device power saving restored to Windows defaults." -ForegroundColor Green
+}
+
+function Restore-HardwareMsiMode {
+    Write-Host "`n[*] Restoring Hardware MSI Mode to System Defaults..." -ForegroundColor Yellow
+    $pciBase = 'HKLM:\SYSTEM\CurrentControlSet\Enum\PCI'
+    if (Test-Path $pciBase) {
+        $pciDevices = Get-ChildItem -Path $pciBase -ErrorAction SilentlyContinue
+        foreach ($dev in $pciDevices) {
+            $instances = Get-ChildItem -Path $dev.PSPath -ErrorAction SilentlyContinue
+            foreach ($inst in $instances) {
+                $devParam = Join-Path $inst.PSPath 'Device Parameters'
+                $intMgmt = Join-Path $devParam 'Interrupt Management'
+                $msiProps = Join-Path $intMgmt 'MessageSignaledInterruptProperties'
+                $affPolicy = Join-Path $intMgmt 'Affinity Policy'
+                if (Test-Path $msiProps) {
+                    Remove-ItemProperty -Path $msiProps -Name 'MSISupported' -ErrorAction SilentlyContinue
+                }
+                if (Test-Path $affPolicy) {
+                    Remove-ItemProperty -Path $affPolicy -Name 'DevicePriority' -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    }
+    Write-Host "      [OK] PCI controllers restored to default interrupt affinity." -ForegroundColor Green
+}
+
+function Restore-GpuAuto {
+    Write-Host "`n[*] Restoring GPU and Display Driver Settings to Defaults..." -ForegroundColor Yellow
+    $gamesTask = 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games'
+    if (Test-Path $gamesTask) {
+        Set-ItemProperty -Path $gamesTask -Name 'GPU Priority' -Value 8 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $gamesTask -Name 'Priority' -Value 2 -Type DWord -ErrorAction SilentlyContinue
+        Set-ItemProperty -Path $gamesTask -Name 'Scheduling Category' -Value 'Medium' -Type String -ErrorAction SilentlyContinue
+    }
+    $dwmKey = 'HKCU:\Software\Microsoft\Windows\DWM'
+    if (Test-Path $dwmKey) {
+        Remove-ItemProperty -Path $dwmKey -Name 'EnableWindowColorization' -ErrorAction SilentlyContinue
+    }
+    Restore-HardwareMsiMode
+    Restore-DevicePowerSaving
+    Write-Host "      [OK] GPU auto-tuning restored to Windows defaults." -ForegroundColor Green
+}
+
 # If run directly as standalone script (not dot-sourced)
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {

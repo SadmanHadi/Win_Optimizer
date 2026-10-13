@@ -461,6 +461,18 @@ function Restore-SystemTimeouts {
     Write-Host "      [+] Default timeouts and link tracking restored." -ForegroundColor Green
 }
 
+# Compatibility Aliases for GUI & CLI Dispatchers
+function Disable-ThirdPartyAppTelemetry { Disable-AppTelemetry }
+function Disable-CdpUserServices { Disable-CdpServices }
+function Disable-RestartAppsAfterReboot { Disable-AutomaticRestartSignOn }
+function Disable-HandwritingTypingCollection { Disable-TextInputCollection }
+function Disable-ClipboardCloudSync { Disable-ClipboardSync }
+function Disable-SafeSearchFiltering { Disable-SafeSearchMode }
+function Exclude-DriverUpdatesInWindowsUpdate { Disable-DriverUpdatesFromWindowsUpdate }
+function Disable-WindowsStoreAutoUpdates { Disable-StoreAutoUpdates }
+function Disable-SmartScreenProtection { Disable-SmartScreenFilter }
+function Disable-SystemCrashDumps { Disable-CrashDumps }
+
 # Standalone execution check
 if ($MyInvocation.InvocationName -ne '.') {
     if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
