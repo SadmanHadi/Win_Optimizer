@@ -246,31 +246,32 @@ function Set-RecycleBinCustomIcon {
         New-Item -ItemType Directory -Path $iconsDir -Force | Out-Null
     }
 
+    $baseCandidates = @()
+    if ($Global:OptimizerProjectRoot) { $baseCandidates += (Join-Path $Global:OptimizerProjectRoot "recycle bin new style") }
+    if ($PSScriptRoot) {
+        $baseCandidates += (Join-Path (Split-Path $PSScriptRoot -Parent) "recycle bin new style")
+        $baseCandidates += (Join-Path $PSScriptRoot "recycle bin new style")
+    }
+    $baseCandidates += "e:\Projects\Win_Optimizer\recycle bin new style"
+    $baseCandidates += (Join-Path (Get-Location) "recycle bin new style")
+
     # Locate empty icon
-    if (-not $EmptyIconPath -or -not (Test-Path $EmptyIconPath)) {
-        $candidateEmpty = @(
-            (Join-Path $PSScriptRoot "..\recycle bin new style\empty.ico"),
-            (Join-Path $PSScriptRoot "..\recycle bin new style\pop-cat-empty.ico"),
-            "e:\Projects\Win_Optimizer\recycle bin new style\empty.ico",
-            "e:\Projects\Win_Optimizer\recycle bin new style\pop-cat-empty.ico",
-            "E:\Sadman softs\recycle bin new style\pop-cat-empty.ico"
-        )
-        foreach ($c in $candidateEmpty) {
-            if ($c -and (Test-Path $c)) { $EmptyIconPath = (Resolve-Path $c).Path; break }
+    if (-not $EmptyIconPath -or -not (Test-Path -LiteralPath $EmptyIconPath)) {
+        foreach ($b in $baseCandidates) {
+            $e1 = Join-Path $b "empty.ico"
+            $e2 = Join-Path $b "pop-cat-empty.ico"
+            if ($e1 -and (Test-Path -LiteralPath $e1)) { $EmptyIconPath = (Resolve-Path $e1).Path; break }
+            if ($e2 -and (Test-Path -LiteralPath $e2)) { $EmptyIconPath = (Resolve-Path $e2).Path; break }
         }
     }
 
     # Locate full icon
-    if (-not $FullIconPath -or -not (Test-Path $FullIconPath)) {
-        $candidateFull = @(
-            (Join-Path $PSScriptRoot "..\recycle bin new style\full.ico"),
-            (Join-Path $PSScriptRoot "..\recycle bin new style\pop-cat-full.ico"),
-            "e:\Projects\Win_Optimizer\recycle bin new style\full.ico",
-            "e:\Projects\Win_Optimizer\recycle bin new style\pop-cat-full.ico",
-            "E:\Sadman softs\recycle bin new style\pop-cat-full.ico"
-        )
-        foreach ($c in $candidateFull) {
-            if ($c -and (Test-Path $c)) { $FullIconPath = (Resolve-Path $c).Path; break }
+    if (-not $FullIconPath -or -not (Test-Path -LiteralPath $FullIconPath)) {
+        foreach ($b in $baseCandidates) {
+            $f1 = Join-Path $b "full.ico"
+            $f2 = Join-Path $b "pop-cat-full.ico"
+            if ($f1 -and (Test-Path -LiteralPath $f1)) { $FullIconPath = (Resolve-Path $f1).Path; break }
+            if ($f2 -and (Test-Path -LiteralPath $f2)) { $FullIconPath = (Resolve-Path $f2).Path; break }
         }
     }
 

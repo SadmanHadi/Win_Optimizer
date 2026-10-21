@@ -221,6 +221,7 @@ function Show-SystemAuditReport {
         'ShowExtensions'          = 'Show File Extensions & Hidden Files'
         'DisableAds'              = 'Disable All Windows Desktop & Shell Ads'
         'NoShortcutArrows'        = 'Remove Shortcut Arrow Icon Overlays'
+        'PopCatRecycleBin'        = 'Pop Cat Recycle Bin Desktop Icons (Empty & Full)'
         'EnableLongPaths'         = 'Enable Win32 Long Paths (MAX_PATH 32767)'
         'DisableLockScreen'       = 'Disable Windows Lock Screen Swipe'
         'BsodVerbose'             = 'Verbose BSOD Stop Codes & Drivers'
@@ -484,6 +485,11 @@ function Get-SystemAuditState {
         $res = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -ErrorAction SilentlyContinue).ShippedWithReserves
         $state['DisableReservedStorage'] = ($res -eq 0)
     } catch { $state['DisableReservedStorage'] = $false }
+
+    try {
+        $rbEmpty = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon' -ErrorAction SilentlyContinue).empty
+        $state['PopCatRecycleBin'] = ($rbEmpty -and $rbEmpty -like '*recycle-empty.ico*')
+    } catch { $state['PopCatRecycleBin'] = $false }
 
     try {
         $state['HardwareMsi'] = $true

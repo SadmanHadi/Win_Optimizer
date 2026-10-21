@@ -2756,6 +2756,7 @@ function Start-PumpkiNGui {
         @{ Key="ShowExtensions"; Title="Show File Extensions & Hidden Files"; Category="System"; Tier="Recommended"; Description="Configures File Explorer to always show file extensions and hidden items for security."; Apply={ Set-ShowFileExtensionsAndHidden }; Rollback={ Restore-ShowFileExtensionsAndHidden } },
         @{ Key="DisableAds"; Title="Disable Windows Desktop Ads"; Category="System"; Tier="Recommended"; Description="Removes suggested apps, tip notifications, and promotional banners across the shell."; Apply={ Disable-WindowsAds }; Rollback={ Enable-WindowsAds } },
         @{ Key="NoShortcutArrows"; Title="Remove Shortcut Arrow Overlays"; Category="System"; Tier="Safe"; Description="Removes the default arrow icon overlay from desktop application shortcuts."; Apply={ Disable-ShortcutArrow }; Rollback={ Restore-ShortcutArrow } },
+        @{ Key="PopCatRecycleBin"; Title="Pop Cat Recycle Bin Icons"; Category="System"; Tier="Safe"; Description="Sets dynamic animated-style Pop Cat empty and full icons on the desktop Recycle Bin."; Apply={ Set-RecycleBinCustomIcon }; Rollback={ Restore-RecycleBinDefaultIcon } },
         @{ Key="EnableLongPaths"; Title="Enable Win32 Long Paths (MAX_PATH)"; Category="System"; Tier="Recommended"; Description="Removes the 260-character path limit for file paths, preventing filesystem errors."; Apply={ Enable-LongPaths }; Rollback={ Restore-LongPaths } },
         @{ Key="DisableLockScreen"; Title="Disable Windows Lock Screen"; Category="System"; Tier="Safe"; Description="Bypasses the swipe-up lock screen image and displays the password prompt immediately."; Apply={ Disable-LockScreen }; Rollback={ Restore-LockScreen } },
         @{ Key="BsodVerbose"; Title="Verbose Crash Screen (BSOD)"; Category="System"; Tier="Safe"; Description="Configures Windows to display detailed stop codes and faulting driver names on crash."; Apply={ Enable-BsodVerbose }; Rollback={ Restore-BsodVerbose } },
@@ -6389,31 +6390,32 @@ function Set-RecycleBinCustomIcon {
         New-Item -ItemType Directory -Path $iconsDir -Force | Out-Null
     }
 
+    $baseCandidates = @()
+    if ($Global:OptimizerProjectRoot) { $baseCandidates += (Join-Path $Global:OptimizerProjectRoot "recycle bin new style") }
+    if ($PSScriptRoot) {
+        $baseCandidates += (Join-Path (Split-Path $PSScriptRoot -Parent) "recycle bin new style")
+        $baseCandidates += (Join-Path $PSScriptRoot "recycle bin new style")
+    }
+    $baseCandidates += "e:\Projects\Win_Optimizer\recycle bin new style"
+    $baseCandidates += (Join-Path (Get-Location) "recycle bin new style")
+
     # Locate empty icon
-    if (-not $EmptyIconPath -or -not (Test-Path $EmptyIconPath)) {
-        $candidateEmpty = @(
-            (Join-Path $PSScriptRoot "..\recycle bin new style\empty.ico"),
-            (Join-Path $PSScriptRoot "..\recycle bin new style\pop-cat-empty.ico"),
-            "e:\Projects\Win_Optimizer\recycle bin new style\empty.ico",
-            "e:\Projects\Win_Optimizer\recycle bin new style\pop-cat-empty.ico",
-            "E:\Sadman softs\recycle bin new style\pop-cat-empty.ico"
-        )
-        foreach ($c in $candidateEmpty) {
-            if ($c -and (Test-Path $c)) { $EmptyIconPath = (Resolve-Path $c).Path; break }
+    if (-not $EmptyIconPath -or -not (Test-Path -LiteralPath $EmptyIconPath)) {
+        foreach ($b in $baseCandidates) {
+            $e1 = Join-Path $b "empty.ico"
+            $e2 = Join-Path $b "pop-cat-empty.ico"
+            if ($e1 -and (Test-Path -LiteralPath $e1)) { $EmptyIconPath = (Resolve-Path $e1).Path; break }
+            if ($e2 -and (Test-Path -LiteralPath $e2)) { $EmptyIconPath = (Resolve-Path $e2).Path; break }
         }
     }
 
     # Locate full icon
-    if (-not $FullIconPath -or -not (Test-Path $FullIconPath)) {
-        $candidateFull = @(
-            (Join-Path $PSScriptRoot "..\recycle bin new style\full.ico"),
-            (Join-Path $PSScriptRoot "..\recycle bin new style\pop-cat-full.ico"),
-            "e:\Projects\Win_Optimizer\recycle bin new style\full.ico",
-            "e:\Projects\Win_Optimizer\recycle bin new style\pop-cat-full.ico",
-            "E:\Sadman softs\recycle bin new style\pop-cat-full.ico"
-        )
-        foreach ($c in $candidateFull) {
-            if ($c -and (Test-Path $c)) { $FullIconPath = (Resolve-Path $c).Path; break }
+    if (-not $FullIconPath -or -not (Test-Path -LiteralPath $FullIconPath)) {
+        foreach ($b in $baseCandidates) {
+            $f1 = Join-Path $b "full.ico"
+            $f2 = Join-Path $b "pop-cat-full.ico"
+            if ($f1 -and (Test-Path -LiteralPath $f1)) { $FullIconPath = (Resolve-Path $f1).Path; break }
+            if ($f2 -and (Test-Path -LiteralPath $f2)) { $FullIconPath = (Resolve-Path $f2).Path; break }
         }
     }
 
@@ -9072,6 +9074,7 @@ function Show-SystemAuditReport {
         'ShowExtensions'          = 'Show File Extensions & Hidden Files'
         'DisableAds'              = 'Disable All Windows Desktop & Shell Ads'
         'NoShortcutArrows'        = 'Remove Shortcut Arrow Icon Overlays'
+        'PopCatRecycleBin'        = 'Pop Cat Recycle Bin Desktop Icons (Empty & Full)'
         'EnableLongPaths'         = 'Enable Win32 Long Paths (MAX_PATH 32767)'
         'DisableLockScreen'       = 'Disable Windows Lock Screen Swipe'
         'BsodVerbose'             = 'Verbose BSOD Stop Codes & Drivers'
@@ -9335,6 +9338,11 @@ function Get-SystemAuditState {
         $res = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' -ErrorAction SilentlyContinue).ShippedWithReserves
         $state['DisableReservedStorage'] = ($res -eq 0)
     } catch { $state['DisableReservedStorage'] = $false }
+
+    try {
+        $rbEmpty = (Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon' -ErrorAction SilentlyContinue).empty
+        $state['PopCatRecycleBin'] = ($rbEmpty -and $rbEmpty -like '*recycle-empty.ico*')
+    } catch { $state['PopCatRecycleBin'] = $false }
 
     try {
         $state['HardwareMsi'] = $true
