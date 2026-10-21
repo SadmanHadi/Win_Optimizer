@@ -1,14 +1,14 @@
 <div align="center">
 
 # 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite
-### *v5.6.0 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
+### *v5.6.1 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
 
 <p align="center" style="font-size: 1.15rem; color: #00FFCC; font-weight: bold;">
   <strong>Streamline • Optimize • Dominate</strong><br>
   <span style="font-size: 0.95rem; color: #8892B0; font-weight: normal;">Hardware-Probed Performance • 100% Symmetrical Rollback Guarantee • Zero Bloatware • 115+ App Catalog • 23 Custom Gaming Cursors</span>
 </p>
 
-[![Release](https://img.shields.io/badge/Release-v5.6.0-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
+[![Release](https://img.shields.io/badge/Release-v5.6.1-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207+-5391FE?style=for-the-badge&logo=powershell&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![Reversibility](https://img.shields.io/badge/Reversibility-100%25%20Symmetrical-FF0055?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
@@ -64,7 +64,7 @@ PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dar
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.6.0]   [ 🔍 Search... ]  [🛡️ Restore Point]  [🔑 MAS]   │
+│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.6.1]   [ 🔍 Search... ]  [🛡️ Restore Point]  [🔑 MAS]   │
 ├───────────────┬────────────────────────────────────────────────────────────────────────┤
 │ ⚡ Dashboard   │  🎮 Gaming & Low Latency                                               │
 │ 🎮 Gaming     │  Preset: [ All ] [⭐ Recommended Safe ] [ 🔥 Esports Extreme ] [ Active ]│

@@ -117,6 +117,143 @@ function Run-Diagnostics {
         $maxCf = ($pingCf | Measure-Object -Property ResponseTime -Maximum).Maximum
         Write-Host "Cloudflare DNS (1.1.1.1): Avg: $avgCf ms | Min: $minCf ms | Max: $maxCf ms (Jitter: $([math]::Round($maxCf - $minCf, 1)) ms)" -ForegroundColor Green
     }
+
+    Show-SystemAuditReport
+}
+
+function Show-SystemAuditReport {
+    <#
+    .SYNOPSIS
+        Displays a structured, categorized console report of all active vs unapplied
+        optimizations across Gaming & Latency, Privacy & Telemetry, and System & Usability.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n================================================================================" -ForegroundColor Cyan
+    Write-Host "                LIVE SYSTEM AUDIT & TWEAK STATUS REPORT                         " -ForegroundColor Cyan
+    Write-Host "================================================================================" -ForegroundColor Cyan
+    $audit = Get-SystemAuditState
+    $scCol = if ($audit.ScorePercent -ge 80) { 'Green' } elseif ($audit.ScorePercent -ge 50) { 'Yellow' } else { 'Cyan' }
+    Write-Host "Overall System Tuning Score: $($audit.ScoreGrade) ($($audit.ScoreApplied)/$($audit.ScoreTotal) Active - $($audit.ScorePercent)%)" -ForegroundColor $scCol
+
+    # Category 1: Gaming & Latency
+    $gamingMap = [ordered]@{
+        'GpuAuto'             = 'GPU Driver Latency Auto-Tuning'
+        'HardwareMsi'         = 'Hardware MSI Mode (GPU/Net/Audio/USB)'
+        'DisablePowerSaving'  = 'Disable Device Power Saving Suspensions'
+        'Mpo'                 = 'Disable Multiplane Overlay (MPO)'
+        'MouseCurve'          = '1:1 Raw Mouse Linear Curve'
+        'InputLatency'        = '8000Hz USB Keyboard Response Buffers'
+        'CsrssPriority'       = 'CSRSS Realtime I/O Priority'
+        'CpuSystem'           = 'Win32PrioritySeparation Quantum (0x26)'
+        'SvcHost'             = 'SvcHost RAM Thread Splitting'
+        'Network'             = 'TCP/IP Low-Latency Anti-Lag Stack'
+        'WifiScan'            = 'Wi-Fi 0ms Roaming Ping Shield'
+        'StartupDns'          = 'Gaming DNS & Fast Startup Tuning'
+        'GameHooks'           = 'Esports Process Priority Hooks'
+        'UltimatePower'       = 'PumpkiN Ultimate Power Plan (0% Core Parking)'
+        'CoreUnpark'          = '100% CPU Core Unparking'
+        'StripVisual'         = 'Strip Desktop Visual Animations'
+        'EndTask'             = 'Taskbar End Task Right-Click'
+        'StickyKeys'          = 'Disable Sticky Keys Prompt'
+        'CompactMetrics'      = 'Compact Window Metrics (8px Scrollbars)'
+        'DebloatServices'     = 'Debloat Background Services'
+        'DiskIo'              = 'Optimize Disk I/O & NTFS (No 8.3/LastAccess)'
+        'CompactOs'           = 'CompactOS System Compression'
+        'TakeOwnership'       = 'Take Ownership Context Menu'
+        'JunkTasks'           = 'Disable Scheduled Junk Tasks'
+        'Privacy'             = 'Harden Core Windows Telemetry (Level 0)'
+        'AudioDpc'            = 'Audio DPC & Anti-Popping (MMCSS High)'
+        'UsbxHci'             = 'USB xHCI Realtime Thread Priority (31)'
+        'DeviceManager'       = 'Device Manager Latency Tuning (HPET/Timers)'
+    }
+    $activeGamingCount = 0
+    foreach ($k in $gamingMap.Keys) { if ($audit.State[$k] -eq $true) { $activeGamingCount++ } }
+    Write-Host "`n>>> GAMING & LATENCY TWEAKS ($activeGamingCount/$($gamingMap.Count) Active):" -ForegroundColor Cyan
+    foreach ($k in $gamingMap.Keys) {
+        $isActive = ($audit.State[$k] -eq $true)
+        $glyph = if ($isActive) { "[+]" } else { "[-]" }
+        $col   = if ($isActive) { "Green" } else { "DarkGray" }
+        Write-Host "  $glyph $($gamingMap[$k])" -ForegroundColor $col
+    }
+
+    # Category 2: Privacy & Telemetry
+    $privacyMap = [ordered]@{
+        'AppTelemetry'             = 'Disable 3rd-Party App Telemetry (Edge/Chrome/NV)'
+        'BluetoothAdvertising'     = 'Disable Bluetooth Advertising Beacons'
+        'CloudContent'             = 'Disable Cloud Optimized Content'
+        'CdpServices'              = 'Disable CDP Connected Devices Platform'
+        'DiagnosticsToasts'        = 'Disable Feedback & Survey Toasts'
+        'OnlineSpeech'             = 'Disable Online Speech Recognition'
+        'Arso'                     = 'Disable Auto-Restart Apps on Reboot'
+        'TextInputCollection'      = 'Disable Handwriting & Typing Collection'
+        'ClipboardSync'            = 'Disable Clipboard Cloud Synchronization'
+        'SettingsMessageSync'      = 'Disable Settings & Message Sync'
+        'FindMyDevice'             = 'Disable Find My Device GPS Tracking'
+        'SafeSearch'               = 'Disable SafeSearch Query Telemetry'
+        'RemoteAssistanceRegistry' = 'Disable Remote Assistance & Remote Registry'
+        'DriverUpdatesExcluded'    = 'Exclude Drivers from Windows Update'
+        'StoreAutoUpdates'         = 'Disable Microsoft Store Background Updates'
+        'SmartScreen'              = 'Disable SmartScreen Hash Verification'
+        'CrashDumps'               = 'Disable System Memory Crash Dumps'
+        'SystemTimeouts'           = 'Optimize Service Shutdown Timeouts (2000ms)'
+    }
+    $activePrivCount = 0
+    foreach ($k in $privacyMap.Keys) { if ($audit.State[$k] -eq $true) { $activePrivCount++ } }
+    Write-Host "`n>>> PRIVACY & TELEMETRY TWEAKS ($activePrivCount/$($privacyMap.Count) Active):" -ForegroundColor Magenta
+    foreach ($k in $privacyMap.Keys) {
+        $isActive = ($audit.State[$k] -eq $true)
+        $glyph = if ($isActive) { "[+]" } else { "[-]" }
+        $col   = if ($isActive) { "Green" } else { "DarkGray" }
+        Write-Host "  $glyph $($privacyMap[$k])" -ForegroundColor $col
+    }
+
+    # Category 3: System, Shell & Usability
+    $systemMap = [ordered]@{
+        'BlockWpbt'               = 'Block UEFI WPBT Binary Execution'
+        'BlockPeripheral'         = 'Block Peripheral Bloatware Auto-Install'
+        'RemoveAi'                = 'Purge Windows AI, Copilot & Recall'
+        'SecurityUpdatesOnly'     = 'Security-Only Updates (Defer Feature Builds)'
+        'ClassicContext'          = 'Classic Windows 10 Right-Click Menu'
+        'DisableBing'             = 'Disable Start Menu Web & Bing Search'
+        'DisableAutoDiscovery'    = 'Disable Network Explorer Auto-Discovery'
+        'ShowExtensions'          = 'Show File Extensions & Hidden Files'
+        'DisableAds'              = 'Disable All Windows Desktop & Shell Ads'
+        'NoShortcutArrows'        = 'Remove Shortcut Arrow Icon Overlays'
+        'EnableLongPaths'         = 'Enable Win32 Long Paths (MAX_PATH 32767)'
+        'DisableLockScreen'       = 'Disable Windows Lock Screen Swipe'
+        'BsodVerbose'             = 'Verbose BSOD Stop Codes & Drivers'
+        'DisableReservedStorage'  = 'Reclaim 7GB Windows Reserved Storage'
+        'BitLocker'               = 'Turn Off BitLocker Drive Encryption'
+        'VbsSecurity'             = 'Disable VBS / HVCI Memory Integrity'
+        'TaskbarLeft'             = 'Align Taskbar Icons to Left'
+        'RecommendedStart'        = 'Hide Start Menu Recommended Section'
+        'TaskbarChat'             = 'Disable Taskbar Chat & Teams Widget'
+        'FilesCompact'            = 'File Explorer Compact View Mode'
+        'SnapAssist'              = 'Disable Snap Assist Window Suggestions'
+        'WindowsStickers'         = 'Disable Desktop Stickers'
+        'EdgeDiscover'            = 'Disable Edge Discover Bing Sidebar'
+        'CopyMoveMenu'            = 'Add Copy To & Move To Context Menu'
+        'WindowShake'             = 'Disable Aero Shake Window Minimizing'
+        'SystemDarkMode'          = 'System-Wide Dark Mode'
+        'VerboseLogon'            = 'Enable Verbose Startup Boot Messages'
+        'QuickAccessHistory'      = 'Disable Quick Access Recent Files History'
+        'MyPeople'                = 'Disable My People Taskbar Band'
+        'WindowsInk'              = 'Disable Windows Ink Workspace'
+        'CastToDevice'            = 'Disable Cast to Device Context Menu'
+    }
+    $activeSysCount = 0
+    foreach ($k in $systemMap.Keys) { if ($audit.State[$k] -eq $true) { $activeSysCount++ } }
+    Write-Host "`n>>> SYSTEM & USABILITY TWEAKS ($activeSysCount/$($systemMap.Count) Active):" -ForegroundColor Yellow
+    foreach ($k in $systemMap.Keys) {
+        $isActive = ($audit.State[$k] -eq $true)
+        $glyph = if ($isActive) { "[+]" } else { "[-]" }
+        $col   = if ($isActive) { "Green" } else { "DarkGray" }
+        Write-Host "  $glyph $($systemMap[$k])" -ForegroundColor $col
+    }
+
+    Write-Host "`n================================================================================" -ForegroundColor Cyan
 }
 
 function Get-SystemAuditState {
@@ -129,6 +266,10 @@ function Get-SystemAuditState {
     param()
 
     $state = @{}
+
+    if (-not (Get-PSDrive -Name HKCR -ErrorAction SilentlyContinue)) {
+        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT -ErrorAction SilentlyContinue | Out-Null
+    }
 
     # 1. GPU & Display Latency
     try {
@@ -173,8 +314,9 @@ function Get-SystemAuditState {
     } catch { $state['AudioDpc'] = $false }
 
     try {
-        $xhciPrio = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).ThreadPriority
-        $state['UsbxHci'] = ($xhciPrio -eq 31)
+        $xhciPrio1 = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).ThreadPriority
+        $xhciPrio2 = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\USBXHCI\Parameters' -ErrorAction SilentlyContinue).ThreadPriority
+        $state['UsbxHci'] = ($xhciPrio1 -eq 31 -or $xhciPrio2 -eq 31)
     } catch { $state['UsbxHci'] = $false }
 
     # 4. Network & Anti-Lag
@@ -191,11 +333,14 @@ function Get-SystemAuditState {
 
     try {
         $state['WifiScan'] = $false
-        if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
-            $hw = Get-HardwareProfile
-            if ($hw -and $hw.IsWifi) {
-                $wlanOut = netsh wlan show interfaces 2>$null
-                $state['WifiScan'] = ($wlanOut -match 'disabled|Disabled')
+        $wlanOut = netsh wlan show interfaces 2>$null
+        if ($wlanOut -match 'disabled|Disabled') {
+            $state['WifiScan'] = $true
+        } else {
+            $hw = if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) { Get-HardwareProfile } else { $null }
+            if ($hw -and (-not $hw.IsWifi)) {
+                # Ethernet PC - AutoConfig scanning does not cause ping spikes on wired Ethernet
+                $state['WifiScan'] = $true
             }
         }
     } catch { $state['WifiScan'] = $false }
@@ -214,7 +359,7 @@ function Get-SystemAuditState {
 
     try {
         $coreAttr = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-48e0-a5e0-94168290a945\0cc5b647-c1df-4637-891a-dec35c318583' -ErrorAction SilentlyContinue).Attributes
-        $state['CoreUnpark'] = ($coreAttr -eq 0)
+        $state['CoreUnpark'] = ($coreAttr -eq 0 -or $coreAttr -eq 2)
     } catch { $state['CoreUnpark'] = $false }
 
     # 6. Visuals & System Tweaks
@@ -255,7 +400,7 @@ function Get-SystemAuditState {
     } catch { $state['CompactOs'] = $false }
 
     try {
-        $state['TakeOwnership'] = (Test-Path 'HKCR:\*\shell\runas' -ErrorAction SilentlyContinue)
+        $state['TakeOwnership'] = (Test-Path -LiteralPath 'HKCR:\*\shell\runas' -ErrorAction SilentlyContinue)
     } catch { $state['TakeOwnership'] = $false }
 
     try {
@@ -301,7 +446,8 @@ function Get-SystemAuditState {
 
     try {
         $noNet = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -ErrorAction SilentlyContinue).NoNetCrawling
-        $state['DisableAutoDiscovery'] = ($noNet -eq 1)
+        $folderType = (Get-ItemProperty 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell' -ErrorAction SilentlyContinue).FolderType
+        $state['DisableAutoDiscovery'] = ($noNet -eq 1 -or $folderType -eq 'NotSpecified')
     } catch { $state['DisableAutoDiscovery'] = $false }
 
     try {
@@ -353,7 +499,7 @@ function Get-SystemAuditState {
             $state['DeviceManager'] = (Get-DeviceManagerOptimizationStatus)
         } else {
             $hpet = Get-PnpDevice -FriendlyName 'High precision event timer' -ErrorAction SilentlyContinue | Select-Object -First 1
-            $state['DeviceManager'] = ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or $hpet.Status -eq 'Error'))
+            $state['DeviceManager'] = ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or "$($hpet.ConfigManagerErrorCode)" -match 'DISABLED|22' -or $hpet.Status -eq 'Error'))
         }
     } catch { $state['DeviceManager'] = $false }
 
@@ -552,8 +698,10 @@ function Get-SystemAuditState {
     # Compute Live Optimization Score & Grade
     $appliedCount = 0
     $totalCount = 0
+    $stateCopy = @{}
     foreach ($k in $state.Keys) {
         $totalCount++
+        $stateCopy[$k] = $state[$k]
         if ($state[$k] -eq $true) { $appliedCount++ }
     }
     $scorePct = if ($totalCount -gt 0) { [math]::Round(($appliedCount / $totalCount) * 100) } else { 0 }
@@ -566,7 +714,7 @@ function Get-SystemAuditState {
     $state['ScoreTotal']   = $totalCount
     $state['ScorePercent'] = $scorePct
     $state['ScoreGrade']   = $scoreGrade
-    $state['State']        = $state
+    $state['State']        = $stateCopy
 
     return $state
 }

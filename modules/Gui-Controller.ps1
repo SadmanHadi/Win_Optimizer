@@ -79,36 +79,53 @@ function Start-PumpkiNGui {
     $pageSoftware        = $window.FindName("PageSoftware")
     $pageDevice          = $window.FindName("PageDevice")
 
+    # Top Bar Controls
+    $btnRestorePointTop        = $window.FindName("BtnRestorePointTop")
+    $btnMasActivateTop         = $window.FindName("BtnMasActivateTop")
+    $btnBeastMode              = $window.FindName("BtnBeastMode")
+    $btnExitTop                = $window.FindName("BtnExitTop")
+
     # Tweak Scrollable Panels
     $panelGamingTweaks   = $window.FindName("PanelGamingTweaks")
     $panelPrivacyTweaks  = $window.FindName("PanelPrivacyTweaks")
     $panelSystemTweaks   = $window.FindName("PanelSystemTweaks")
 
     # Dashboard Controls
-    $borderScoreGauge         = $window.FindName("BorderScoreGauge")
-    $txtScorePercent          = $window.FindName("TxtScorePercent")
-    $txtScoreGrade            = $window.FindName("TxtScoreGrade")
-    $txtActiveTweakRatio      = $window.FindName("TxtActiveTweakRatio")
-    $txtScoreSubtitle         = $window.FindName("TxtScoreSubtitle")
-    $btnScanSystemStateBanner = $window.FindName("BtnScanSystemStateBanner")
-    $btnRevertDefaults        = $window.FindName("BtnRevertDefaults")
-    $txtLiveCpu               = $window.FindName("TxtLiveCpu")
-    $txtLiveRam               = $window.FindName("TxtLiveRam")
-    $txtLivePing              = $window.FindName("TxtLivePing")
-    $txtLiveBooster           = $window.FindName("TxtLiveBooster")
-    $btnStartGameBooster      = $window.FindName("BtnStartGameBooster")
-    $btnPurgeStandby          = $window.FindName("BtnPurgeStandby")
-    $btnApplyProfileEsports   = $window.FindName("BtnApplyProfileEsports")
+    $borderScoreGauge          = $window.FindName("BorderScoreGauge")
+    $txtScorePercent           = $window.FindName("TxtScorePercent")
+    $txtScoreGrade             = $window.FindName("TxtScoreGrade")
+    $txtActiveTweakRatio       = $window.FindName("TxtActiveTweakRatio")
+    $txtScoreSubtitle          = $window.FindName("TxtScoreSubtitle")
+    $btnScanSystemStateBanner  = $window.FindName("BtnScanSystemStateBanner")
+    $btnRevertDefaults         = $window.FindName("BtnRevertDefaults")
+    $txtLiveCpu                = $window.FindName("TxtLiveCpu")
+    $txtLiveRam                = $window.FindName("TxtLiveRam")
+    $txtLivePing               = $window.FindName("TxtLivePing")
+    $txtLiveBooster            = $window.FindName("TxtLiveBooster")
+    $btnStartGameBooster       = $window.FindName("BtnStartGameBooster")
+    $btnPurgeStandby           = $window.FindName("BtnPurgeStandby")
+    $txtActiveGamingCount      = $window.FindName("TxtActiveGamingCount")
+    $txtActivePrivacyCount     = $window.FindName("TxtActivePrivacyCount")
+    $txtActiveSystemCount      = $window.FindName("TxtActiveSystemCount")
+    $btnViewActiveTweaks       = $window.FindName("BtnViewActiveTweaks")
+    $btnApplyUnappliedDashboard = $window.FindName("BtnApplyUnappliedDashboard")
+    $btnApplyProfileEsports    = $window.FindName("BtnApplyProfileEsports")
     $btnApplyProfileRecommended = $window.FindName("BtnApplyProfileRecommended")
-    $btnApplyProfilePrivacy   = $window.FindName("BtnApplyProfilePrivacy")
+    $btnApplyProfilePrivacy    = $window.FindName("BtnApplyProfilePrivacy")
 
-    # Gaming Page Master Controls
+    # Gaming Page Master Controls & Tools
     $chipGamingAll           = $window.FindName("ChipGamingAll")
     $chipGamingRecommended   = $window.FindName("ChipGamingRecommended")
     $chipGamingEsports       = $window.FindName("ChipGamingEsports")
     $chipGamingActive        = $window.FindName("ChipGamingActive")
     $btnGamingApplyAll       = $window.FindName("BtnGamingApplyAll")
     $btnGamingRollbackAll    = $window.FindName("BtnGamingRollbackAll")
+    $cmbCursorSchemes        = $window.FindName("CmbCursorSchemes")
+    $txtActiveCursorScheme   = $window.FindName("TxtActiveCursorScheme")
+    $btnInstallCursor        = $window.FindName("BtnInstallCursor")
+    $btnRestoreCursor        = $window.FindName("BtnRestoreCursor")
+    $btnBenchmarkDns         = $window.FindName("BtnBenchmarkDns")
+    $btnResetDns             = $window.FindName("BtnResetDns")
 
     # Privacy Page Master Controls
     $chipPrivacyAll          = $window.FindName("ChipPrivacyAll")
@@ -116,11 +133,21 @@ function Start-PumpkiNGui {
     $btnPrivacyApplyAll      = $window.FindName("BtnPrivacyApplyAll")
     $btnPrivacyRollbackAll   = $window.FindName("BtnPrivacyRollbackAll")
 
-    # System Page Master Controls
+    # System Page Master Controls & Diagnostics
     $chipSystemAll           = $window.FindName("ChipSystemAll")
     $chipSystemActive        = $window.FindName("ChipSystemActive")
     $btnSystemApplyAll       = $window.FindName("BtnSystemApplyAll")
     $btnSystemRollbackAll    = $window.FindName("BtnSystemRollbackAll")
+    $btnRunDiagnostics       = $window.FindName("BtnRunDiagnostics")
+    $btnClearUpdateCache     = $window.FindName("BtnClearUpdateCache")
+    $btnClearDeepCacheBar    = $window.FindName("BtnClearDeepCacheBar")
+    $btnReport_Interrupts    = $window.FindName("BtnReport_Interrupts")
+
+    # Device Page Header Controls
+    $txtDev_CompName         = $window.FindName("TxtDev_CompName")
+    $txtDev_SubTitle         = $window.FindName("TxtDev_SubTitle")
+    $btnRefreshDeviceSpecs   = $window.FindName("BtnRefreshDeviceSpecs")
+    $btnCopyAllDeviceSpecs   = $window.FindName("BtnCopyAllDeviceSpecs")
 
     # Software Downloader Controls
     $wrapPackages            = $window.FindName("WrapPackages")
@@ -410,6 +437,9 @@ function Start-PumpkiNGui {
                 try {
                     & $tw.Apply
                     & $script:LogToGui "[+] $($tw.Title) activated successfully."
+                    if ($script:UpdateGuiAuditStatus) {
+                        & $script:UpdateGuiAuditStatus -ExcludeKey $tw.Key
+                    }
                 } catch {
                     $this.IsChecked = $false
                     & $script:LogToGui "[-] Failed to activate $($tw.Title): $($_.Exception.Message)" "ERROR"
@@ -419,13 +449,13 @@ function Start-PumpkiNGui {
                 try {
                     & $tw.Rollback
                     & $script:LogToGui "[+] $($tw.Title) restored to Windows defaults."
+                    if ($script:UpdateGuiAuditStatus) {
+                        & $script:UpdateGuiAuditStatus -ExcludeKey $tw.Key
+                    }
                 } catch {
                     $this.IsChecked = $true
                     & $script:LogToGui "[-] Failed to restore $($tw.Title): $($_.Exception.Message)" "ERROR"
                 }
-            }
-            if ($script:UpdateGuiAuditStatus) {
-                & $script:UpdateGuiAuditStatus
             }
         })
 
@@ -453,6 +483,10 @@ function Start-PumpkiNGui {
 
     # 7. Live Audit & Score Gauge Synchronizer
     $script:UpdateGuiAuditStatus = {
+        param(
+            [string]$ExcludeKey = $null,
+            [switch]$LogDetails
+        )
         try {
             $audit = Get-SystemAuditState
             $scorePct = [int]$audit.ScorePercent
@@ -469,22 +503,95 @@ function Start-PumpkiNGui {
             if ($txtScoreGrade)       { $txtScoreGrade.Text = $gradeText }
             if ($txtActiveTweakRatio) { $txtActiveTweakRatio.Text = $ratioText }
             if ($borderScoreGauge)    { $borderScoreGauge.BorderBrush = $brushGauge }
+            if ($progressBar)         { $progressBar.Value = $scorePct }
+            if ($txtStatus)           { $txtStatus.Text = "System Audit: $($audit.ScoreApplied)/$($audit.ScoreTotal) Tweaks Active ($scorePctText)" }
+
+            # Calculate active tweaks per category
+            $gamingTweaks  = @($script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" })
+            $privacyTweaks = @($script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" })
+            $systemTweaks  = @($script:TweakDefinitions | Where-Object { $_.Category -eq "System" })
+
+            $activeGaming  = @($gamingTweaks  | Where-Object { $audit.State[$_.Key] -eq $true })
+            $activePrivacy = @($privacyTweaks | Where-Object { $audit.State[$_.Key] -eq $true })
+            $activeSystem  = @($systemTweaks  | Where-Object { $audit.State[$_.Key] -eq $true })
+
+            if ($txtActiveGamingCount)  { $txtActiveGamingCount.Text  = "$($activeGaming.Count) / $($gamingTweaks.Count) Active" }
+            if ($txtActivePrivacyCount) { $txtActivePrivacyCount.Text = "$($activePrivacy.Count) / $($privacyTweaks.Count) Active" }
+            if ($txtActiveSystemCount)  { $txtActiveSystemCount.Text  = "$($activeSystem.Count) / $($systemTweaks.Count) Active" }
+
+            if ($txtScoreSubtitle) {
+                $txtScoreSubtitle.Text = "Active: Gaming ($($activeGaming.Count)/$($gamingTweaks.Count)) | Privacy ($($activePrivacy.Count)/$($privacyTweaks.Count)) | System ($($activeSystem.Count)/$($systemTweaks.Count))  [Score: $scorePctText]"
+            }
 
             foreach ($tw in $script:TweakDefinitions) {
                 if ($tw.Toggle) {
+                    if ($ExcludeKey -and $tw.Key -eq $ExcludeKey) {
+                        continue
+                    }
                     $isApplied = ($audit.State[$tw.Key] -eq $true)
                     $tw.Toggle.IsChecked = $isApplied
                 }
             }
-        } catch {}
+
+            if ($LogDetails) {
+                & $script:ExpandLogDrawer
+                & $script:LogToGui "================================================================================"
+                & $script:LogToGui "  [AUDIT] SYSTEM SCAN RESULTS: $($audit.ScoreApplied) / $($audit.ScoreTotal) TWEAKS ACTIVE ($gradeText)"
+                & $script:LogToGui "================================================================================"
+                & $script:LogToGui "  >>> ACTIVE GAMING & LATENCY TWEAKS ($($activeGaming.Count)/$($gamingTweaks.Count)): "
+                foreach ($tw in $activeGaming) {
+                    & $script:LogToGui "      [+] $($tw.Title)  --  $($tw.Description)"
+                }
+                & $script:LogToGui "  >>> ACTIVE PRIVACY & TELEMETRY TWEAKS ($($activePrivacy.Count)/$($privacyTweaks.Count)): "
+                foreach ($tw in $activePrivacy) {
+                    & $script:LogToGui "      [+] $($tw.Title)  --  $($tw.Description)"
+                }
+                & $script:LogToGui "  >>> ACTIVE SYSTEM & USABILITY TWEAKS ($($activeSystem.Count)/$($systemTweaks.Count)): "
+                foreach ($tw in $activeSystem) {
+                    & $script:LogToGui "      [+] $($tw.Title)  --  $($tw.Description)"
+                }
+                $unapplied = @($script:TweakDefinitions | Where-Object { $audit.State[$_.Key] -ne $true })
+                if ($unapplied.Count -gt 0) {
+                    & $script:LogToGui "  >>> UNAPPLIED / NEEDED TWEAKS ($($unapplied.Count) Remaining): "
+                    foreach ($tw in $unapplied) {
+                        & $script:LogToGui "      [-] $($tw.Title) ($($tw.Category))" "WARN"
+                    }
+                }
+                & $script:LogToGui "================================================================================"
+            }
+        } catch {
+            & $script:LogToGui "[-] Audit sync error: $($_.Exception.Message)" "ERROR"
+        }
     }
 
     # Re-Scan Audit Button Handler
     if ($btnScanSystemStateBanner) {
         $btnScanSystemStateBanner.Add_Click({
-            & $script:LogToGui "[*] Re-scanning live Windows registry and service state..."
-            & $script:UpdateGuiAuditStatus
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Re-scanning live Windows registry, policies, and service state..."
+            & $script:UpdateGuiAuditStatus -LogDetails
             & $script:LogToGui "[+] System audit re-scan complete."
+        })
+    }
+
+    # View Active Tweaks Button Handler
+    if ($btnViewActiveTweaks) {
+        $btnViewActiveTweaks.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:UpdateGuiAuditStatus -LogDetails
+        })
+    }
+
+    # Apply Unapplied on Dashboard
+    if ($btnApplyUnappliedDashboard) {
+        $btnApplyUnappliedDashboard.Add_Click({
+            $audit = Get-SystemAuditState
+            $unappliedTweaks = @($script:TweakDefinitions | Where-Object { $audit.State[$_.Key] -ne $true })
+            if ($unappliedTweaks.Count -eq 0) {
+                & $script:LogToGui "[OK] All tweaks are already active! Optimization score is at 100%."
+                return
+            }
+            & $script:InvokeSequentialTweakAction -Tweaks $unappliedTweaks -Action "Apply"
         })
     }
 
@@ -900,6 +1007,62 @@ function Start-PumpkiNGui {
         })
     }
 
+    if ($btnInstallSelected) {
+        $btnInstallSelected.Add_Click({
+            $selected = @($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true })
+            if ($selected.Count -eq 0) {
+                & $script:LogToGui "[-] No applications selected to install. Check packages in the grid first." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting installation batch for $($selected.Count) application(s)..."
+            $idx = 0
+            foreach ($item in $selected) {
+                $idx++
+                $pct = [int](($idx / $selected.Count) * 100)
+                & $script:SetProgress $pct
+                & $script:LogToGui "[$idx/$($selected.Count)] Installing $($item.Name) ($($item.Id))..."
+                Install-WinGetPackage -PackageId $item.Id -LogCallback { param($m) & $script:LogToGui $m }
+            }
+            & $script:SetProgress 0
+            & $script:LogToGui "[+] WinGet installation batch complete!"
+        })
+    }
+
+    if ($btnUninstallSelected) {
+        $btnUninstallSelected.Add_Click({
+            $selected = @($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true })
+            if ($selected.Count -eq 0) {
+                & $script:LogToGui "[-] No applications selected to uninstall." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Uninstalling $($selected.Count) selected application(s)..."
+            $idx = 0
+            foreach ($item in $selected) {
+                $idx++
+                $pct = [int](($idx / $selected.Count) * 100)
+                & $script:SetProgress $pct
+                Uninstall-WinGetPackage -PackageId $item.Id -LogCallback { param($m) & $script:LogToGui $m }
+            }
+            & $script:SetProgress 0
+            & $script:LogToGui "[+] WinGet uninstall batch complete!"
+        })
+    }
+
+    if ($btnUpgradeAll) {
+        $btnUpgradeAll.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting WinGet system-wide upgrade for all installed packages..."
+            & $script:SetProgress 30
+            Upgrade-AllWinGetPackages -LogCallback { param($m) & $script:LogToGui $m }
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+            & $script:LogToGui "[+] WinGet upgrade complete!"
+        })
+    }
+
     # Software Category Filter Chips
     $categoryMap = @{
         "ChipCatAll"      = "All"
@@ -1023,16 +1186,229 @@ function Start-PumpkiNGui {
         }
     }
 
-    # Cursor schemes manager button
+    # Custom Gaming Cursors (23 Packs) Manager
+    if ($cmbCursorSchemes) {
+        try {
+            $schemes = Get-AvailableCursorSchemes
+            $cmbCursorSchemes.ItemsSource = $schemes
+            $cmbCursorSchemes.DisplayMemberPath = "Name"
+            if ($schemes -and $schemes.Count -gt 0) { $cmbCursorSchemes.SelectedIndex = 0 }
+        } catch {}
+    }
+
+    if ($btnInstallCursor) {
+        $btnInstallCursor.Add_Click({
+            $selected = $cmbCursorSchemes.SelectedItem
+            if (-not $selected) {
+                & $script:LogToGui "[-] Please select a cursor scheme from the dropdown." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Installing custom cursor scheme: $($selected.Name)..."
+            try {
+                $ok = Install-CursorScheme -SchemeName $selected.Name
+                if ($ok) {
+                    if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = $selected.Name }
+                    & $script:LogToGui "[+] Cursor scheme '$($selected.Name)' installed and live-reloaded successfully!"
+                } else {
+                    & $script:LogToGui "[-] Failed to apply cursor scheme: $($selected.Name)" "ERROR"
+                }
+            } catch {
+                & $script:LogToGui "[-] Cursor install error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    if ($btnRestoreCursor) {
+        $btnRestoreCursor.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Restoring Windows default cursor scheme..."
+            try {
+                Restore-DefaultCursors
+                if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = "Windows Default" }
+                & $script:LogToGui "[+] Windows default cursors restored successfully!"
+            } catch {
+                & $script:LogToGui "[-] Cursor restore error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
     $btnRestoreDefaultCursors = $window.FindName("BtnRestoreDefaultCursors")
     if ($btnRestoreDefaultCursors) {
         $btnRestoreDefaultCursors.Add_Click({
+            & $script:ExpandLogDrawer
             & $script:LogToGui "[*] Restoring default Windows cursor schemes..."
             try {
                 Restore-DefaultCursors
+                if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = "Windows Default" }
                 & $script:LogToGui "[+] Default Windows cursors restored successfully!"
             } catch {
                 & $script:LogToGui "[-] Cursor restore failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # Gaming DNS Benchmark & Fast Switcher
+    if ($btnBenchmarkDns) {
+        $btnBenchmarkDns.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting Gaming DNS latency benchmark (Cloudflare, Google, Quad9, OpenDNS)..."
+            try {
+                Optimize-StartupAndDns
+                & $script:LogToGui "[+] Fastest gaming DNS successfully applied to active network adapter!"
+                if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+            } catch {
+                & $script:LogToGui "[-] DNS benchmark failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnResetDns) {
+        $btnResetDns.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Resetting DNS servers to router automatic DHCP..."
+            try {
+                Reset-DnsToAutomatic
+                & $script:LogToGui "[+] DNS servers reset to automatic DHCP!"
+                if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+            } catch {
+                & $script:LogToGui "[-] DNS reset error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # System Health, Diagnostics & Cleaners
+    if ($btnRunDiagnostics) {
+        $btnRunDiagnostics.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Launching Windows System File Checker (SFC) and DISM health repair..."
+            try {
+                Repair-SystemHealth
+                & $script:LogToGui "[+] System health repair routine completed!"
+            } catch {
+                & $script:LogToGui "[-] Repair failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnClearUpdateCache) {
+        $btnClearUpdateCache.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Purging corrupted Windows Update download cache..."
+            try {
+                Clear-WindowsUpdateCache
+                & $script:LogToGui "[+] Windows Update cache cleared successfully!"
+            } catch {
+                & $script:LogToGui "[-] Failed to clear WU cache: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnClearDeepCacheBar) {
+        $btnClearDeepCacheBar.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Running Deep Junk & Shader Temp Cache Cleaner..."
+            try {
+                Invoke-DeepCacheCleaner
+                & $script:LogToGui "[+] Deep Cache Cleaner finished!"
+            } catch {
+                & $script:LogToGui "[-] Cache cleaner failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnReport_Interrupts) {
+        $btnReport_Interrupts.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Checking DPC Interrupt Latency and Device Manager state..."
+            try {
+                $status = Get-DeviceManagerOptimizationStatus
+                & $script:LogToGui "[+] Device Manager optimization status: $status (HPET/SMBus/Timers)"
+            } catch {}
+        })
+    }
+
+    # Top Bar Actions
+    if ($btnRestorePointTop) {
+        $btnRestorePointTop.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Creating safe Windows System Restore Point..."
+            try {
+                New-SystemRestorePointSafe -Description "PumpkiN Optimizer Pre-Tune Point"
+                & $script:LogToGui "[+] System Restore Point created successfully!"
+            } catch {
+                & $script:LogToGui "[-] Restore point failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnMasActivateTop) {
+        $btnMasActivateTop.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS)..."
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`"" -Verb RunAs
+        })
+    }
+    if ($btnBeastMode) {
+        $btnBeastMode.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "=== ENGAGING FULL BEAST MODE (Applying all recommended tweaks) ==="
+            $safeTweaks = @($script:TweakDefinitions | Where-Object { $_.Tier -ne "Esports" })
+            & $script:InvokeSequentialTweakAction -Tweaks $safeTweaks -Action "Apply"
+        })
+    }
+
+    # Match Booster & Standby Purge
+    if ($btnStartGameBooster) {
+        $btnStartGameBooster.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting PumpkiN Match Booster Daemon..."
+            try {
+                Invoke-MatchBooster
+                & $script:LogToGui "[+] Match Booster active: gaming processes prioritized, standby memory purged!"
+            } catch {
+                & $script:LogToGui "[-] Match Booster error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnPurgeStandby) {
+        $btnPurgeStandby.Add_Click({
+            & $script:LogToGui "[*] Purging Windows standby memory cache via EmptyStandbyList..."
+            try {
+                $exe = Join-Path (Split-Path $PSScriptRoot -Parent) "EmptyStandbyList.exe"
+                if (Test-Path $exe) {
+                    Start-Process -FilePath $exe -ArgumentList "workingsets standby" -NoNewWindow -Wait
+                    & $script:LogToGui "[+] Standby memory list purged successfully!"
+                } else {
+                    & $script:LogToGui "[-] EmptyStandbyList.exe not found in root directory." "WARN"
+                }
+            } catch {
+                & $script:LogToGui "[-] Standby purge error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # Device Page Actions
+    if ($btnRefreshDeviceSpecs) {
+        $btnRefreshDeviceSpecs.Add_Click({
+            & $script:LogToGui "[*] Refreshing live device hardware specifications..."
+            & $script:UpdateDeviceSpecsView
+            & $script:LogToGui "[+] Hardware profile refreshed."
+        })
+    }
+    if ($btnCopyAllDeviceSpecs) {
+        $btnCopyAllDeviceSpecs.Add_Click({
+            try {
+                $hw = Get-HardwareProfile
+                $specsText = @"
+PumpkiN Windows Optimizer - Hardware Specifications Report
+----------------------------------------------------------
+Computer Name:  $($env:COMPUTERNAME)
+CPU:            $($hw.CpuName) ($($hw.CpuCores) Cores / $($hw.CpuThreads) Threads @ $($hw.CpuBaseClock) GHz)
+GPU:            $($hw.GpuPrimary) (Driver: $($hw.GpuDriverVersion), VRAM: $($hw.GpuMemoryGb) GB)
+RAM:            $($hw.TotalRamGb) GB ($($hw.RamSpeedMhz) MHz)
+OS:             $($hw.OsName) (Build $($hw.OsBuild))
+Network:        $($hw.ActiveAdapterName) ($($hw.ActiveAdapterSpeed))
+"@
+                [System.Windows.Clipboard]::SetText($specsText)
+                & $script:LogToGui "[+] Full system hardware specifications copied to clipboard!"
+            } catch {
+                & $script:LogToGui "[-] Failed to copy specs: $($_.Exception.Message)" "ERROR"
             }
         })
     }

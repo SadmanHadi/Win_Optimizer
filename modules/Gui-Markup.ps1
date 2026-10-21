@@ -9,7 +9,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.0"
+    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.1"
     Height="840" Width="1260"
     MinHeight="700" MinWidth="1040"
     WindowStartupLocation="CenterScreen"
@@ -311,7 +311,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="16" FontWeight="Bold" Foreground="#00D2FF"/>
                             <TextBlock Text=" OPTIMIZER" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.6.0" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
+                                <TextBlock Text="v5.6.1" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Windows 11 Fluent Gaming Suite" FontSize="11" Foreground="#64748B"/>
@@ -398,6 +398,7 @@ $Global:xamlContent = @'
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
@@ -472,8 +473,53 @@ $Global:xamlContent = @'
                         </Grid>
                     </Border>
 
-                    <!-- ROW 2: 1-CLICK CURATED PROFILE LAUNCHERS -->
-                    <Grid Grid.Row="2">
+                    <!-- ROW 2: ACTIVE TWEAKS CATEGORY BREAKDOWN -->
+                    <Border Grid.Row="2" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Gaming Status Chip -->
+                            <Border Grid.Column="0" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="GAMING &amp; LATENCY" FontSize="10" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,2"/>
+                                    <TextBlock Name="TxtActiveGamingCount" Text="-- / -- Active" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="HPET, Unparking, Win32Priority" FontSize="9" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Privacy Status Chip -->
+                            <Border Grid.Column="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="3,0,3,0">
+                                <StackPanel>
+                                    <TextBlock Text="PRIVACY &amp; TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="#FF7700" Margin="0,0,0,2"/>
+                                    <TextBlock Name="TxtActivePrivacyCount" Text="-- / -- Active" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="App Telemetry, Bing, Tracking" FontSize="9" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- System Status Chip -->
+                            <Border Grid.Column="2" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="6,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="SYSTEM &amp; USABILITY" FontSize="10" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,2"/>
+                                    <TextBlock Name="TxtActiveSystemCount" Text="-- / -- Active" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="No Shortcut Arrow, Classic Context" FontSize="9" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- View Active Tweaks Button -->
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="6,0,0,0">
+                                <Button Name="BtnViewActiveTweaks" Content="Inspect Active in Console" Style="{StaticResource CyanButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnApplyUnappliedDashboard" Content="Apply Unapplied" Style="{StaticResource DarkOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ROW 3: 1-CLICK CURATED PROFILE LAUNCHERS -->
+                    <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
@@ -542,7 +588,55 @@ $Global:xamlContent = @'
                     <!-- Scrollable Dynamic Card Container -->
                     <Border Grid.Row="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="10">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Name="PanelGamingTweaks" Margin="2"/>
+                            <StackPanel Margin="2">
+                                <!-- CUSTOM GAMING CURSORS (23 PACKS) -->
+                                <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                                <TextBlock Text="CUSTOM GAMING CURSORS (23 PACKS)" FontSize="12" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                <Border Background="#14261C" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="3" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="HOT RELOAD" FontSize="9" FontWeight="Bold" Foreground="#00FF88"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="Select and apply esports cursor schemes (Dim, Night Diamond, Oxygen, Material, etc.). Instantly reloads live without Windows restart." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                <TextBlock Text="Active Scheme: " FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                                <TextBlock Name="TxtActiveCursorScheme" Text="Windows Default" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <ComboBox Name="CmbCursorSchemes" Width="180" Height="30" Background="#0D131F" Foreground="#FFFFFF" BorderBrush="#2C3B52" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
+                                            <Button Name="BtnInstallCursor" Content="Install Scheme" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnRestoreCursor" Content="Restore Default" Style="{StaticResource DarkOutlineButton}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- GAMING DNS BENCHMARK AND FAST SWITCHER -->
+                                <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="GAMING DNS BENCHMARK AND FAST SWITCHER" FontSize="12" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Benchmarks Cloudflare (1.1.1.1), Google (8.8.8.8), Quad9 (9.9.9.9), and OpenDNS. Automatically binds your active NIC to the lowest latency provider." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnBenchmarkDns" Content="Benchmark and Apply Fastest DNS" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnResetDns" Content="Reset to DHCP Auto" Style="{StaticResource DarkOutlineButton}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <StackPanel Name="PanelGamingTweaks"/>
+                            </StackPanel>
                         </ScrollViewer>
                     </Border>
                 </Grid>
@@ -606,7 +700,29 @@ $Global:xamlContent = @'
 
                     <Border Grid.Row="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="10">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Name="PanelSystemTweaks" Margin="2"/>
+                            <StackPanel Margin="2">
+                                <!-- SYSTEM HEALTH, DIAGNOSTICS AND DEEP CLEANER -->
+                                <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="SYSTEM HEALTH, DIAGNOSTICS AND DEEP CLEANER" FontSize="12" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Scan and repair corrupted Windows system files (SFC / DISM), clear corrupted Windows Update cache, and deep clean shader/temp caches." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnRunDiagnostics" Content="Repair System Health" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnClearUpdateCache" Content="Clear WU Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnClearDeepCacheBar" Content="Deep Junk Cleaner" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnReport_Interrupts" Content="Check DPC Latency" Style="{StaticResource DarkOutlineButton}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <StackPanel Name="PanelSystemTweaks"/>
+                            </StackPanel>
                         </ScrollViewer>
                     </Border>
                 </Grid>
@@ -700,6 +816,29 @@ $Global:xamlContent = @'
                 <Grid Name="PageDevice" Visibility="Collapsed">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="0,0,8,0">
+                            <!-- Device Header & Action Strip -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="16,12" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <TextBlock Name="TxtDev_CompName" Text="DEVICE SPECIFICATIONS &amp; HARDWARE TELEMETRY" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                            <Border Background="#14261C" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="3" Padding="6,1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="LIVE PROBE" FontSize="9" FontWeight="Bold" Foreground="#00FF88"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Name="TxtDev_SubTitle" Text="Complete real-time hardware diagnostics, driver telemetry, and system profiles." FontSize="11" Foreground="#94A3B8"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Name="BtnRefreshDeviceSpecs" Content="Refresh Hardware" Style="{StaticResource CyanButton}" Margin="0,0,8,0"/>
+                                        <Button Name="BtnCopyAllDeviceSpecs" Content="Copy All Specs" Style="{StaticResource DarkOutlineButton}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
                             <!-- Tools Banner: Cursors and TrafficMonitor -->
                             <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
                                 <Grid>

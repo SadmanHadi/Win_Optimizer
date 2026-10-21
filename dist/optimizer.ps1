@@ -6,7 +6,7 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-            ULTIMATE GAMING & NETWORK OPTIMIZER v5.5.0
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.1
             Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
@@ -31,7 +31,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.5.0"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.1"
 
 # ==============================================================================
 # 2. EMBEDDED ENGINE MODULES (ALL-IN-ONE STANDALONE BUNDLE)
@@ -1157,7 +1157,8 @@ function Get-AppCatalogCategories {
 # ------------------------------------------------------------------------------
 <#
 ================================================================================
-  PumpkiN's Modular Suite: Cyberpunk Dark WPF (XAML) UI Markup
+  PumpkiN's Modular Suite: Windows 11 Fluent + Cyberpunk Dark WPF (XAML) Markup
+  Version 5.6.0
 ================================================================================
 #>
 
@@ -1165,11 +1166,11 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Gaming Optimizer &amp; Software Suite v5.5.0"
-    Height="840" Width="1240"
-    MinHeight="700" MinWidth="1000"
+    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.1"
+    Height="840" Width="1260"
+    MinHeight="700" MinWidth="1040"
     WindowStartupLocation="CenterScreen"
-    Background="#0F141C"
+    Background="#0A0E17"
     Foreground="#F1F5F9"
     FontFamily="Segoe UI Variable Text, Segoe UI, Arial"
     TextOptions.TextFormattingMode="Display"
@@ -1178,30 +1179,113 @@ $Global:xamlContent = @'
     UseLayoutRounding="True">
 
     <Window.Resources>
-        <!-- Dark Cyberpunk Styles -->
-        <SolidColorBrush x:Key="BgDark" Color="#0F141C"/>
-        <SolidColorBrush x:Key="BgCard" Color="#161E2B"/>
-        <SolidColorBrush x:Key="BgCardHover" Color="#1E293B"/>
-        <SolidColorBrush x:Key="BorderDark" Color="#26354A"/>
+        <!-- Palette Brushes -->
+        <SolidColorBrush x:Key="BgDark" Color="#0A0E17"/>
+        <SolidColorBrush x:Key="BgSidebar" Color="#0D131F"/>
+        <SolidColorBrush x:Key="BgCard" Color="#121824"/>
+        <SolidColorBrush x:Key="BgCardHover" Color="#182233"/>
+        <SolidColorBrush x:Key="BorderDark" Color="#1F293D"/>
+        <SolidColorBrush x:Key="BorderSubtle" Color="#151E2E"/>
         <SolidColorBrush x:Key="AccentCyan" Color="#00D2FF"/>
-        <SolidColorBrush x:Key="AccentOrange" Color="#FF7700"/>
         <SolidColorBrush x:Key="AccentGreen" Color="#00FF88"/>
-        <SolidColorBrush x:Key="TextDim" Color="#94A3B8"/>
-        <SolidColorBrush x:Key="ConsoleBg" Color="#0A0E14"/>
+        <SolidColorBrush x:Key="AccentOrange" Color="#FF7700"/>
+        <SolidColorBrush x:Key="AccentCrimson" Color="#FF3366"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#94A3B8"/>
+        <SolidColorBrush x:Key="TextDim" Color="#64748B"/>
+        <SolidColorBrush x:Key="ConsoleBg" Color="#06090E"/>
+
+        <!-- Windows 11 Fluent Toggle Switch Style -->
+        <Style x:Key="FluentToggleSwitch" TargetType="ToggleButton">
+            <Setter Property="Width" Value="66"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="PillBorder" Background="#1E2838" BorderBrush="#2C3B52" BorderThickness="1" CornerRadius="14" Padding="3">
+                            <Grid>
+                                <!-- State Label -->
+                                <TextBlock x:Name="TxtToggleState" Text="OFF" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,7,0"/>
+                                <!-- Slider Thumb Knob -->
+                                <Ellipse x:Name="ThumbKnob" Width="20" Height="20" Fill="#CBD5E1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.3" Color="#000000"/>
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="PillBorder" Property="Background" Value="#002D1E"/>
+                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="#00FF88"/>
+                                <Setter TargetName="ThumbKnob" Property="HorizontalAlignment" Value="Right"/>
+                                <Setter TargetName="ThumbKnob" Property="Fill" Value="#00FF88"/>
+                                <Setter TargetName="TxtToggleState" Property="Text" Value="ON"/>
+                                <Setter TargetName="TxtToggleState" Property="HorizontalAlignment" Value="Left"/>
+                                <Setter TargetName="TxtToggleState" Property="Foreground" Value="#00FF88"/>
+                                <Setter TargetName="TxtToggleState" Property="Margin" Value="7,0,0,0"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="PillBorder" Property="BorderBrush" Value="#00D2FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Sidebar Navigation RadioButton Style -->
+        <Style x:Key="NavRailItem" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,2,0,2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="12,10" Margin="4,1">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <!-- Active Indicator Bar -->
+                                <Border x:Name="ActiveIndicator" Grid.Column="0" Background="#00D2FF" CornerRadius="2" Margin="0,0,8,0" Visibility="Collapsed"/>
+                                <ContentPresenter Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#141E2E"/>
+                                <Setter TargetName="ActiveIndicator" Property="Visibility" Value="Visible"/>
+                                <Setter Property="Foreground" Value="#00D2FF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#101826"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!-- Primary Cyan Button Style -->
         <Style x:Key="CyanButton" TargetType="Button">
             <Setter Property="Background" Value="#00D2FF"/>
-            <Setter Property="Foreground" Value="#0A0E14"/>
+            <Setter Property="Foreground" Value="#0A0E17"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="14,7"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -1222,14 +1306,14 @@ $Global:xamlContent = @'
             <Setter Property="Background" Value="#FF7700"/>
             <Setter Property="Foreground" Value="#FFFFFF"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="14,7"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" CornerRadius="5" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -1247,24 +1331,25 @@ $Global:xamlContent = @'
 
         <!-- Dark Outlined Button Style -->
         <Style x:Key="DarkOutlineButton" TargetType="Button">
-            <Setter Property="Background" Value="#161E2B"/>
-            <Setter Property="Foreground" Value="#F1F5F9"/>
-            <Setter Property="BorderBrush" Value="#26354A"/>
+            <Setter Property="Background" Value="#121824"/>
+            <Setter Property="Foreground" Value="#CBD5E1"/>
+            <Setter Property="BorderBrush" Value="#1F293D"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontWeight" Value="Medium"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="12,7"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="12,6"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#1E293B"/>
+                                <Setter TargetName="border" Property="Background" Value="#1A2234"/>
                                 <Setter TargetName="border" Property="BorderBrush" Value="#00D2FF"/>
+                                <Setter Property="Foreground" Value="#00D2FF"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -1272,15 +1357,44 @@ $Global:xamlContent = @'
             </Setter>
         </Style>
 
-        <!-- Category Chip Style (ToggleButton or Button) -->
-        <Style x:Key="CategoryChip" TargetType="Button">
-            <Setter Property="Background" Value="#161E2B"/>
-            <Setter Property="Foreground" Value="#94A3B8"/>
-            <Setter Property="BorderBrush" Value="#26354A"/>
+        <!-- Danger Crimson Revert Button -->
+        <Style x:Key="DangerOutlineButton" TargetType="Button">
+            <Setter Property="Background" Value="#1C1218"/>
+            <Setter Property="Foreground" Value="#FF4A70"/>
+            <Setter Property="BorderBrush" Value="#4A2030"/>
             <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="10,5"/>
-            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="5" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#FF3366"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FF3366"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Preset Filter Pill Chip Button -->
+        <Style x:Key="PresetChip" TargetType="Button">
+            <Setter Property="Background" Value="#121824"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="BorderBrush" Value="#1F293D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="12,5"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -1299,127 +1413,29 @@ $Global:xamlContent = @'
             </Setter>
         </Style>
 
-        <!-- CheckBox Dark Style -->
-        <Style TargetType="CheckBox">
-            <Setter Property="Foreground" Value="#F1F5F9"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,4,0,4"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
+        <!-- Category Chip for Software Catalog -->
+        <Style x:Key="CategoryChip" TargetType="Button" BasedOn="{StaticResource PresetChip}"/>
 
-        <!-- TabItem Cyberpunk Style -->
-        <Style TargetType="TabItem">
-            <Setter Property="Foreground" Value="#94A3B8"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Padding" Value="20,12"/>
+        <!-- Custom Dark ScrollBar -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Width" Value="8"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Border x:Name="tabBorder" Background="Transparent" BorderThickness="0,0,0,2" BorderBrush="Transparent" Margin="0,0,10,0" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" ContentSource="Header"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="tabBorder" Property="BorderBrush" Value="#00D2FF"/>
-                                <Setter Property="Foreground" Value="#00D2FF"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Foreground" Value="#F1F5F9"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- Mini Apply Action Button -->
-        <Style x:Key="MiniApplyButton" TargetType="Button">
-            <Setter Property="Background" Value="#1E293B"/>
-            <Setter Property="Foreground" Value="#00D2FF"/>
-            <Setter Property="BorderBrush" Value="#26354A"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="9,3"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#00D2FF"/>
-                                <Setter Property="Foreground" Value="#0A0E14"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#00D2FF"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#0284C7"/>
-                                <Setter Property="Foreground" Value="#FFFFFF"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- Mini Rollback Action Button -->
-        <Style x:Key="MiniRollbackButton" TargetType="Button">
-            <Setter Property="Background" Value="#1C141A"/>
-            <Setter Property="Foreground" Value="#FF4A70"/>
-            <Setter Property="BorderBrush" Value="#4A2635"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="8,3"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#FF0055"/>
-                                <Setter Property="Foreground" Value="#FFFFFF"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FF0055"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#B8003E"/>
-                                <Setter Property="Foreground" Value="#FFFFFF"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!-- Device Spec Copy Button Style -->
-        <Style x:Key="DeviceCopyButton" TargetType="Button">
-            <Setter Property="Background" Value="#1E2838"/>
-            <Setter Property="Foreground" Value="#CBD5E1"/>
-            <Setter Property="BorderBrush" Value="#334155"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="Padding" Value="14,4"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="4" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#2D3B4E"/>
-                                <Setter Property="Foreground" Value="#00D2FF"/>
-                                <Setter TargetName="border" Property="BorderBrush" Value="#00D2FF"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="border" Property="Background" Value="#161E2B"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Grid Background="Transparent">
+                            <Track x:Name="PART_Track" IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb Background="#2C3B52" BorderThickness="0">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="4"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -1430,71 +1446,446 @@ $Global:xamlContent = @'
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="210"/>
+            <RowDefinition Height="Auto" Name="RowLogDrawer"/>
         </Grid.RowDefinitions>
 
-        <!-- TOP BAR: Cyberpunk Header -->
-        <Border Grid.Row="0" Background="#121822" BorderBrush="#26354A" BorderThickness="0,0,0,1" Padding="20,14">
+        <!-- ROW 0: TOP APP BAR AND SEARCH -->
+        <Border Grid.Row="0" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="0,0,0,1" Padding="18,10">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="220"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
+                <!-- Brand and Logo -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="40" Height="40" CornerRadius="8" Background="#161E2B" BorderBrush="#00D2FF" BorderThickness="1" Margin="0,0,12,0" VerticalAlignment="Center">
-                        <Image Name="ImgAppLogo" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    <Border Width="34" Height="34" CornerRadius="6" Background="#121824" BorderBrush="#00D2FF" BorderThickness="1" Margin="0,0,10,0" VerticalAlignment="Center">
+                        <Image Name="ImgAppLogo" Width="26" Height="26" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                     </Border>
-                    <StackPanel>
+                    <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="PUMPKIN" FontSize="20" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center"/>
-                            <TextBlock Text=" ULTIMATE OPTIMIZER" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                            <Border Background="#FF7700" CornerRadius="3" Padding="6,2" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.5.0" FontSize="11" FontWeight="Bold" Foreground="#0F141C"/>
+                            <TextBlock Text="PUMPKIN" FontSize="16" FontWeight="Bold" Foreground="#00D2FF"/>
+                            <TextBlock Text=" OPTIMIZER" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <Border Background="#FF7700" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="v5.6.1" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
                             </Border>
                         </StackPanel>
-                        <TextBlock Text="Ultra Low-Latency Windows Kernel Engine &amp; 10-Category WinGet Software Suite" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        <TextBlock Text="Windows 11 Fluent Gaming Suite" FontSize="11" Foreground="#64748B"/>
                     </StackPanel>
                 </StackPanel>
 
-                <!-- LIVE HARDWARE TELEMETRY HUD -->
-                <Border Grid.Column="1" Background="#0A0E14" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,6" Margin="16,0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
-                            <TextBlock Text="CPU: " FontWeight="Bold" FontSize="11" Foreground="#00D2FF"/>
-                            <TextBlock Name="TxtLiveCpu" Text="--%" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
-                            <TextBlock Text="RAM: " FontWeight="Bold" FontSize="11" Foreground="#00FF88"/>
-                            <TextBlock Name="TxtLiveRam" Text="-- GB (--%)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,14,0" VerticalAlignment="Center">
-                            <TextBlock Text="PING: " FontWeight="Bold" FontSize="11" Foreground="#FF7700"/>
-                            <TextBlock Name="TxtLivePing" Text="-- ms" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="BOOSTER: " FontWeight="Bold" FontSize="11" Foreground="#A855F7"/>
-                            <TextBlock Name="TxtLiveBooster" Text="STANDBY" FontWeight="SemiBold" FontSize="12" Foreground="#94A3B8"/>
-                        </StackPanel>
-                    </StackPanel>
-                </Border>
+                <!-- Universal Instant Search Bar -->
+                <Grid Grid.Column="1" Margin="24,0" VerticalAlignment="Center" MaxWidth="540" HorizontalAlignment="Stretch">
+                    <TextBox Name="TxtSearch" Height="34" Background="#121824" Foreground="#FFFFFF" BorderBrush="#1F293D" BorderThickness="1" Padding="12,6" FontSize="12" VerticalContentAlignment="Center">
+                        <TextBox.Template>
+                            <ControlTemplate TargetType="TextBox">
+                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ScrollViewer x:Name="PART_ContentHost"/>
+                                </Border>
+                            </ControlTemplate>
+                        </TextBox.Template>
+                    </TextBox>
+                    <TextBlock IsHitTestVisible="False" Text="Search all tweaks, settings and apps (e.g. MPO, 8000Hz, Steam, telemetry)..." VerticalAlignment="Center" Margin="14,0,0,0" Foreground="#64748B" FontSize="12">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=TxtSearch}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button Name="BtnClearSearch" Content="x" Width="24" Height="24" HorizontalAlignment="Right" Margin="0,0,6,0" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Cursor="Hand" ToolTip="Clear search filter"/>
+                </Grid>
 
+                <!-- Top Quick Actions -->
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Name="BtnBeastMode" Content="ENGAGE BEAST MODE" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
-                    <Button Name="BtnRestorePointTop" Content="Create Restore Point" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                    <Button Name="BtnMasActivateTop" Content="MAS Activation" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
+                    <Button Name="BtnBeastMode" Content="ENGAGE BEAST MODE" Style="{StaticResource OrangeButton}" Margin="0,0,8,0"/>
+                    <Button Name="BtnRestorePointTop" Content="Restore Point" Style="{StaticResource DarkOutlineButton}" Margin="0,0,8,0"/>
+                    <Button Name="BtnMasActivateTop" Content="MAS Activation" Style="{StaticResource DarkOutlineButton}" Margin="0,0,8,0"/>
                     <Button Name="BtnExitTop" Content="Exit" Style="{StaticResource DarkOutlineButton}"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!-- MAIN TAB CONTROL -->
-        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0" Margin="14,10,14,0">
+        <!-- ROW 1: MAIN BODY (SIDEBAR RAIL AND PAGE CONTAINER) -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            <!-- TAB 1: SOFTWARE DOWNLOADER -->
-            <TabItem Header="Software Downloader">
-                <Grid Margin="0,10,0,0">
+            <!-- LEFT NAVIGATION RAIL -->
+            <Border Grid.Column="0" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="0,0,1,0" Padding="8,12">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+                        <TextBlock Text="NAVIGATION" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="12,4,0,8"/>
+                        <RadioButton Name="NavDashboard" Content="Dashboard and Audit" Style="{StaticResource NavRailItem}" IsChecked="True"/>
+                        <RadioButton Name="NavGaming" Content="Gaming and Latency" Style="{StaticResource NavRailItem}"/>
+                        <RadioButton Name="NavPrivacy" Content="Privacy and Telemetry" Style="{StaticResource NavRailItem}"/>
+                        <RadioButton Name="NavSystem" Content="System and Usability" Style="{StaticResource NavRailItem}"/>
+                        <RadioButton Name="NavSoftware" Content="Software Downloader" Style="{StaticResource NavRailItem}"/>
+                        <RadioButton Name="NavDevice" Content="Device Specs" Style="{StaticResource NavRailItem}"/>
+                    </StackPanel>
+
+                    <!-- Bottom Sidebar Status Badge -->
+                    <Border Grid.Row="1" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10" Margin="4,0,4,4">
+                        <StackPanel>
+                            <TextBlock Text="SYSTEM STATUS" FontSize="10" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,4"/>
+                            <TextBlock Name="TxtActiveTweakRatio" Text="Probing PC state..." FontSize="11" Foreground="#00FF88" FontWeight="SemiBold"/>
+                            <TextBlock Text="100% Symmetrical Safe Rollbacks" FontSize="10" Foreground="#64748B" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- RIGHT PAGE CONTAINER -->
+            <Grid Grid.Column="1" Background="#0A0E17" Margin="16,12,16,12">
+
+                <!-- PAGE 1: DASHBOARD AND AUDIT -->
+                <Grid Name="PageDashboard" Visibility="Visible">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Hero Banner: Radial Score Gauge and Live Specs -->
+                    <Border Grid.Row="0" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="18,14" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Radial Score Circle -->
+                            <Border Name="BorderScoreGauge" Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0A0E17" BorderBrush="#00D2FF" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,18,0">
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Name="TxtScorePercent" Text="--%" FontSize="20" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
+                                    <TextBlock Name="TxtScoreGrade" Text="Probing..." FontSize="10" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Score" FontSize="8" Foreground="#64748B" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Center Banner Text -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <TextBlock Text="WINDOWS PERFORMANCE AND AUDIT DASHBOARD" FontSize="14" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <Border Background="#14261C" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="3" Padding="6,1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="LIVE AUDIT ENGINE" FontSize="9" FontWeight="Bold" Foreground="#00FF88"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Text="100% reversible live Windows tuning. Every single tweak reflects your exact live registry state with instant ON / OFF control." FontSize="12" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                <TextBlock Name="TxtScoreSubtitle" Text="[OK] Fast Startup Probed - Clean Symmetrical Rollbacks Ready" FontSize="11" Foreground="#64748B" Margin="0,4,0,0"/>
+                            </StackPanel>
+
+                            <!-- Right Action Buttons -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                <Button Name="BtnScanSystemStateBanner" Content="Re-Scan System" Style="{StaticResource CyanButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnRevertDefaults" Content="Rollback to Defaults" Style="{StaticResource DangerOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ROW 1: LIVE HARDWARE TELEMETRY -->
+                    <Border Grid.Row="1" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,20,0" VerticalAlignment="Center">
+                                    <TextBlock Text="CPU LOAD: " FontWeight="Bold" FontSize="11" Foreground="#00D2FF"/>
+                                    <TextBlock Name="TxtLiveCpu" Text="--%" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,20,0" VerticalAlignment="Center">
+                                    <TextBlock Text="RAM USAGE: " FontWeight="Bold" FontSize="11" Foreground="#00FF88"/>
+                                    <TextBlock Name="TxtLiveRam" Text="-- GB (--%)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,20,0" VerticalAlignment="Center">
+                                    <TextBlock Text="ROUTER PING: " FontWeight="Bold" FontSize="11" Foreground="#FF7700"/>
+                                    <TextBlock Name="TxtLivePing" Text="-- ms" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="SMART BOOSTER: " FontWeight="Bold" FontSize="11" Foreground="#A855F7"/>
+                                    <TextBlock Name="TxtLiveBooster" Text="STANDBY" FontWeight="SemiBold" FontSize="12" Foreground="#94A3B8"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Name="BtnStartGameBooster" Content="Start Match Daemon" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                <Button Name="BtnPurgeStandby" Content="Purge Standby RAM" Style="{StaticResource DarkOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ROW 2: ACTIVE TWEAKS CATEGORY BREAKDOWN -->
+                    <Border Grid.Row="2" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Gaming Status Chip -->
+                            <Border Grid.Column="0" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="GAMING &amp; LATENCY" FontSize="10" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,2"/>
+                                    <TextBlock Name="TxtActiveGamingCount" Text="-- / -- Active" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="HPET, Unparking, Win32Priority" FontSize="9" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Privacy Status Chip -->
+                            <Border Grid.Column="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="3,0,3,0">
+                                <StackPanel>
+                                    <TextBlock Text="PRIVACY &amp; TELEMETRY" FontSize="10" FontWeight="Bold" Foreground="#FF7700" Margin="0,0,0,2"/>
+                                    <TextBlock Name="TxtActivePrivacyCount" Text="-- / -- Active" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="App Telemetry, Bing, Tracking" FontSize="9" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- System Status Chip -->
+                            <Border Grid.Column="2" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="6,0,6,0">
+                                <StackPanel>
+                                    <TextBlock Text="SYSTEM &amp; USABILITY" FontSize="10" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,2"/>
+                                    <TextBlock Name="TxtActiveSystemCount" Text="-- / -- Active" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="No Shortcut Arrow, Classic Context" FontSize="9" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- View Active Tweaks Button -->
+                            <StackPanel Grid.Column="3" VerticalAlignment="Center" Margin="6,0,0,0">
+                                <Button Name="BtnViewActiveTweaks" Content="Inspect Active in Console" Style="{StaticResource CyanButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnApplyUnappliedDashboard" Content="Apply Unapplied" Style="{StaticResource DarkOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- ROW 3: 1-CLICK CURATED PROFILE LAUNCHERS -->
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Card 1: Esports Profile -->
+                        <Border Grid.Column="0" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14" Margin="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="ESPORTS AND LOW LATENCY" FontSize="13" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,6"/>
+                                <TextBlock Text="Tuned for Valorant, CS2, Apex, Fortnite. Activates 8000Hz input, Win32Priority 0x26, GPU MSI mode, and disables Wi-Fi 60s background scanning spikes." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                <Button Name="BtnApplyProfileEsports" Content="Apply Esports Profile" Style="{StaticResource CyanButton}" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 2: Recommended Safe Profile -->
+                        <Border Grid.Column="1" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14" Margin="4,0,4,0">
+                            <StackPanel>
+                                <TextBlock Text="RECOMMENDED SAFE" FontSize="13" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,6"/>
+                                <TextBlock Text="The definitive everyday profile for gaming, work, and streaming. Strips telemetry, optimizes network TCP/IP, fixes MPO micro-stutters, and unlocks power schemes." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                <Button Name="BtnApplyProfileRecommended" Content="Apply Recommended Profile" Style="{StaticResource CyanButton}" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Card 3: Privacy and Security Profile -->
+                        <Border Grid.Column="2" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14" Margin="8,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="PRIVACY AND DEBLOAT" FontSize="13" FontWeight="Bold" Foreground="#FF7700" Margin="0,0,0,6"/>
+                                <TextBlock Text="Suppresses telemetry, disables Start Menu web search, removes diagnostic tracking from Edge/Chrome, stops clipboard syncing, and cleans background tasks." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap" Margin="0,0,0,12"/>
+                                <Button Name="BtnApplyProfilePrivacy" Content="Apply Privacy Profile" Style="{StaticResource OrangeButton}" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+
+                <!-- PAGE 2: GAMING AND LATENCY TWEAKS -->
+                <Grid Name="PageGaming" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Master Control Strip and Preset Chips -->
+                    <Border Grid.Row="0" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <!-- Filter Chips -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="FILTER:" FontSize="11" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Button Name="ChipGamingAll" Content="All Tweaks" Style="{StaticResource PresetChip}"/>
+                                <Button Name="ChipGamingRecommended" Content="Recommended" Style="{StaticResource PresetChip}"/>
+                                <Button Name="ChipGamingEsports" Content="Esports Latency" Style="{StaticResource PresetChip}"/>
+                                <Button Name="ChipGamingActive" Content="Active Only" Style="{StaticResource PresetChip}"/>
+                            </StackPanel>
+                            <!-- Master Action Buttons -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Name="BtnGamingApplyAll" Content="Turn All ON" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                <Button Name="BtnGamingRollbackAll" Content="Turn All OFF (Defaults)" Style="{StaticResource DangerOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Scrollable Dynamic Card Container -->
+                    <Border Grid.Row="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="2">
+                                <!-- CUSTOM GAMING CURSORS (23 PACKS) -->
+                                <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                                <TextBlock Text="CUSTOM GAMING CURSORS (23 PACKS)" FontSize="12" FontWeight="Bold" Foreground="#00D2FF"/>
+                                                <Border Background="#14261C" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="3" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="HOT RELOAD" FontSize="9" FontWeight="Bold" Foreground="#00FF88"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="Select and apply esports cursor schemes (Dim, Night Diamond, Oxygen, Material, etc.). Instantly reloads live without Windows restart." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                <TextBlock Text="Active Scheme: " FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                                                <TextBlock Name="TxtActiveCursorScheme" Text="Windows Default" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <ComboBox Name="CmbCursorSchemes" Width="180" Height="30" Background="#0D131F" Foreground="#FFFFFF" BorderBrush="#2C3B52" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
+                                            <Button Name="BtnInstallCursor" Content="Install Scheme" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnRestoreCursor" Content="Restore Default" Style="{StaticResource DarkOutlineButton}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- GAMING DNS BENCHMARK AND FAST SWITCHER -->
+                                <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="GAMING DNS BENCHMARK AND FAST SWITCHER" FontSize="12" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Benchmarks Cloudflare (1.1.1.1), Google (8.8.8.8), Quad9 (9.9.9.9), and OpenDNS. Automatically binds your active NIC to the lowest latency provider." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnBenchmarkDns" Content="Benchmark and Apply Fastest DNS" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnResetDns" Content="Reset to DHCP Auto" Style="{StaticResource DarkOutlineButton}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <StackPanel Name="PanelGamingTweaks"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+
+                <!-- PAGE 3: PRIVACY AND TELEMETRY -->
+                <Grid Name="PagePrivacy" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="FILTER:" FontSize="11" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Button Name="ChipPrivacyAll" Content="All Privacy Tweaks" Style="{StaticResource PresetChip}"/>
+                                <Button Name="ChipPrivacyActive" Content="Active Only" Style="{StaticResource PresetChip}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Name="BtnPrivacyApplyAll" Content="Turn All ON" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                <Button Name="BtnPrivacyRollbackAll" Content="Turn All OFF (Defaults)" Style="{StaticResource DangerOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Name="PanelPrivacyTweaks" Margin="2"/>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+
+                <!-- PAGE 4: SYSTEM AND USABILITY -->
+                <Grid Name="PageSystem" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="FILTER:" FontSize="11" FontWeight="Bold" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <Button Name="ChipSystemAll" Content="All System Tweaks" Style="{StaticResource PresetChip}"/>
+                                <Button Name="ChipSystemActive" Content="Active Only" Style="{StaticResource PresetChip}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Name="BtnSystemApplyAll" Content="Turn All ON" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                <Button Name="BtnSystemRollbackAll" Content="Turn All OFF (Defaults)" Style="{StaticResource DangerOutlineButton}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Row="1" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="10">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="2">
+                                <!-- SYSTEM HEALTH, DIAGNOSTICS AND DEEP CLEANER -->
+                                <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,10" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                            <TextBlock Text="SYSTEM HEALTH, DIAGNOSTICS AND DEEP CLEANER" FontSize="12" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,4"/>
+                                            <TextBlock Text="Scan and repair corrupted Windows system files (SFC / DISM), clear corrupted Windows Update cache, and deep clean shader/temp caches." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Name="BtnRunDiagnostics" Content="Repair System Health" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnClearUpdateCache" Content="Clear WU Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnClearDeepCacheBar" Content="Deep Junk Cleaner" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnReport_Interrupts" Content="Check DPC Latency" Style="{StaticResource DarkOutlineButton}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <StackPanel Name="PanelSystemTweaks"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
+
+                <!-- PAGE 5: SOFTWARE DOWNLOADER -->
+                <Grid Name="PageSoftware" Visibility="Collapsed">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -1504,64 +1895,34 @@ $Global:xamlContent = @'
                         <ColumnDefinition Width="260"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- TOP FILTER & CATEGORY CHIPS -->
-                    <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,10">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-
-                            <!-- Search Input -->
-                            <Grid Grid.Row="0" Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBox Name="TxtSearch" Height="34" Background="#0F141C" Foreground="#FFFFFF" BorderBrush="#26354A" BorderThickness="1" Padding="10,6" FontSize="13" VerticalContentAlignment="Center"/>
-                                <TextBlock IsHitTestVisible="False" Text="Search 100+ applications (e.g. Brave, Discord, Steam, VS Code)..." VerticalAlignment="Center" Margin="12,0,0,0" Foreground="#64748B" FontSize="13">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Text, ElementName=TxtSearch}" Value="">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                                <Button Name="BtnClearSearch" Grid.Column="1" Content="Clear" Style="{StaticResource DarkOutlineButton}" Margin="10,0,0,0"/>
-                            </Grid>
-
-                            <!-- Horizontal Scrollable Category Chips -->
-                            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                                <StackPanel Name="StackCategoryChips" Orientation="Horizontal">
-                                    <Button Name="ChipCatAll" Content="All Apps (100+)" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatBrowsers" Content="Browsers" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatComms" Content="Communications" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatDev" Content="Development" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatDoc" Content="Document" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatGames" Content="Games" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatMs" Content="Microsoft Tools" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatMedia" Content="Multimedia Tools" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatPro" Content="Pro Tools" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatSelf" Content="Selfhosted Tools" Style="{StaticResource CategoryChip}"/>
-                                    <Button Name="ChipCatUtil" Content="Utilities" Style="{StaticResource CategoryChip}"/>
-                                </StackPanel>
-                            </ScrollViewer>
-                        </Grid>
+                    <!-- Category Chips -->
+                    <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="0,0,0,10">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <StackPanel Name="StackCategoryChips" Orientation="Horizontal">
+                                <Button Name="ChipCatAll" Content="All Apps (115+)" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatBrowsers" Content="Browsers" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatComms" Content="Communications" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatDev" Content="Development" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatDoc" Content="Document" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatGames" Content="Games" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatMs" Content="Microsoft Tools" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatMedia" Content="Multimedia Tools" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatPro" Content="Pro Tools" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatSelf" Content="Selfhosted Tools" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatUtil" Content="Utilities" Style="{StaticResource CategoryChip}"/>
+                            </StackPanel>
+                        </ScrollViewer>
                     </Border>
 
-                    <!-- APP CARDS GRID (SCROLLABLE WRAPPANEL) -->
-                    <Border Grid.Row="1" Grid.Column="0" Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="8" Margin="0,0,10,0">
+                    <!-- Apps Grid -->
+                    <Border Grid.Row="1" Grid.Column="0" Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="8" Margin="0,0,10,0">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <WrapPanel Name="WrapPackages" Margin="4"/>
                         </ScrollViewer>
                     </Border>
 
-                    <!-- ACTION SIDEBAR -->
-                    <Border Grid.Row="1" Grid.Column="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="16">
+                    <!-- Action Sidebar -->
+                    <Border Grid.Row="1" Grid.Column="1" Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -1571,14 +1932,15 @@ $Global:xamlContent = @'
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0">
-                                <TextBlock Text="ACTIONS" FontSize="12" FontWeight="Bold" Foreground="#94A3B8" Margin="0,0,0,10"/>
-                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,10"/>
-                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
-                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,14"/>
-                                <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,14">
+                                <TextBlock Text="ACTIONS" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
+                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,8"/>
+                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,8"/>
+                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,12"/>
+                                
+                                <Border Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,12">
                                     <StackPanel>
                                         <TextBlock Text="EQUICORD CLIENT" FontSize="11" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,4"/>
-                                        <TextBlock Text="Enhanced Discord client with 100+ plugins &amp; themes." FontSize="10" Foreground="#94A3B8" Margin="0,0,0,8" TextWrapping="Wrap"/>
+                                        <TextBlock Text="Enhanced Discord client with 100+ plugins and themes." FontSize="10" Foreground="#94A3B8" Margin="0,0,0,8" TextWrapping="Wrap"/>
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
@@ -1591,2120 +1953,211 @@ $Global:xamlContent = @'
                                 </Border>
                             </StackPanel>
 
-                            <Separator Grid.Row="1" Background="#26354A" Margin="0,0,0,14"/>
+                            <Separator Grid.Row="1" Background="#1F293D" Margin="0,0,0,12"/>
 
                             <StackPanel Grid.Row="2">
-                                <TextBlock Text="SELECTION" FontSize="12" FontWeight="Bold" Foreground="#94A3B8" Margin="0,0,0,8"/>
-                                <Button Name="BtnSelectAll" Content="Select Visible" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,8"/>
-                                <Button Name="BtnClearAll" Content="Clear Selection" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,12"/>
+                                <TextBlock Text="SELECTION" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,6"/>
+                                <Button Name="BtnSelectAll" Content="Select Visible" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnClearAll" Content="Clear Selection" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
                                 <TextBlock Name="TxtSelectedCount" Text="0 apps selected" FontSize="12" Foreground="#00D2FF" FontWeight="SemiBold"/>
                             </StackPanel>
 
-                            <Border Grid.Row="3" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10">
-                                <TextBlock Text="WinGet installs directly from official vendor repositories with silent parameters." FontSize="11" Foreground="#64748B" TextWrapping="Wrap"/>
+                            <Border Grid.Row="3" Background="#0A0E17" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10">
+                                <TextBlock Text="Silent WinGet installation directly from verified vendor sources." FontSize="11" Foreground="#64748B" TextWrapping="Wrap"/>
                             </Border>
                         </Grid>
                     </Border>
                 </Grid>
-            </TabItem>
 
-                                                <!-- TAB 2: GAMING TWEAKS -->
-            <TabItem Header="Gaming Tweaks">
-                <Grid Margin="0,10,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- ROW 0: OPTIMIZATION SCORE DASHBOARD BANNER -->
-                    <Border Grid.Row="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,12">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Circular Radial Score Gauge -->
-                            <Border Name="BorderScoreGauge" Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00D2FF" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
-                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Name="TxtScorePercent" Text="100%" FontSize="18" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
-                                    <TextBlock Name="TxtScoreGrade" Text="A+ Optimal" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Score" FontSize="8" Foreground="#64748B" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Center Info & Badges -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <WrapPanel Margin="0,0,0,6">
-                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Text="[Usability &amp; Shell Features]" FontSize="11" FontWeight="SemiBold" Foreground="#00D2FF"/>
-                                    </Border>
-                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Name="TxtSystemSpecBadge" Text="[Windows Optimization Suite]" FontSize="11" Foreground="#CBD5E1"/>
-                                    </Border>
-                                    <Border Background="#0B2518" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="4" Padding="6,2">
-                                        <TextBlock Name="TxtActiveTweakRatio" Text="[Active: 50 / 75]" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
-                                    </Border>
-                                </WrapPanel>
-
-                                <TextBlock Text="Streamline. Optimize. Dominate. 100% reversible live Windows tuning with individual rollbacks." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
-                                <TextBlock Name="TxtScoreSubtitle" Text="[OK] Recommended: Ready   [&lt;] Rollbacks: Ready   [*] 1-Click Control" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
-                            </StackPanel>
-
-                            <!-- Right Controls -->
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,6">
-                                    <Button Name="BtnFilterRec" Content="Rec" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                    <Button Name="BtnFilterSafe" Content="Safe" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                    <Button Name="BtnFilterAdv" Content="Adv" Style="{StaticResource MiniApplyButton}"/>
-                                </StackPanel>
-                                <Button Name="BtnApplyUnappliedBanner" Content="Apply Unapplied Only" Style="{StaticResource CyanButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Name="BtnScanSystemStateBanner" Content="Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
-                                    <Button Name="BtnRevertDefaultsBanner" Content="Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- COLUMN 1: GPU, LATENCY, NETWORK -->
-                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <!-- Card: GPU & Display -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="GRAPHICS &amp; DISPLAY LATENCY" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="GPU Auto-Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_GpuAuto" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_GpuAuto" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Optimizes NVIDIA and AMD driver settings for maximum frame rates." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_GpuAuto" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_GpuAuto" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Hardware MSI Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_HardwareMsi" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_HardwareMsi" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Switches USB and network adapters to MSI for lowest DPC latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_HardwareMsi" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_HardwareMsi" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable USB Sleep" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DisablePowerSaving" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DisablePowerSaving" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Stops Windows from throttling USB controllers and gaming peripherals." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisablePowerSaving" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DisablePowerSaving" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable MPO" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_Mpo" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_Mpo" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables Multiplane Overlay to eliminate micro-stutters and black screens." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_Mpo" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_Mpo" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Raw Mouse Input" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_MouseCurve" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_MouseCurve" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables Windows pointer acceleration for true 1:1 sensor tracking." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_MouseCurve" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_MouseCurve" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: Ultra-Low Latency & Input -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="INPUT &amp; TIMER RESOLUTION" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="8000Hz Input Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_InputLatency" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_InputLatency" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Optimizes keyboard buffers and high-polling mouse latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_InputLatency" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_InputLatency" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="CSRSS Realtime I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CsrssPriority" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CsrssPriority" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Sets Windows subsystem to Realtime priority for lowest input latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CsrssPriority" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_CsrssPriority" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="CPU Gaming Quantum" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CpuSystem" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CpuSystem" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Prioritizes foreground games and MMCSS multimedia threads." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CpuSystem" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_CpuSystem" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="SvcHost RAM Splitting" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_SvcHost" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_SvcHost" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Isolates Windows services into dedicated RAM pools for stability." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_SvcHost" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_SvcHost" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: Audio DPC & USB Interrupts -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="AUDIO DPC &amp; USB INTERRUPTS" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Low-Latency Audio &amp; Anti-Popping" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_AudioDpc" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_AudioDpc" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="MMCSS Audio High priority, Realtek/HD Audio MSI mode, zero audio drops." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_AudioDpc" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_AudioDpc" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="USB xHCI Thread Priority" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_UsbxHci" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_UsbxHci" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Kernel Thread Priority 31 for USB 3.x controller and 200-depth mouse buffers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_UsbxHci" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_UsbxHci" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Hardware MSI &amp; Interrupt Report" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Audits real-time MSI mode and IRQ priorities across GPU, USB, Audio, and NIC." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <Button Name="BtnReport_Interrupts" Grid.Column="1" Content="Audit" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable High-Latency Devices (Device Manager)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DeviceManager" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DeviceManager" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables HPET, AMD SMBus, System Speaker, Kernel Debugger, DMA &amp; Legacy Timers in Device Manager to eliminate DPC latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DeviceManager" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DeviceManager" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: Esports Network Engine -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="ESPORTS NETWORK ENGINE" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="TCP/IP Gaming Stack" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_Network" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_Network" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables Nagle algorithm and packet delays for online gaming." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_Network" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_Network" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Wi-Fi Ping Shield" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_WifiScan" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_WifiScan" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Blocks background roaming scans that cause periodic 200ms ping spikes." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_WifiScan" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_WifiScan" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Gaming DNS &amp; Startup Tuning" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_StartupDns" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_StartupDns" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Configures Cloudflare 1.1.1.1 gaming DNS and cleans startup bloat." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_StartupDns" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_StartupDns" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: Gaming DNS Benchmark & Fast Switcher -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="GAMING DNS BENCHMARK &amp; FAST SWITCHER" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Benchmark &amp; Auto-Apply Fastest DNS" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Pings Cloudflare, Google, Quad9, AdGuard, OpenDNS (3-sample avg) and applies lowest latency provider." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <Button Name="BtnBenchmarkDns" Grid.Column="1" Content="Benchmark" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Reset DNS to DHCP Defaults" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Restores automatic router DHCP DNS server addresses across all adapters." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <Button Name="BtnResetDns" Grid.Column="1" Content="Reset" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- COLUMN 2: SYSTEM OPTIMIZATIONS & PRO DEBLOAT -->
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <!-- Card: Esports Priority Hooks -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="ESPORTS GAME PRIORITY HOOKS" FontWeight="Bold" FontSize="13" Foreground="#00FF88" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Esports Game Priority Hooks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_GameHooks" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_GameHooks" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Locks CPU High Priority and GPU High Performance for CS2, Valorant, Apex, PUBG, Fortnite, COD." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_GameHooks" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_GameHooks" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: Performance Power & Visuals -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="POWER &amp; SYSTEM VISUALS" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="PumpkiN Esports Ultimate Power Plan" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_UltimatePower" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_UltimatePower" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Activates custom low-latency scheme with 0% core parking, 0ms DPC transition, and USB/PCIe sleep off." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_UltimatePower" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_UltimatePower" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="100% CPU Core Unparking" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CoreUnpark" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CoreUnpark" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Unparks all logical CPU cores, forces instant frequency ramp-up, and unmasks core parking in Power Options." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CoreUnpark" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_CoreUnpark" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Strip Visual Animations" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_StripVisual" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_StripVisual" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Removes desktop animations and window shadows for maximum FPS." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_StripVisual" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_StripVisual" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Taskbar End Task" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_EndTask" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_EndTask" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Adds instant force-close to right-clicked taskbar app icons." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_EndTask" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_EndTask" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Sticky Keys" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_StickyKeys" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_StickyKeys" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Stops annoying accessibility popups when pressing Shift repeatedly." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_StickyKeys" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_StickyKeys" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Compact Window Metrics" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CompactMetrics" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CompactMetrics" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="8px thin scrollbars (-120), 1px border (-15), 0px padding, and 10px compact title bar (-150)." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CompactMetrics" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnReset_CompactMetrics" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: Background Services & Disk -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="SYSTEM DEBLOAT &amp; STORAGE" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Debloat Services" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DebloatServices" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DebloatServices" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables telemetry, diagnostic tracking, and background services." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DebloatServices" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DebloatServices" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Optimize Disk I/O" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DiskIo" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DiskIo" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables NTFS last-access timestamps and optimizes disk buffers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DiskIo" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DiskIo" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="CompactOS Compression" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CompactOs" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CompactOs" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Compresses Windows system binaries using LZX to reclaim 3-6 GB on SSD." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CompactOs" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_CompactOs" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Take Ownership Menu" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_TakeOwnership" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_TakeOwnership" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Adds a 1-click Take Ownership shortcut to Explorer right-click menu." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_TakeOwnership" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_TakeOwnership" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Junk Tasks" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_JunkTasks" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_JunkTasks" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables CEIP, feedback, and telemetry background scheduled tasks." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_JunkTasks" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_JunkTasks" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Telemetry" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_Privacy" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_Privacy" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Hardens privacy by disabling telemetry and background diagnostics." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_Privacy" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_Privacy" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Deep Cache &amp; Event Cleaner" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Purges Windows Temp, Prefetch, spooler cache, and wipes all Windows Event Logs." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <Button Name="BtnApply_DeepCache" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="GPU Shader &amp; Browser Cache Purge" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Wipes DirectX D3DSCache, NVIDIA DX/GL, AMD DxCache, Discord, and Chrome/Edge caches." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <Button Name="BtnApply_ShaderCache" Grid.Column="1" Content="Apply" Style="{StaticResource MiniApplyButton}" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </Grid>
-                    </ScrollViewer>
-
-                    <!-- ACTION BAR FOR TWEAKS -->
-                    <Border Grid.Row="2" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Click [Apply] next to any tweak to run it individually, or run all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Name="BtnScanSystemState" Content="Audit System State" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnApplyUnappliedOnly" Content="Apply Unapplied Only" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnClearDeepCacheBar" Content="Deep Cache Cleaner" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnClearUpdateCache" Content="Purge Update Cache" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnInstallDirectXDirect" Content="DirectX (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnInstallVcRedistAio" Content="VC++ AIO (Direct)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnRevertDefaults" Content="Revert to Windows Defaults" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnRunAllTweaks" Content="Apply All Gaming Tweaks" Style="{StaticResource CyanButton}"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </TabItem>
-
-            <!-- TAB 3: MATCH BOOSTER -->
-            <TabItem Header="Match Booster">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,0">
-                    <StackPanel>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Standby Memory Purger Card -->
-                            <Border Grid.Column="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,0,8,0">
-                                <StackPanel>
-                                    <TextBlock Text="STANDBY MEMORY PURGER" FontWeight="Bold" FontSize="14" Foreground="#00D2FF" Margin="0,0,0,6"/>
-                                    <TextBlock Text="Clears cached standby list RAM instantly, preventing stutter during gaming matches." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
-                                    <Button Name="BtnPurgeStandby" Content="Purge Standby Memory (One-Time Run)" Style="{StaticResource CyanButton}" Margin="0,0,0,14"/>
-
-                                    <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
-                                        <StackPanel>
-                                            <TextBlock Text="BACKGROUND AUTO-PURGE SCHEDULE" FontWeight="Bold" FontSize="11" Foreground="#00FF88" Margin="0,0,0,6"/>
-                                            <TextBlock Text="Set background Task Scheduler auto-clean interval:" FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
-                                            <Grid Margin="0,0,0,8">
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <ComboBox Name="CmbStandbyInterval" SelectedIndex="0" Background="#161E2B" Foreground="#000000" BorderBrush="#26354A" BorderThickness="1" Padding="6,4" VerticalAlignment="Center">
-                                                    <ComboBoxItem Content="5 Minutes (Esports Default)" Tag="5"/>
-                                                    <ComboBoxItem Content="10 Minutes (Balanced)" Tag="10"/>
-                                                    <ComboBoxItem Content="15 Minutes (Low Overhead)" Tag="15"/>
-                                                    <ComboBoxItem Content="30 Minutes (Standard)" Tag="30"/>
-                                                </ComboBox>
-                                                <Button Name="BtnSetStandbySchedule" Grid.Column="1" Content="Activate" Style="{StaticResource MiniApplyButton}" Margin="6,0,0,0" Padding="10,5" VerticalAlignment="Center"/>
-                                            </Grid>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <TextBlock Name="TxtStandbyTaskStatus" Grid.Column="0" Text="Status: Checking..." FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                                <Button Name="BtnRemoveStandbySchedule" Grid.Column="1" Content="Disable" Style="{StaticResource MiniApplyButton}" Padding="10,5" VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </StackPanel>
-                                    </Border>
-                                    <TextBlock Text="Uses Win32 memory management API with zero disk wear." FontSize="11" Foreground="#64748B"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Wi-Fi Ping Spike Shield Card -->
-                            <Border Grid.Column="1" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="8,0,0,0">
-                                <StackPanel>
-                                    <TextBlock Text="WI-FI LATENCY SPIKE SHIELD" FontWeight="Bold" FontSize="14" Foreground="#FF7700" Margin="0,0,0,6"/>
-                                    <TextBlock Text="Toggles WLAN AutoConfig to halt background network roaming scans." Foreground="#94A3B8" FontSize="12" Margin="0,0,0,14"/>
-                                    <Button Name="BtnToggleWifiScan" Content="Toggle Wi-Fi AutoConfig" Style="{StaticResource OrangeButton}" Margin="0,0,0,10"/>
-                                    <TextBlock Text="Enable before entering matches to stop 60-second periodic 200ms ping spikes." FontSize="11" Foreground="#64748B"/>
-                                </StackPanel>
-                            </Border>
-                        </Grid>
-
-                        <!-- Smart Game Booster Daemon Card -->
-                        <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,14,0,0">
-                            <StackPanel>
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0" Margin="0,0,14,0">
-                                        <TextBlock Text="SMART GAME BOOSTER DAEMON (AUTO-DETECTION ENGINE)" FontWeight="Bold" FontSize="14" Foreground="#A855F7" Margin="0,0,0,4"/>
-                                        <TextBlock Text="Watches for 20+ competitive titles (CS2, Valorant, Apex, PUBG, Fortnite, COD, etc.). When a game launches, instantly purges standby RAM, trims background memory hogs (Chrome/Discord/Spotify), locks High CPU priority, and engages Wi-Fi Ping Shield." Foreground="#94A3B8" FontSize="12" TextWrapping="Wrap"/>
-                                    </StackPanel>
-                                    <Border Grid.Column="1" Background="#0A0E14" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,6" VerticalAlignment="Center">
-                                        <TextBlock Name="TxtDaemonStatus" Text="Status: INACTIVE (Stopped)" FontSize="12" FontWeight="Bold" Foreground="#94A3B8"/>
-                                    </Border>
-                                </Grid>
-
-                                <StackPanel Orientation="Horizontal">
-                                    <Button Name="BtnStartGameBooster" Content="Start Smart Booster Daemon" Style="{StaticResource CyanButton}" Margin="0,0,10,0"/>
-                                    <Button Name="BtnStopGameBooster" Content="Stop Daemon" Style="{StaticResource DarkOutlineButton}"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Esports Game Priority Hooks Card -->
-                        <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="18" Margin="0,14,0,0">
-                        <StackPanel>
-                            <TextBlock Text="ESPORTS GAME HIGH-PRIORITY HOOKS (IFEO)" FontWeight="Bold" FontSize="14" Foreground="#00FF88" Margin="0,0,0,6"/>
-                            <TextBlock Text="Locks CPU High Priority and GPU High Performance for esports titles permanently via Windows IFEO registry:" Foreground="#94A3B8" FontSize="12" Margin="0,0,0,12"/>
-
-                            <WrapPanel Margin="0,0,0,14">
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Counter-Strike 2 (cs2.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Valorant (VALORANT-Win64-Shipping.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Apex Legends (r5apex.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Fortnite (FortniteClient-Win64-Shipping.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Call of Duty (cod.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Rainbow Six Siege (RainbowSix.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] Overwatch 2 (Overwatch.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                                <Border Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,8,8">
-                                    <TextBlock Text="[>] PUBG (TslGame.exe)" Foreground="#FFFFFF" FontSize="12"/>
-                                </Border>
-                            </WrapPanel>
-
-                            <Button Name="BtnApplyGameHooks" Content="Install Esports Priority Hooks" Style="{StaticResource CyanButton}" HorizontalAlignment="Left"/>
-                        </StackPanel>
-                    </Border>
-                    </StackPanel>
-                </ScrollViewer>
-            </TabItem>
-
-                                    <!-- TAB 4: SYSTEM & HARDENING TOOLS -->
-            <TabItem Header="System &amp; Hardening">
-                <Grid Margin="0,10,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- TAB 4 SCORE DASHBOARD BANNER -->
-                    <Border Grid.Row="0" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,12">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Border Name="BorderScoreGaugeTab4" Grid.Column="0" Width="84" Height="84" CornerRadius="42" Background="#0C1017" BorderBrush="#00FF88" BorderThickness="3" VerticalAlignment="Center" Margin="0,0,16,0">
-                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <TextBlock Name="TxtScorePercentTab4" Text="100%" FontSize="18" FontWeight="Bold" Foreground="#00FF88" HorizontalAlignment="Center"/>
-                                    <TextBlock Name="TxtScoreGradeTab4" Text="A+ Optimal" FontSize="9" FontWeight="SemiBold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="Score" FontSize="8" Foreground="#64748B" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
-
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <WrapPanel Margin="0,0,0,6">
-                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Text="[Security &amp; Privacy Shield]" FontSize="11" FontWeight="SemiBold" Foreground="#00FF88"/>
-                                    </Border>
-                                    <Border Background="#1E293B" CornerRadius="4" Padding="6,2" Margin="0,0,6,0">
-                                        <TextBlock Text="[Windows 11 Hardening Suite]" FontSize="11" Foreground="#CBD5E1"/>
-                                    </Border>
-                                    <Border Background="#0B2518" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="4" Padding="6,2">
-                                        <TextBlock Name="TxtActiveTweakRatioTab4" Text="[Active: 50 / 75]" FontSize="11" FontWeight="Bold" Foreground="#00FF88"/>
-                                    </Border>
-                                </WrapPanel>
-                                <TextBlock Text="Enterprise-grade telemetry strip, OEM bloatware immunization, and Windows 11 desktop refinements." FontSize="11" Foreground="#94A3B8" TextWrapping="Wrap"/>
-                                <TextBlock Text="[OK] Symmetrical 1-Click Rollbacks for Every Individual Tweak" FontSize="10" Foreground="#64748B" Margin="0,4,0,0"/>
-                            </StackPanel>
-
-                            <StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="14,0,0,0">
-                                <Button Name="BtnApplyUnappliedHardeningBanner" Content="Apply Unapplied Only" Style="{StaticResource OrangeButton}" Padding="12,6" FontSize="11" Margin="0,0,0,4"/>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Button Name="BtnScanSystemStateTab4Banner" Content="Live Audit" Style="{StaticResource DarkOutlineButton}" Padding="8,4" FontSize="10" Margin="0,0,4,0"/>
-                                    <Button Name="BtnRevertDefaultsTab4" Content="Rollback All" Style="{StaticResource MiniRollbackButton}" Padding="8,4" FontSize="10"/>
-                                </StackPanel>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- COLUMN 1: SNAPPY OS & HARDENING -->
-                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                <!-- Card: Windows 11 Exclusives & Shell Usability -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="WINDOWS 11 EXCLUSIVES &amp; SHELL USABILITY" FontWeight="Bold" FontSize="13" Foreground="#00FF88" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable VBS / HVCI Security" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_VbsSecurity" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_VbsSecurity" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Turns off hypervisor-protected code integrity to reclaim 5-15% gaming CPU latency." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_VbsSecurity" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_VbsSecurity" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Align Taskbar to Left" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_TaskbarLeft" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_TaskbarLeft" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Moves the Windows 11 taskbar icons from center to classic left alignment." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_TaskbarLeft" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_TaskbarLeft" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Recommended in Start" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_RecommendedStart" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_RecommendedStart" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Removes the bulky Recommended section in Start Menu for a cleaner layout." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_RecommendedStart" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_RecommendedStart" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Taskbar Chat (Teams)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_TaskbarChat" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_TaskbarChat" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Hides and unloads the integrated Microsoft Teams Chat icon from taskbar." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_TaskbarChat" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_TaskbarChat" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Files Compact View Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_FilesCompact" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_FilesCompact" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Enables compact row spacing in File Explorer for denser file navigation." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_FilesCompact" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_FilesCompact" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Edge Discover &amp; Sidebar" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_EdgeDiscover" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_EdgeDiscover" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Removes the Bing Copilot button and unwanted side toolbar from Edge." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_EdgeDiscover" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_EdgeDiscover" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Add 'Copy/Move To' Context Menu" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CopyMoveMenu" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CopyMoveMenu" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Adds Copy To Folder &amp; Move To Folder directly in right-click explorer menu." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CopyMoveMenu" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_CopyMoveMenu" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Windows System Dark Mode" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_SystemDarkMode" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_SystemDarkMode" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Enforces dark theme across Windows Shell and apps without Windows activation." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_SystemDarkMode" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_SystemDarkMode" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Window Shake (Aero)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_WindowShake" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_WindowShake" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Prevents accidentally minimizing all background windows when shaking a window." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_WindowShake" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_WindowShake" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Enable Verbose Logon" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_VerboseLogon" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_VerboseLogon" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Displays detailed startup and logoff stages on screen instead of generic dots." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_VerboseLogon" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_VerboseLogon" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="SECURITY &amp; BLOATWARE MITIGATION" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Block WPBT Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_BlockWpbt" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_BlockWpbt" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Prevents motherboard UEFI from auto-installing OEM bloatware." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_BlockWpbt" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_BlockWpbt" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Block Peripheral Bloat" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_BlockPeripheral" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_BlockPeripheral" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Blocks auto-install of Razer Synapse, Armoury Crate, and vendor tools." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_BlockPeripheral" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_BlockPeripheral" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Purge Windows AI" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_RemoveAi" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_RemoveAi" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Removes Recall, Copilot, and CoreAI background services." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_RemoveAi" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_RemoveAi" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Security-Only Updates" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_SecurityUpdatesOnly" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_SecurityUpdatesOnly" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Defers feature upgrade builds while keeping security patches active." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_SecurityUpdatesOnly" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_SecurityUpdatesOnly" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="WINDOWS EXPLORER &amp; DESKTOP" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Classic Right-Click" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_ClassicContext" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_ClassicContext" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Restores the classic Windows 10 right-click menu on Windows 11." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_ClassicContext" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_ClassicContext" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Web Search" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DisableBing" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DisableBing" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Stops Start Menu from sending keystrokes to Bing web search." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisableBing" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DisableBing" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Auto-Discovery" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DisableAutoDiscovery" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DisableAutoDiscovery" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Halts background network broadcast polling for local file shares." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisableAutoDiscovery" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DisableAutoDiscovery" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Show File Extensions" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_ShowExtensions" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_ShowExtensions" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Shows file extensions (.exe, .ps1) and hidden system files." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_ShowExtensions" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_ShowExtensions" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <TextBlock Text="Pop Cat Recycle Bin" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                    <TextBlock Text="Changes Desktop Recycle Bin to Pop Cat (open when full, closed when empty)." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_RecycleBinIcon" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,6,0"/>
-                                                    <Button Name="BtnReset_RecycleBinIcon" Content="Default" Style="{StaticResource MiniApplyButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable All Windows Ads" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DisableAds" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DisableAds" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Kills Lock Screen ads, Start suggestions, Explorer sync ads, and Settings promotions." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisableAds" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnReset_DisableAds" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Remove Shortcut Arrows" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_NoShortcutArrows" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_NoShortcutArrows" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Removes shortcut arrow badge overlays for clean desktop icons (No Arrow)." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_NoShortcutArrows" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnReset_ShortcutArrows" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- COLUMN 2: ADVANCED KERNEL & SYSTEM POWER TOOLS -->
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="KERNEL &amp; STORAGE HARDENING" FontWeight="Bold" FontSize="13" Foreground="#FF7700" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Enable Long Paths" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_EnableLongPaths" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_EnableLongPaths" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Removes the 260-character file path limit for modding and dev tools." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_EnableLongPaths" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_EnableLongPaths" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Lock Screen" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DisableLockScreen" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DisableLockScreen" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Skips the swipe-up lock screen directly to the password prompt." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisableLockScreen" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DisableLockScreen" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Verbose BSOD" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_BsodVerbose" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_BsodVerbose" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Enables detailed crash diagnostic text on blue screens." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_BsodVerbose" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_BsodVerbose" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Reclaim Reserved Storage" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DisableReservedStorage" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DisableReservedStorage" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables 7GB of reserved update storage and returns it to drive C:." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DisableReservedStorage" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DisableReservedStorage" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Turn Off BitLocker Permanently" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_BitLocker" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_BitLocker" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Permanently disables BitLocker device encryption, stops BDESVC service, decrypts active drives, and blocks auto-encryption." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_BitLocker" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_BitLocker" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="1-CLICK SYSTEM POWER TOOLS" FontWeight="Bold" FontSize="13" Foreground="#00FF88" Margin="0,0,0,10"/>
-                                        <Button Name="BtnMasActivate" Content="Microsoft Activation Scripts (MAS 1-Click)" Style="{StaticResource OrangeButton}" Margin="0,0,0,8"/>
-                                        <Button Name="BtnRestorePoint" Content="Create System Restore Point" Style="{StaticResource CyanButton}" Margin="0,0,0,8"/>
-                                        <Button Name="BtnRunDiagnostics" Content="Run System Hardware &amp; Latency Diagnostics" Style="{StaticResource DarkOutlineButton}"/>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Card: 1-Click Custom Gaming Cursors Manager -->
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <Grid Margin="0,0,0,10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Grid.Column="0">
-                                                <TextBlock Text="CUSTOM GAMING CURSORS (23 PACKS)" FontWeight="Bold" FontSize="13" Foreground="#00FF88"/>
-                                                <TextBlock Text="Instant live 1-click cursor schemes from Cursors folder without reboot." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                                            </StackPanel>
-                                            <Border Grid.Column="1" Background="#0C1017" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
-                                                <TextBlock Name="TxtActiveCursorScheme" Text="Active: Windows Default" FontSize="10" FontWeight="SemiBold" Foreground="#00D2FF"/>
-                                            </Border>
-                                        </Grid>
-
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,10">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition Height="Auto"/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Grid Grid.Row="0" Margin="0,0,0,8">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <ComboBox Name="CmbCursorSchemes" Grid.Column="0" Height="30" Background="#161E2B" Foreground="#FFFFFF" BorderBrush="#26354A" Margin="0,0,8,0" VerticalContentAlignment="Center" FontSize="12"/>
-                                                    <Button Name="BtnInstallCursor" Grid.Column="1" Content="Install Cursor" Style="{StaticResource CyanButton}" Padding="14,5" FontSize="11" Margin="0,0,6,0"/>
-                                                    <Button Name="BtnRestoreCursor" Grid.Column="2" Content="Default Cursors" Style="{StaticResource DarkOutlineButton}" Padding="12,5" FontSize="11"/>
-                                                </Grid>
-                                                <TextBlock Grid.Row="1" Text="Select from 23 animated and precision schemes (DIM v3.2, Android Material, Neon, Crosshair, etc.). Instant broadcast." FontSize="11" Foreground="#64748B"/>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="TRAFFICMONITOR &amp; TASKBAR TELEMETRY" FontWeight="Bold" FontSize="13" Foreground="#A855F7" Margin="0,0,0,6"/>
-                                        <TextBlock Text="Real-time CPU/RAM/Net taskbar monitor with MiSans typography and custom config preset." FontSize="11" Foreground="#94A3B8" Margin="0,0,0,10" TextWrapping="Wrap"/>
-                                        <Grid Margin="0,0,0,8">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Button Name="BtnInstallTrafficMonitor" Grid.Column="0" Content="Download &amp; Install (x64)" Style="{StaticResource CyanButton}" Margin="0,0,4,0"/>
-                                            <Button Name="BtnInstallMiSansFonts" Grid.Column="1" Content="Install MiSans Fonts" Style="{StaticResource DarkOutlineButton}" Margin="4,0,0,0"/>
-                                        </Grid>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Button Name="BtnApplyTrafficMonitorConfig" Grid.Column="0" Content="Apply Custom config.ini" Style="{StaticResource DarkOutlineButton}" Margin="0,0,4,0"/>
-                                            <Button Name="BtnLaunchTrafficMonitor" Grid.Column="1" Content="Launch TrafficMonitor" Style="{StaticResource OrangeButton}" Margin="4,0,0,0"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-
-                                <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14" Margin="0,0,0,12">
-                                    <StackPanel>
-                                        <TextBlock Text="ADVANCED PRIVACY &amp; APP TELEMETRY" FontWeight="Bold" FontSize="13" Foreground="#00D2FF" Margin="0,0,0,10"/>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable App Telemetry (All)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_AppTelemetry" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_AppTelemetry" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Kills telemetry reporting in Edge, Chrome, Firefox, Visual Studio, and Nvidia drivers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_AppTelemetry" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_AppTelemetry" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Bluetooth Advertising" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_BluetoothAdvertising" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_BluetoothAdvertising" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Stops broadcasting PC existence to nearby wireless Bluetooth devices." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_BluetoothAdvertising" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_BluetoothAdvertising" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable CDP Services" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_CdpServices" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_CdpServices" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables Connected Devices Platform background sync and tracking daemons." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_CdpServices" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_CdpServices" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Diagnostic Toasts" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DiagnosticsToasts" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DiagnosticsToasts" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Suppresses annoying Security and Maintenance pop-up toasts in action center." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DiagnosticsToasts" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DiagnosticsToasts" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Typing &amp; Ink Telemetry" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_TextInputCollection" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_TextInputCollection" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Blocks transmission of keystroke samples and handwriting patterns to cloud." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_TextInputCollection" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_TextInputCollection" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable Cloud Clipboard Sync" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_ClipboardSync" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_ClipboardSync" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Stops copied passwords and text from synchronizing across foreign devices." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_ClipboardSync" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_ClipboardSync" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Disable SMBv1 (WannaCry Shield)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_SmbV1" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_SmbV1" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Disables insecure legacy SMB 1.0 protocol to seal critical ransomware vectors." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_SmbV1" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_SmbV1" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Exclude Drivers from WU" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_DriverUpdatesExcluded" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_DriverUpdatesExcluded" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Blocks Windows Update from overwriting custom graphics and audio drivers." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_DriverUpdatesExcluded" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_DriverUpdatesExcluded" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <Border Background="#121822" BorderBrush="#26354A" BorderThickness="1" CornerRadius="4" Padding="12,7" Margin="0,0,0,6">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="*"/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-                                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,12,0">
-                                                    <StackPanel Orientation="Horizontal">
-                                                        <TextBlock Text="Optimize System Timeouts (0ms)" FontWeight="SemiBold" FontSize="12" Foreground="#FFFFFF"/>
-                                                        <Border Name="Badge_SystemTimeouts" Background="#0F141C" BorderBrush="#26354A" BorderThickness="1" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                                            <TextBlock Name="TxtBadge_SystemTimeouts" Text="Needed" FontSize="9" FontWeight="Bold" Foreground="#00D2FF"/>
-                                                        </Border>
-                                                    </StackPanel>
-                                                    <TextBlock Text="Zeros menu delay (0ms) and shortens hung app shutdown wait to 2 seconds." FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0" TextWrapping="Wrap"/>
-                                                </StackPanel>
-                                                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                                    <Button Name="BtnApply_SystemTimeouts" Content="Apply" Style="{StaticResource MiniApplyButton}" Margin="0,0,4,0"/>
-                                                    <Button Name="BtnRollback_SystemTimeouts" Content="Rollback" Style="{StaticResource MiniRollbackButton}"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </StackPanel>
-                                </Border>
-                            </StackPanel>
-                        </Grid>
-                    </ScrollViewer>
-
-                    <Border Grid.Row="2" Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,10,0,0">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Click [Apply] next to any hardening tweak, or apply all below." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="12"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button Name="BtnScanSystemStateTab4" Content="Audit System State" Style="{StaticResource DarkOutlineButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnApplyUnappliedHardening" Content="Apply Unapplied Hardening" Style="{StaticResource OrangeButton}" Margin="0,0,10,0"/>
-                                <Button Name="BtnApplyHardening" Content="Apply All Hardening" Style="{StaticResource CyanButton}"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                </Grid>
-            </TabItem>
-
-            <!-- TAB 5: DEVICE (SPECIFICATIONS & SYSTEM PROFILE) -->
-            <TabItem Header="Device">
-                <Grid Margin="0,10,0,0">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel Margin="0,0,10,10">
-                            <!-- DEVICE MASTER BANNER CARD -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="8" Padding="18,14" Margin="0,0,0,12">
+                <!-- PAGE 6: DEVICE DETAILS AND TOOLS -->
+                <Grid Name="PageDevice" Visibility="Collapsed">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="0,0,8,0">
+                            <!-- Device Header & Action Strip -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="16,12" Margin="0,0,0,10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <!-- Laptop / Monitor Vector Path Icon -->
-                                    <Path Grid.Column="0" Data="M 4 8 L 28 8 A 2 2 0 0 1 30 10 L 30 20 A 2 2 0 0 1 28 22 L 4 22 A 2 2 0 0 1 2 20 L 2 10 A 2 2 0 0 1 4 8 Z M 0 24 L 32 24 L 32 26 L 0 26 Z" Stroke="#00D2FF" StrokeThickness="1.5" Fill="Transparent" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,16,0"/>
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock Name="TxtDev_CompName" Text="DEVICE" FontSize="20" FontWeight="Bold" Foreground="#FFFFFF"/>
-                                        <TextBlock Name="TxtDev_SubTitle" Text="Windows | CPU | RAM" FontSize="12" Foreground="#94A3B8" Margin="0,3,0,0"/>
+                                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                            <TextBlock Name="TxtDev_CompName" Text="DEVICE SPECIFICATIONS &amp; HARDWARE TELEMETRY" FontSize="13" FontWeight="Bold" Foreground="#FFFFFF"/>
+                                            <Border Background="#14261C" BorderBrush="#00FF88" BorderThickness="1" CornerRadius="3" Padding="6,1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="LIVE PROBE" FontSize="9" FontWeight="Bold" Foreground="#00FF88"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Name="TxtDev_SubTitle" Text="Complete real-time hardware diagnostics, driver telemetry, and system profiles." FontSize="11" Foreground="#94A3B8"/>
                                     </StackPanel>
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Button Name="BtnRefreshDeviceSpecs" Content="Refresh" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                        <Button Name="BtnCopyAllDeviceSpecs" Content="Copy All Specs" Style="{StaticResource CyanButton}" Padding="16,5" FontSize="11"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Name="BtnRefreshDeviceSpecs" Content="Refresh Hardware" Style="{StaticResource CyanButton}" Margin="0,0,8,0"/>
+                                        <Button Name="BtnCopyAllDeviceSpecs" Content="Copy All Specs" Style="{StaticResource DarkOutlineButton}"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>
 
-                            <!-- 1. OPERATING SYSTEM -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                            <!-- Tools Banner: Cursors and TrafficMonitor -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <!-- Custom Gaming Cursors -->
+                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                        <TextBlock Text="CUSTOM GAMING CURSOR SCHEMES" FontSize="12" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,4"/>
+                                        <TextBlock Text="23 handpicked esports cursor packs. Instantly applies without restart." FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Name="BtnRestoreDefaultCursors" Content="Default Cursors" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <!-- TrafficMonitor Telemetry -->
+                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                        <TextBlock Text="TRAFFICMONITOR TASKBAR HUD" FontSize="12" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,4"/>
+                                        <TextBlock Text="Lightweight live taskbar CPU, RAM and Net metrics." FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Name="BtnInstallTrafficMonitor" Content="Install Tool" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnInstallMiSansFonts" Content="Install Fonts" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                            <Button Name="BtnLaunchTrafficMonitor" Content="Launch HUD" Style="{StaticResource CyanButton}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Specs Collapsible Cards -->
+                            <!-- CPU -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
                                 <StackPanel>
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 12 2 A 10 10 0 1 0 22 12 A 10 10 0 0 0 12 2 Z M 12 7 A 5 5 0 1 0 17 12 A 5 5 0 0 0 12 7 Z M 12 10 A 2 2 0 1 1 10 12 A 2 2 0 0 1 12 10 Z" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Operating System" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevOs" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevOs" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Processor (CPU)" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevCpu" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevCpu" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
-                                    <StackPanel Name="Panel_DevOs" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="OS Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Version: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsVersion" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Build Number: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsBuild" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Architecture: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsArch" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Install Date: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsInstallDate" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Registered User: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsUser" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Windows Directory: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsWinDir" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="System Directory: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsSysDir" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Last Boot Up Time: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsBootTime" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    <StackPanel Name="Panel_DevCpu" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Model: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Cores / Threads: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuCores" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Base Clock: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuClock" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
-                            <!-- 2. PROCESSOR -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                            <!-- GPU -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
                                 <StackPanel>
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 4 4 L 20 4 L 20 20 L 4 20 Z M 7 1 L 7 4 M 12 1 L 12 4 M 17 1 L 17 4 M 7 20 L 7 23 M 12 20 L 12 23 M 17 20 L 17 23 M 1 7 L 4 7 M 1 12 L 4 12 M 1 17 L 4 17 M 20 7 L 23 7 M 20 12 L 23 12 M 20 17 L 23 17" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Processor" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevCpu" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevCpu" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Graphics Card (GPU)" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevGpu" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevGpu" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
-                                    <StackPanel Name="Panel_DevCpu" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Manufacturer: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuManufacturer" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Architecture: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuArchitecture" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Cores: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuCores" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Logical Processors: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuLogical" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Max Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuMaxSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Socket Designation: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuSocket" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="L2 Cache Size: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuL2" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="L3 Cache Size: " Foreground="#FFFFFF"/><Run Name="TxtDev_CpuL3" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    <StackPanel Name="Panel_DevGpu" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Device: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Driver Version: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuDriver" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="VRAM: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuRam" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
-                            <!-- 3. GRAPHICS -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                            <!-- RAM -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
                                 <StackPanel>
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 2 6 L 22 6 L 22 18 L 2 18 Z M 6 10 A 3 3 0 1 0 6 14 A 3 3 0 0 0 6 10 Z M 14 10 A 3 3 0 1 0 14 14 A 3 3 0 0 0 14 10 Z M 4 18 L 4 22 L 8 22 L 8 18" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Graphics" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevGpu" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevGpu" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Memory (RAM)" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevRam" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevRam" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
-                                    <StackPanel Name="Panel_DevGpu" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Manufacturer: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuManufacturer" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Driver Version: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuDriverVersion" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Driver Date: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuDriverDate" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="VRAM: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuVram" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Resolution: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuResolution" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Refresh Rate: " Foreground="#FFFFFF"/><Run Name="TxtDev_GpuRefreshRate" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    <StackPanel Name="Panel_DevRam" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Installed Capacity: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamTotal" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Configured Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
-                            <!-- 4. RAM -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                            <!-- OS -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
                                 <StackPanel>
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 2 8 L 22 8 L 22 16 L 2 16 Z M 4 16 L 4 18 M 7 16 L 7 18 M 10 16 L 10 18 M 14 16 L 14 18 M 17 16 L 17 18 M 20 16 L 20 18 M 5 10 L 9 10 L 9 14 L 5 14 Z M 12 10 L 16 10 L 16 14 L 12 14 Z" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="RAM" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevRam" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevRam" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Operating System" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevOs" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevOs" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
-                                    <StackPanel Name="Panel_DevRam" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Total Installed: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamTotal" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Usable Memory: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamUsable" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Manufacturer: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamManufacturer" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Part Number: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamPartNumber" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Slots Configured: " Foreground="#FFFFFF"/><Run Name="TxtDev_RamSlots" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    <StackPanel Name="Panel_DevOs" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="OS Edition: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Build Number: " Foreground="#FFFFFF"/><Run Name="TxtDev_OsBuild" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
 
-                            <!-- 5. STORAGE -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
+                            <!-- Network -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
                                 <StackPanel>
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 2 8 L 22 8 L 22 16 L 2 16 Z M 17 12 A 1 1 0 1 0 19 12 A 1 1 0 0 0 17 12 Z M 5 12 L 13 12" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Storage" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevStorage" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevStorage" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Network Interface" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevNet" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevNet" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
                                         </StackPanel>
                                     </Grid>
-                                    <StackPanel Name="Panel_DevStorage" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Physical Disks: " Foreground="#FFFFFF"/><Run Name="TxtDev_StorageDisks" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Volumes &amp; Partitions: " Foreground="#FFFFFF"/><Run Name="TxtDev_StorageVolumes" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    <StackPanel Name="Panel_DevNet" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Adapter: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Link Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
-
-                            <!-- 6. NETWORK -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
-                                <StackPanel>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 2 4 L 22 4 L 22 16 L 2 16 Z M 12 16 L 12 20 M 6 20 L 18 20" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Network" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevNet" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevNet" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
-                                        </StackPanel>
-                                    </Grid>
-                                    <StackPanel Name="Panel_DevNet" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Adapter Name: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Description: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetDesc" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="MAC Address: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetMac" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Link Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="IPv4 Address: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetIp" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Status: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetStatus" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- 7. BATTERY -->
-                            <Border Background="#161E2B" BorderBrush="#26354A" BorderThickness="1" CornerRadius="6" Margin="0,0,0,8" Padding="14,10">
-                                <StackPanel>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Path Data="M 2 6 L 18 6 L 18 18 L 2 18 Z M 18 10 L 21 10 L 21 14 L 18 14 Z M 5 9 L 9 9 L 9 15 L 5 15 Z M 11 9 L 15 9 L 15 15 L 11 15 Z" Stroke="#00D2FF" StrokeThickness="1.2" Fill="Transparent" Width="18" Height="18" Margin="0,0,12,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Battery" FontWeight="SemiBold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="BtnCopy_DevBattery" Content="Copy" Style="{StaticResource DeviceCopyButton}" Margin="0,0,8,0"/>
-                                            <Button Name="BtnToggle_DevBattery" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" FontSize="11" Width="26" Height="26" Cursor="Hand"/>
-                                        </StackPanel>
-                                    </Grid>
-                                    <StackPanel Name="Panel_DevBattery" Margin="30,12,0,4">
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Power Status: " Foreground="#FFFFFF"/><Run Name="TxtDev_BatteryStatus" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Battery Device: " Foreground="#FFFFFF"/><Run Name="TxtDev_BatteryName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                        <TextBlock Margin="0,2" FontSize="12"><Run FontWeight="Bold" Text="Charge Level: " Foreground="#FFFFFF"/><Run Name="TxtDev_BatteryPercent" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
-                                    </StackPanel>
-                                </StackPanel>
-                            </Border>
-
                         </StackPanel>
                     </ScrollViewer>
                 </Grid>
-            </TabItem>
-        </TabControl>
+            </Grid>
+        </Grid>
 
-        <!-- BOTTOM CONSOLE & REAL-TIME LOG AREA -->
-        <Border Grid.Row="2" Background="#0C1017" BorderBrush="#26354A" BorderThickness="0,1,0,0" Padding="14,10">
+        <!-- ROW 2: COLLAPSIBLE BOTTOM ACTIVITY AND REAL-TIME LOG DRAWER -->
+        <Border Grid.Row="2" Background="#06090E" BorderBrush="#1F293D" BorderThickness="0,1,0,0">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="34"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0,0,0,6">
+                <!-- Status Strip (Always Visible) -->
+                <Grid Grid.Row="0" Margin="14,0" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="OUTPUT LOG" FontSize="11" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,8,0"/>
-                        <TextBlock Name="TxtStatus" Text="Ready" FontSize="11" Foreground="#94A3B8"/>
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse Width="8" Height="8" Fill="#00FF88" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="ACTIVITY: " FontSize="10" FontWeight="Bold" Foreground="#00D2FF" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Name="TxtStatus" Text="Ready" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <Button Name="BtnClearConsole" Grid.Column="1" Content="Clear Log" Style="{StaticResource CategoryChip}" Margin="0" Padding="8,2"/>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Name="BtnClearConsole" Content="Clear" Style="{StaticResource DarkOutlineButton}" Padding="8,2" FontSize="10" Margin="0,0,6,0"/>
+                        <Button Name="BtnToggleLogDrawer" Content="^ Show Console" Style="{StaticResource DarkOutlineButton}" Padding="10,2" FontSize="10"/>
+                    </StackPanel>
                 </Grid>
 
-                <TextBox Name="TxtConsole" Grid.Row="1" Background="#070A0F" Foreground="#00FF88" BorderBrush="#1E293B" BorderThickness="1" FontFamily="Consolas" FontSize="12" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="8" TextWrapping="NoWrap"/>
-
-                <ProgressBar Name="MainProgressBar" Grid.Row="2" Height="4" Background="#161E2B" Foreground="#00D2FF" BorderThickness="0" Margin="0,6,0,0" Value="0" Maximum="100"/>
+                <!-- Expandable Console Log and Progress Bar (Drawer) -->
+                <Grid Name="PanelLogDrawer" Grid.Row="1" Height="170" Margin="14,0,14,10" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBox Name="TxtConsole" Grid.Row="0" Background="#0A0E17" Foreground="#00FF88" BorderBrush="#1F293D" BorderThickness="1" FontFamily="Consolas" FontSize="11" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="8" TextWrapping="NoWrap"/>
+                    <ProgressBar Name="MainProgressBar" Grid.Row="1" Height="4" Background="#121824" Foreground="#00D2FF" BorderThickness="0" Margin="0,6,0,0" Value="0" Maximum="100"/>
+                </Grid>
             </Grid>
         </Border>
     </Grid>
@@ -3722,6 +2175,7 @@ function Get-OptimizerXamlMarkup {
 <#
 ================================================================================
   PumpkiN's Modular Suite: Desktop WPF GUI Event Controller & Async Engine
+  Version 5.6.0 - Windows 11 Fluent + Cyberpunk Architecture
 ================================================================================
 #>
 
@@ -3738,7 +2192,7 @@ function Start-PumpkiNGui {
     $xmlReader = [System.Xml.XmlReader]::Create($stringReader)
     $window = [System.Windows.Markup.XamlReader]::Load($xmlReader)
 
-    # Load 3D Pumpkin Brand Logo & Window Icon (.ico / .png)
+    # 1. Load Application Brand Logo (.ico / .png)
     $imgLogo = $window.FindName("ImgAppLogo")
     $projectRoot = $null
     if ($Global:OptimizerProjectRoot -and (Test-Path $Global:OptimizerProjectRoot)) {
@@ -3756,24 +2210,6 @@ function Start-PumpkiNGui {
     $logoCandidates.Add("E:\Projects\Win_Optimizer\LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico")
     $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
     $logoCandidates.Add((Join-Path $projectRoot "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
-    $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
-
-    $logoDirs = @((Join-Path $projectRoot "LOGO"), "E:\Projects\Win_Optimizer\LOGO", (Join-Path (Get-Location) "LOGO"))
-    foreach ($ld in $logoDirs) {
-        if ($ld -and (Test-Path $ld)) {
-            $discovered = Get-ChildItem -Path $ld -Filter "*.ico" -ErrorAction SilentlyContinue
-            if (-not $discovered) {
-                $discovered = Get-ChildItem -Path $ld -Filter "*.png" -ErrorAction SilentlyContinue
-            }
-            if ($discovered) {
-                foreach ($df in $discovered) {
-                    if (-not $logoCandidates.Contains($df.FullName)) {
-                        $logoCandidates.Add($df.FullName)
-                    }
-                }
-            }
-        }
-    }
 
     $logoLoaded = $false
     foreach ($cand in $logoCandidates) {
@@ -3789,143 +2225,122 @@ function Start-PumpkiNGui {
                 $logoLoaded = $true
                 break
             } catch {}
-
-            if (-not $logoLoaded) {
-                try {
-                    $stream = [System.IO.File]::OpenRead($cand)
-                    $decoder = New-Object System.Windows.Media.Imaging.IconBitmapDecoder($stream, [System.Windows.Media.Imaging.BitmapCreateOptions]::PreservePixelFormat, [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad)
-                    $frame = $decoder.Frames[0]
-                    $stream.Close()
-                    if ($imgLogo) { $imgLogo.Source = $frame }
-                    $window.Icon = $frame
-                    $logoLoaded = $true
-                    break
-                } catch {}
-            }
-
-            if (-not $logoLoaded) {
-                try {
-                    Add-Type -AssemblyName System.Drawing
-                    $drawingIcon = New-Object System.Drawing.Icon($cand)
-                    $bmpSource = [System.Windows.Interop.Imaging]::CreateBitmapSourceFromHIcon(
-                        $drawingIcon.Handle,
-                        [System.Windows.Int32Rect]::Empty,
-                        [System.Windows.Media.Imaging.BitmapSizeOptions]::FromEmptyOptions()
-                    )
-                    if ($imgLogo) { $imgLogo.Source = $bmpSource }
-                    $window.Icon = $bmpSource
-                    $logoLoaded = $true
-                    break
-                } catch {}
-            }
         }
     }
 
-    # Core Controls
-    $wrapPackages       = $window.FindName("WrapPackages")
-    $txtSearch          = $window.FindName("TxtSearch")
-    $btnClearSearch     = $window.FindName("BtnClearSearch")
-    $btnInstallSelected = $window.FindName("BtnInstallSelected")
-    $btnUninstallSelected = $window.FindName("BtnUninstallSelected")
-    $btnUpgradeAll      = $window.FindName("BtnUpgradeAll")
-    $btnSelectAll       = $window.FindName("BtnSelectAll")
-    $btnClearAll        = $window.FindName("BtnClearAll")
-    $txtSelectedCount   = $window.FindName("TxtSelectedCount")
+    # 2. Controls Resolution
+    # Top Bar
+    $txtSearch           = $window.FindName("TxtSearch")
+    $btnClearSearch      = $window.FindName("BtnClearSearch")
+    $btnBeastMode        = $window.FindName("BtnBeastMode")
+    $btnRestorePointTop  = $window.FindName("BtnRestorePointTop")
+    $btnMasActivateTop   = $window.FindName("BtnMasActivateTop")
+    $btnExitTop          = $window.FindName("BtnExitTop")
 
-    $btnRunAllTweaks    = $window.FindName("BtnRunAllTweaks")
-    $btnRevertDefaults  = $window.FindName("BtnRevertDefaults")
-    $btnClearDeepCacheBar = $window.FindName("BtnClearDeepCacheBar")
-    $btnClearUpdateCache = $window.FindName("BtnClearUpdateCache")
-    $btnInstallDirectXDirect = $window.FindName("BtnInstallDirectXDirect")
-    $btnInstallVcRedistAio = $window.FindName("BtnInstallVcRedistAio")
-    $btnBeastMode       = $window.FindName("BtnBeastMode")
+    # Navigation Rail
+    $navDashboard        = $window.FindName("NavDashboard")
+    $navGaming           = $window.FindName("NavGaming")
+    $navPrivacy          = $window.FindName("NavPrivacy")
+    $navSystem           = $window.FindName("NavSystem")
+    $navSoftware         = $window.FindName("NavSoftware")
+    $navDevice           = $window.FindName("NavDevice")
 
-    $btnPurgeStandby         = $window.FindName("BtnPurgeStandby")
-    $cmbStandbyInterval      = $window.FindName("CmbStandbyInterval")
-    $btnSetStandbySchedule   = $window.FindName("BtnSetStandbySchedule")
-    $btnRemoveStandbySchedule = $window.FindName("BtnRemoveStandbySchedule")
-    $txtStandbyTaskStatus    = $window.FindName("TxtStandbyTaskStatus")
-    $btnToggleWifiScan       = $window.FindName("BtnToggleWifiScan")
-        $btnApplyGameHooks       = $window.FindName("BtnApplyGameHooks")
-    $txtLiveCpu              = $window.FindName("TxtLiveCpu")
-    $txtLiveRam              = $window.FindName("TxtLiveRam")
-    $txtLivePing             = $window.FindName("TxtLivePing")
-    $txtLiveBooster          = $window.FindName("TxtLiveBooster")
-    $txtDaemonStatus         = $window.FindName("TxtDaemonStatus")
-    $btnStartGameBooster     = $window.FindName("BtnStartGameBooster")
-    $btnStopGameBooster      = $window.FindName("BtnStopGameBooster")
+    # Page Containers
+    $pageDashboard       = $window.FindName("PageDashboard")
+    $pageGaming          = $window.FindName("PageGaming")
+    $pagePrivacy         = $window.FindName("PagePrivacy")
+    $pageSystem          = $window.FindName("PageSystem")
+    $pageSoftware        = $window.FindName("PageSoftware")
+    $pageDevice          = $window.FindName("PageDevice")
 
-    $btnMasActivate     = $window.FindName("BtnMasActivate")
-    $btnMasActivateTop  = $window.FindName("BtnMasActivateTop")
-    $btnRestorePoint    = $window.FindName("BtnRestorePoint")
-    $btnRestorePointTop = $window.FindName("BtnRestorePointTop")
-    $btnApplyHardening  = $window.FindName("BtnApplyHardening")
-    $btnRunDiagnostics  = $window.FindName("BtnRunDiagnostics")
-    $btnExitTop         = $window.FindName("BtnExitTop")
+    # Top Bar Controls
+    $btnRestorePointTop        = $window.FindName("BtnRestorePointTop")
+    $btnMasActivateTop         = $window.FindName("BtnMasActivateTop")
+    $btnBeastMode              = $window.FindName("BtnBeastMode")
+    $btnExitTop                = $window.FindName("BtnExitTop")
 
-    $btnInstallTrafficMonitor       = $window.FindName("BtnInstallTrafficMonitor")
-    $btnInstallMiSansFonts          = $window.FindName("BtnInstallMiSansFonts")
-    $btnApplyTrafficMonitorConfig   = $window.FindName("BtnApplyTrafficMonitorConfig")
-    $btnLaunchTrafficMonitor        = $window.FindName("BtnLaunchTrafficMonitor")
+    # Tweak Scrollable Panels
+    $panelGamingTweaks   = $window.FindName("PanelGamingTweaks")
+    $panelPrivacyTweaks  = $window.FindName("PanelPrivacyTweaks")
+    $panelSystemTweaks   = $window.FindName("PanelSystemTweaks")
 
-    $txtConsole         = $window.FindName("TxtConsole")
-    $txtStatus          = $window.FindName("TxtStatus")
-    $progressBar        = $window.FindName("MainProgressBar")
-    $btnClearConsole    = $window.FindName("BtnClearConsole")
+    # Dashboard Controls
+    $borderScoreGauge          = $window.FindName("BorderScoreGauge")
+    $txtScorePercent           = $window.FindName("TxtScorePercent")
+    $txtScoreGrade             = $window.FindName("TxtScoreGrade")
+    $txtActiveTweakRatio       = $window.FindName("TxtActiveTweakRatio")
+    $txtScoreSubtitle          = $window.FindName("TxtScoreSubtitle")
+    $btnScanSystemStateBanner  = $window.FindName("BtnScanSystemStateBanner")
+    $btnRevertDefaults         = $window.FindName("BtnRevertDefaults")
+    $txtLiveCpu                = $window.FindName("TxtLiveCpu")
+    $txtLiveRam                = $window.FindName("TxtLiveRam")
+    $txtLivePing               = $window.FindName("TxtLivePing")
+    $txtLiveBooster            = $window.FindName("TxtLiveBooster")
+    $btnStartGameBooster       = $window.FindName("BtnStartGameBooster")
+    $btnPurgeStandby           = $window.FindName("BtnPurgeStandby")
+    $txtActiveGamingCount      = $window.FindName("TxtActiveGamingCount")
+    $txtActivePrivacyCount     = $window.FindName("TxtActivePrivacyCount")
+    $txtActiveSystemCount      = $window.FindName("TxtActiveSystemCount")
+    $btnViewActiveTweaks       = $window.FindName("BtnViewActiveTweaks")
+    $btnApplyUnappliedDashboard = $window.FindName("BtnApplyUnappliedDashboard")
+    $btnApplyProfileEsports    = $window.FindName("BtnApplyProfileEsports")
+    $btnApplyProfileRecommended = $window.FindName("BtnApplyProfileRecommended")
+    $btnApplyProfilePrivacy    = $window.FindName("BtnApplyProfilePrivacy")
 
-    # Optimization Score & Audit Dashboard Controls
-    $txtScorePercent          = $window.FindName("TxtScorePercent")
-    $txtScoreGrade            = $window.FindName("TxtScoreGrade")
-    $txtActiveTweakRatio      = $window.FindName("TxtActiveTweakRatio")
-    $txtScorePercentTab4      = $window.FindName("TxtScorePercentTab4")
-    $txtScoreGradeTab4        = $window.FindName("TxtScoreGradeTab4")
-    $txtActiveTweakRatioTab4  = $window.FindName("TxtActiveTweakRatioTab4")
-    $btnScanSystemStateBanner = $window.FindName("BtnScanSystemStateBanner")
-    $btnScanSystemStateTab4Banner = $window.FindName("BtnScanSystemStateTab4Banner")
-    $btnScanSystemStateTab4   = $window.FindName("BtnScanSystemStateTab4")
-    $btnApplyUnappliedBanner  = $window.FindName("BtnApplyUnappliedBanner")
-    $btnApplyUnappliedTab2    = $window.FindName("BtnApplyUnappliedTab2")
-    $btnApplyUnappliedHardening = $window.FindName("BtnApplyUnappliedHardening")
-    $btnApplyUnappliedHardeningBanner = $window.FindName("BtnApplyUnappliedHardeningBanner")
-    $btnRevertDefaultsBanner  = $window.FindName("BtnRevertDefaultsBanner")
-    $btnRevertDefaultsTab4    = $window.FindName("BtnRevertDefaultsTab4")
+    # Gaming Page Master Controls & Tools
+    $chipGamingAll           = $window.FindName("ChipGamingAll")
+    $chipGamingRecommended   = $window.FindName("ChipGamingRecommended")
+    $chipGamingEsports       = $window.FindName("ChipGamingEsports")
+    $chipGamingActive        = $window.FindName("ChipGamingActive")
+    $btnGamingApplyAll       = $window.FindName("BtnGamingApplyAll")
+    $btnGamingRollbackAll    = $window.FindName("BtnGamingRollbackAll")
+    $cmbCursorSchemes        = $window.FindName("CmbCursorSchemes")
+    $txtActiveCursorScheme   = $window.FindName("TxtActiveCursorScheme")
+    $btnInstallCursor        = $window.FindName("BtnInstallCursor")
+    $btnRestoreCursor        = $window.FindName("BtnRestoreCursor")
+    $btnBenchmarkDns         = $window.FindName("BtnBenchmarkDns")
+    $btnResetDns             = $window.FindName("BtnResetDns")
 
-    # Tab 2 Checkboxes
-    $chkGpuAuto         = $window.FindName("ChkGpuAuto")
-    $chkHardwareMsi     = $window.FindName("ChkHardwareMsi")
-    $chkDisablePowerSaving = $window.FindName("ChkDisablePowerSaving")
-    $chkMpo             = $window.FindName("ChkMpo")
-    $chkMouseCurve      = $window.FindName("ChkMouseCurve")
-    $chkInputLatency    = $window.FindName("ChkInputLatency")
-    $chkCsrssPriority   = $window.FindName("ChkCsrssPriority")
-    $chkCpuSystem       = $window.FindName("ChkCpuSystem")
-    $chkSvcHost         = $window.FindName("ChkSvcHost")
-    $chkNetwork         = $window.FindName("ChkNetwork")
-    $chkWifiScan        = $window.FindName("ChkWifiScan")
-    $chkUltimatePower   = $window.FindName("ChkUltimatePower")
-    $chkStripVisual     = $window.FindName("ChkStripVisual")
-    $chkEndTask         = $window.FindName("ChkEndTask")
-    $chkStickyKeys      = $window.FindName("ChkStickyKeys")
-    $chkDebloatServices = $window.FindName("ChkDebloatServices")
-    $chkDiskIo          = $window.FindName("ChkDiskIo")
-    $chkCompactOs       = $window.FindName("ChkCompactOs")
-    $chkTakeOwnership   = $window.FindName("ChkTakeOwnership")
-    $chkJunkTasks       = $window.FindName("ChkJunkTasks")
-    $chkPrivacy         = $window.FindName("ChkPrivacy")
+    # Privacy Page Master Controls
+    $chipPrivacyAll          = $window.FindName("ChipPrivacyAll")
+    $chipPrivacyActive       = $window.FindName("ChipPrivacyActive")
+    $btnPrivacyApplyAll      = $window.FindName("BtnPrivacyApplyAll")
+    $btnPrivacyRollbackAll   = $window.FindName("BtnPrivacyRollbackAll")
 
-    # Tab 4 Checkboxes
-    $chkBlockWpbt       = $window.FindName("ChkBlockWpbt")
-    $chkBlockPeripheral = $window.FindName("ChkBlockPeripheral")
-    $chkRemoveAi        = $window.FindName("ChkRemoveAi")
-    $chkSecurityUpdatesOnly = $window.FindName("ChkSecurityUpdatesOnly")
-    $chkClassicContext  = $window.FindName("ChkClassicContext")
-    $chkDisableBing     = $window.FindName("ChkDisableBing")
-    $chkDisableAutoDiscovery = $window.FindName("ChkDisableAutoDiscovery")
-    $chkShowExtensions  = $window.FindName("ChkShowExtensions")
-    $chkEnableLongPaths = $window.FindName("ChkEnableLongPaths")
-    $chkDisableLockScreen = $window.FindName("ChkDisableLockScreen")
-    $chkBsodVerbose     = $window.FindName("ChkBsodVerbose")
-    $chkDisableReservedStorage = $window.FindName("ChkDisableReservedStorage")
+    # System Page Master Controls & Diagnostics
+    $chipSystemAll           = $window.FindName("ChipSystemAll")
+    $chipSystemActive        = $window.FindName("ChipSystemActive")
+    $btnSystemApplyAll       = $window.FindName("BtnSystemApplyAll")
+    $btnSystemRollbackAll    = $window.FindName("BtnSystemRollbackAll")
+    $btnRunDiagnostics       = $window.FindName("BtnRunDiagnostics")
+    $btnClearUpdateCache     = $window.FindName("BtnClearUpdateCache")
+    $btnClearDeepCacheBar    = $window.FindName("BtnClearDeepCacheBar")
+    $btnReport_Interrupts    = $window.FindName("BtnReport_Interrupts")
+
+    # Device Page Header Controls
+    $txtDev_CompName         = $window.FindName("TxtDev_CompName")
+    $txtDev_SubTitle         = $window.FindName("TxtDev_SubTitle")
+    $btnRefreshDeviceSpecs   = $window.FindName("BtnRefreshDeviceSpecs")
+    $btnCopyAllDeviceSpecs   = $window.FindName("BtnCopyAllDeviceSpecs")
+
+    # Software Downloader Controls
+    $wrapPackages            = $window.FindName("WrapPackages")
+    $btnInstallSelected      = $window.FindName("BtnInstallSelected")
+    $btnUninstallSelected    = $window.FindName("BtnUninstallSelected")
+    $btnUpgradeAll           = $window.FindName("BtnUpgradeAll")
+    $btnSelectAll            = $window.FindName("BtnSelectAll")
+    $btnClearAll             = $window.FindName("BtnClearAll")
+    $txtSelectedCount        = $window.FindName("TxtSelectedCount")
+    $btnInstallEquicord      = $window.FindName("BtnInstallEquicord")
+    $btnOpenEquicordSite     = $window.FindName("BtnOpenEquicordSite")
+
+    # Bottom Activity / Drawer Controls
+    $btnToggleLogDrawer      = $window.FindName("BtnToggleLogDrawer")
+    $panelLogDrawer          = $window.FindName("PanelLogDrawer")
+    $txtConsole              = $window.FindName("TxtConsole")
+    $txtStatus               = $window.FindName("TxtStatus")
+    $progressBar             = $window.FindName("MainProgressBar")
+    $btnClearConsole         = $window.FindName("BtnClearConsole")
 
     # Thread-Safe UI Pumping and Logging
     $script:DoEvents = {
@@ -3943,9 +2358,13 @@ function Start-PumpkiNGui {
         $timestamp = (Get-Date).ToString("HH:mm:ss")
         $line = "[$timestamp] $Message`r`n"
         $window.Dispatcher.Invoke([Action]{
-            $txtConsole.AppendText($line)
-            $txtConsole.ScrollToEnd()
-            $txtStatus.Text = $Message
+            if ($txtConsole) {
+                $txtConsole.AppendText($line)
+                $txtConsole.ScrollToEnd()
+            }
+            if ($txtStatus) {
+                $txtStatus.Text = $Message
+            }
         })
         & $script:DoEvents
     }
@@ -3953,1004 +2372,622 @@ function Start-PumpkiNGui {
     $script:SetProgress = {
         param([int]$Percent)
         $window.Dispatcher.Invoke([Action]{
-            $progressBar.Value = $Percent
+            if ($progressBar) {
+                $progressBar.Value = $Percent
+            }
         })
         & $script:DoEvents
     }
 
-    $btnClearConsole.Add_Click({
-        $txtConsole.Clear()
-        $txtStatus.Text = "Log cleared"
-    })
+    if ($btnClearConsole) {
+        $btnClearConsole.Add_Click({
+            if ($txtConsole) { $txtConsole.Clear() }
+            if ($txtStatus) { $txtStatus.Text = "Log cleared" }
+        })
+    }
 
-    # Build Application Cards Dynamically with Fast [Type]::new() Constructors
-    $script:AllAppCards = [System.Collections.Generic.List[PSCustomObject]]::new()
-    $brushNormalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#161E2B")
-    $brushHoverBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1E293B")
-    $brushNormalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#26354A")
-    $brushHoverBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-    $brushCyan         = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-    $brushTextDim      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-    $brushTextSub      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#64748B")
-    $badgeBg           = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
-    $whiteBrush        = [System.Windows.Media.Brushes]::White
-    $handCursor        = [System.Windows.Input.Cursors]::Hand
+    # 3. Collapsible Log Drawer Toggle Handler
+    $script:ExpandLogDrawer = {
+        if ($panelLogDrawer -and $panelLogDrawer.Visibility -ne [System.Windows.Visibility]::Visible) {
+            $panelLogDrawer.Visibility = [System.Windows.Visibility]::Visible
+            if ($btnToggleLogDrawer) { $btnToggleLogDrawer.Content = "v Hide Console" }
+        }
+    }
 
-    # Reusable layout metrics to eliminate redundant object allocations
-    $thick1      = [System.Windows.Thickness]::new(1)
-    $thick4      = [System.Windows.Thickness]::new(4, 1, 4, 1)
-    $thick5      = [System.Windows.Thickness]::new(5)
-    $thick10     = [System.Windows.Thickness]::new(10)
-    $thickChk    = [System.Windows.Thickness]::new(0, 4, 10, 0)
-    $thickDesc   = [System.Windows.Thickness]::new(0, 3, 0, 0)
-    $thickBadge  = [System.Windows.Thickness]::new(4, 0, 0, 0)
-    $corn6       = [System.Windows.CornerRadius]::new(6)
-    $corn3       = [System.Windows.CornerRadius]::new(3)
-    $starGrid    = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
-    $autoGrid    = [System.Windows.GridLength]::Auto
+    if ($btnToggleLogDrawer) {
+        $btnToggleLogDrawer.Add_Click({
+            if ($panelLogDrawer.Visibility -eq [System.Windows.Visibility]::Visible) {
+                $panelLogDrawer.Visibility = [System.Windows.Visibility]::Collapsed
+                $btnToggleLogDrawer.Content = "^ Show Console"
+            } else {
+                $panelLogDrawer.Visibility = [System.Windows.Visibility]::Visible
+                $btnToggleLogDrawer.Content = "v Hide Console"
+            }
+        })
+    }
 
-    foreach ($app in $Global:AppCatalog) {
+    # 4. Master Navigation Switching
+    $pages = @($pageDashboard, $pageGaming, $pagePrivacy, $pageSystem, $pageSoftware, $pageDevice)
+    $script:SwitchPage = {
+        param([System.Windows.Controls.Grid]$TargetPage)
+        foreach ($p in $pages) {
+            if ($p) {
+                $p.Visibility = if ($p -eq $TargetPage) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+            }
+        }
+    }
+
+    if ($navDashboard) { $navDashboard.Add_Checked({ & $script:SwitchPage $pageDashboard }) }
+    if ($navGaming)    { $navGaming.Add_Checked({ & $script:SwitchPage $pageGaming }) }
+    if ($navPrivacy)   { $navPrivacy.Add_Checked({ & $script:SwitchPage $pagePrivacy }) }
+    if ($navSystem)    { $navSystem.Add_Checked({ & $script:SwitchPage $pageSystem }) }
+    if ($navSoftware)  { $navSoftware.Add_Checked({ & $script:SwitchPage $pageSoftware }) }
+    if ($navDevice)    { $navDevice.Add_Checked({ & $script:SwitchPage $pageDevice }) }
+
+    # 5. Master Tweak Definitions Registry (Unified Schema for all 82 Tweaks)
+    $script:TweakDefinitions = @(
+        # --- GAMING & HARDWARE PERFORMANCE ---
+        @{ Key="GpuAuto"; Title="GPU Driver Auto-Tuning"; Category="Gaming"; Tier="Recommended"; Description="Auto-optimizes NVIDIA and AMD display driver registry settings for maximum sustained frame rates."; Apply={ Optimize-GpuAuto }; Rollback={ Restore-GpuAuto } },
+        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Tier="Recommended"; Description="Switches GPU, USB, and network adapters to Message Signaled Interrupts (MSI) for lowest DPC latency."; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-HardwareMsiMode } },
+        @{ Key="DisablePowerSaving"; Title="Disable USB Power Savings"; Category="Gaming"; Tier="Safe"; Description="Prevents Windows from suspending USB root hubs and network controllers during competitive gaming."; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-DevicePowerSaving } },
+        @{ Key="Mpo"; Title="Disable Multiplane Overlay (MPO)"; Category="Gaming"; Tier="Recommended"; Description="Disables Desktop Window Manager MPO to permanently eliminate micro-stuttering and black screens."; Apply={ Disable-MultiplaneOverlay }; Rollback={ Restore-MultiplaneOverlay } },
+        @{ Key="MouseCurve"; Title="1:1 Raw Mouse Linear Curve"; Category="Gaming"; Tier="Recommended"; Description="Enforces perfectly linear 1:1 hardware mouse sensitivity with zero angle snapping or smoothing."; Apply={ Set-MouseLinearCurve }; Rollback={ Restore-MouseLinearCurve } },
+        @{ Key="InputLatency"; Title="8000Hz USB Keyboard Response"; Category="Gaming"; Tier="Esports"; Description="Optimizes USB polling buffers and keyboard response rate to lowest possible physical latency."; Apply={ Optimize-LatencyAndInput }; Rollback={ Restore-AudioDpcAndUsbLatency } },
+        @{ Key="CsrssPriority"; Title="CSRSS Realtime I/O Priority"; Category="Gaming"; Tier="Esports"; Description="Elevates Client Server Runtime Subsystem to High/Realtime priority for instant input processing."; Apply={ Optimize-CsrssPriority }; Rollback={ Restore-CsrssPriority } },
+        @{ Key="CpuSystem"; Title="Win32PrioritySeparation Quantum (0x26)"; Category="Gaming"; Tier="Recommended"; Description="Sets kernel scheduler quantum to 0x26, granting active foreground games priority CPU slices."; Apply={ Optimize-CpuAndSystem }; Rollback={ Restore-CpuAndSystem } },
+        @{ Key="SvcHost"; Title="SvcHost RAM Thread Splitting"; Category="Gaming"; Tier="Recommended"; Description="Isolates background service hosts to prevent shared memory contention and micro-stutter."; Apply={ Optimize-SvcHostSplitting }; Rollback={ Restore-SvcHostSplitting } },
+        @{ Key="Network"; Title="TCP/IP Low-Latency Anti-Lag Stack"; Category="Gaming"; Tier="Recommended"; Description="Optimizes TCP autotuning, non-best-effort QoS limits, and disables Nagle latency batching."; Apply={ Optimize-Network }; Rollback={ Restore-Network } },
+        @{ Key="WifiScan"; Title="Wi-Fi 0ms Roaming Ping Shield"; Category="Gaming"; Tier="Esports"; Description="Freezes Windows background 60s Wi-Fi network roaming scans to eliminate ping spikes."; Apply={ Toggle-WifiAutoconfig }; Rollback={ Toggle-WifiAutoconfig } },
+        @{ Key="StartupDns"; Title="Gaming DNS & Fast Startup Tuning"; Category="Gaming"; Tier="Safe"; Description="Prioritizes local DNS resolver threads and optimizes network startup negotiation."; Apply={ Optimize-StartupAndDns }; Rollback={ Reset-DnsToAutomatic } },
+        @{ Key="GameHooks"; Title="Esports Process Priority Hooks"; Category="Gaming"; Tier="Esports"; Description="Configures High CPU Priority and MMIO execution for CS2, Valorant, Apex, and Fortnite."; Apply={ Apply-GameHooks }; Rollback={ Restore-GameHooks } },
+        @{ Key="UltimatePower"; Title="PumpkiN Ultimate Power Plan"; Category="Gaming"; Tier="Recommended"; Description="Unlocks and activates the Ultimate Performance energy scheme with zero CPU clock throttling."; Apply={ Invoke-PumpkiNEsportsPowerPlan }; Rollback={ Restore-BalancedPowerPlan } },
+        @{ Key="CoreUnpark"; Title="100% CPU Core Unparking"; Category="Gaming"; Tier="Recommended"; Description="Unparks all physical and logical CPU cores so all threads respond immediately to game loads."; Apply={ Invoke-CpuCoreUnparking }; Rollback={ Restore-CpuCoreParking } },
+        @{ Key="StripVisual"; Title="Strip Desktop Visual Animations"; Category="Gaming"; Tier="Safe"; Description="Disables unnecessary window drop shadows, fade animations, and cursor effects for peak responsiveness."; Apply={ Strip-VisualEffects }; Rollback={ Restore-VisualEffects } },
+        @{ Key="EndTask"; Title="Taskbar 'End Task' Right-Click"; Category="Gaming"; Tier="Recommended"; Description="Enables instant process termination directly from the Windows taskbar context menu."; Apply={ Enable-EndTaskRightClick }; Rollback={ Restore-EndTaskRightClick } },
+        @{ Key="StickyKeys"; Title="Disable Sticky Keys Prompt"; Category="Gaming"; Tier="Safe"; Description="Suppresses the Windows accessibility dialog when pressing Shift 5 times in rapid succession."; Apply={ Disable-StickyKeysPrompt }; Rollback={ Restore-StickyKeysPrompt } },
+        @{ Key="CompactMetrics"; Title="Compact Window Metrics"; Category="Gaming"; Tier="Safe"; Description="Narrows desktop window padding and title bars for a modern, sleek desktop aesthetic."; Apply={ Set-CompactWindowMetrics }; Rollback={ Restore-CompactWindowMetrics } },
+        @{ Key="DebloatServices"; Title="Debloat Background Services"; Category="Gaming"; Tier="Recommended"; Description="Gracefully disables non-essential background services (Diagnostics, Fax, Maps, Retail Demo)."; Apply={ Debloat-BackgroundServices }; Rollback={ Restore-BackgroundServices } },
+        @{ Key="DiskIo"; Title="Optimize Disk I/O & NTFS"; Category="Gaming"; Tier="Recommended"; Description="Disables 8.3 short filename generation and last-access timestamps for faster disk read/write."; Apply={ Optimize-DiskIO }; Rollback={ Restore-DiskIO } },
+        @{ Key="CompactOs"; Title="CompactOS System Compression"; Category="Gaming"; Tier="Safe"; Description="Compresses core OS binaries via native XPRESS/LZX to free up 10-25 GB of NVMe/SSD space."; Apply={ Enable-CompactOS }; Rollback={ Disable-CompactOS } },
+        @{ Key="TakeOwnership"; Title="'Take Ownership' Context Menu"; Category="Gaming"; Tier="Safe"; Description="Adds a 1-click Take Ownership menu item to easily manage restricted system files."; Apply={ Enable-TakeOwnershipMenu }; Rollback={ Disable-TakeOwnershipMenu } },
+        @{ Key="JunkTasks"; Title="Disable Scheduled Junk Tasks"; Category="Gaming"; Tier="Recommended"; Description="Disables Customer Experience Improvement, CEIP, and background telemetry collection tasks."; Apply={ Disable-ScheduledJunkTasks }; Rollback={ Restore-ScheduledJunkTasks } },
+        @{ Key="Privacy"; Title="Harden Core Windows Telemetry"; Category="Gaming"; Tier="Recommended"; Description="Sets AllowTelemetry policy to 0 (Security) and suppresses diagnostic data reporting."; Apply={ Harden-PrivacyTelemetry }; Rollback={ Restore-PrivacyTelemetry } },
+        @{ Key="AudioDpc"; Title="Audio DPC & Anti-Popping"; Category="Gaming"; Tier="Recommended"; Description="Elevates Multimedia Class Scheduler (MMCSS) audio thread priority to prevent popping."; Apply={ Optimize-AudioDpcLatency }; Rollback={ Restore-AudioDpcAndUsbLatency } },
+        @{ Key="UsbxHci"; Title="USB xHCI Realtime Thread Priority"; Category="Gaming"; Tier="Esports"; Description="Configures USB host controller thread priority to Realtime (31) for zero mouse click latency."; Apply={ Optimize-UsbLatencyAndBuffers }; Rollback={ Restore-AudioDpcAndUsbLatency } },
+        @{ Key="DeviceManager"; Title="Device Manager Latency Tuning"; Category="Gaming"; Tier="Recommended"; Description="Disables high-latency legacy devices (HPET, SMBus, System Speaker, Timers) safely."; Apply={ Optimize-DeviceManager }; Rollback={ Restore-DeviceManager } },
+
+        # --- SYSTEM, SHELL & HARDENING ---
+        @{ Key="BlockWpbt"; Title="Block UEFI WPBT Execution"; Category="System"; Tier="Safe"; Description="Blocks manufacturer-injected rootkit bloatware from executing out of motherboard ACPI tables."; Apply={ Block-WpbtExecution }; Rollback={ Restore-WpbtExecution } },
+        @{ Key="BlockPeripheral"; Title="Block Peripheral Software Bloat"; Category="System"; Tier="Safe"; Description="Prevents Windows from automatically downloading OEM bloatware apps when connecting hardware."; Apply={ Block-PeripheralBloat }; Rollback={ Restore-PeripheralBloat } },
+        @{ Key="RemoveAi"; Title="Purge Windows AI & Recall"; Category="System"; Tier="Recommended"; Description="Removes Copilot, Recall snapshots, and background AI telemetry processors."; Apply={ Remove-WindowsAI }; Rollback={ Restore-WindowsAI } },
+        @{ Key="SecurityUpdatesOnly"; Title="Security-Only Update Policy"; Category="System"; Tier="Safe"; Description="Configures Windows Update to only deliver essential security patches without unwanted feature rollouts."; Apply={ Set-SecurityUpdatesOnly }; Rollback={ Restore-SecurityUpdatesOnly } },
+        @{ Key="ClassicContext"; Title="Classic Windows 10 Context Menu"; Category="System"; Tier="Recommended"; Description="Restores the fast full-featured right-click context menu on Windows 11 without 'Show more options'."; Apply={ Enable-ClassicContextMenu }; Rollback={ Restore-ClassicContextMenu } },
+        @{ Key="DisableBing"; Title="Disable Start Menu Web Search"; Category="System"; Tier="Recommended"; Description="Prevents Start Menu searches from querying Bing and displaying web advertisements."; Apply={ Disable-StartMenuBing }; Rollback={ Restore-StartMenuBing } },
+        @{ Key="DisableAutoDiscovery"; Title="Disable Network Auto-Discovery"; Category="System"; Tier="Safe"; Description="Stops Explorer from constantly scanning local network subnets for devices, speeding up folder loads."; Apply={ Disable-ExplorerAutoDiscovery }; Rollback={ Restore-ExplorerAutoDiscovery } },
+        @{ Key="ShowExtensions"; Title="Show File Extensions & Hidden Files"; Category="System"; Tier="Recommended"; Description="Configures File Explorer to always show file extensions and hidden items for security."; Apply={ Set-ShowFileExtensionsAndHidden }; Rollback={ Restore-ShowFileExtensionsAndHidden } },
+        @{ Key="DisableAds"; Title="Disable Windows Desktop Ads"; Category="System"; Tier="Recommended"; Description="Removes suggested apps, tip notifications, and promotional banners across the shell."; Apply={ Disable-WindowsAds }; Rollback={ Enable-WindowsAds } },
+        @{ Key="NoShortcutArrows"; Title="Remove Shortcut Arrow Overlays"; Category="System"; Tier="Safe"; Description="Removes the default arrow icon overlay from desktop application shortcuts."; Apply={ Disable-ShortcutArrow }; Rollback={ Restore-ShortcutArrow } },
+        @{ Key="EnableLongPaths"; Title="Enable Win32 Long Paths (MAX_PATH)"; Category="System"; Tier="Recommended"; Description="Removes the 260-character path limit for file paths, preventing filesystem errors."; Apply={ Enable-LongPaths }; Rollback={ Restore-LongPaths } },
+        @{ Key="DisableLockScreen"; Title="Disable Windows Lock Screen"; Category="System"; Tier="Safe"; Description="Bypasses the swipe-up lock screen image and displays the password prompt immediately."; Apply={ Disable-LockScreen }; Rollback={ Restore-LockScreen } },
+        @{ Key="BsodVerbose"; Title="Verbose Crash Screen (BSOD)"; Category="System"; Tier="Safe"; Description="Configures Windows to display detailed stop codes and faulting driver names on crash."; Apply={ Enable-BsodVerbose }; Rollback={ Restore-BsodVerbose } },
+        @{ Key="DisableReservedStorage"; Title="Reclaim 7GB Reserved Storage"; Category="System"; Tier="Recommended"; Description="Disables Windows Reserved Storage partition, instantly freeing 7 GB on the C: drive."; Apply={ Disable-ReservedStorage }; Rollback={ Restore-ReservedStorage } },
+        @{ Key="BitLocker"; Title="Turn Off BitLocker Encryption"; Category="System"; Tier="Esports"; Description="Permanently disables BitLocker drive encryption for maximum NVMe disk I/O throughput."; Apply={ Disable-BitLockerPermanently }; Rollback={ Restore-BitLockerDefaults } },
+        @{ Key="VbsSecurity"; Title="Disable VBS / HVCI Security"; Category="System"; Tier="Esports"; Description="Disables Virtualization-Based Security (VBS) and Memory Integrity for 5-15% higher gaming FPS."; Apply={ Disable-VbsSecurity }; Rollback={ Restore-VbsSecurity } },
+        @{ Key="TaskbarLeft"; Title="Align Taskbar to Left"; Category="System"; Tier="Safe"; Description="Aligns the Windows 11 taskbar icons to the bottom-left corner like classic Windows."; Apply={ Set-TaskbarLeftAlign }; Rollback={ Restore-TaskbarAlignmentCenter } },
+        @{ Key="RecommendedStart"; Title="Hide Start Menu 'Recommended'"; Category="System"; Tier="Recommended"; Description="Hides the recommended files section from the Windows 11 Start menu for a cleaner layout."; Apply={ Disable-RecommendedStartSection }; Rollback={ Restore-StartMenuRecommended } },
+        @{ Key="TaskbarChat"; Title="Disable Taskbar Chat / Teams"; Category="System"; Tier="Recommended"; Description="Removes the Microsoft Teams Chat widget from the Windows 11 taskbar."; Apply={ Disable-TaskbarChat }; Rollback={ Restore-TaskbarChat } },
+        @{ Key="FilesCompact"; Title="File Explorer Compact Mode"; Category="System"; Tier="Safe"; Description="Reduces row padding in File Explorer to show more files per folder view."; Apply={ Enable-FilesCompactMode }; Rollback={ Restore-FilesCompactMode } },
+        @{ Key="SnapAssist"; Title="Disable Snap Assist Suggestion"; Category="System"; Tier="Safe"; Description="Suppresses auto-suggested candidate windows when snapping an application to the screen edge."; Apply={ Disable-SnapAssist }; Rollback={ Restore-SnapAssist } },
+        @{ Key="WindowsStickers"; Title="Disable Desktop Stickers"; Category="System"; Tier="Safe"; Description="Disables the Windows 11 desktop sticker drawing integration."; Apply={ Disable-DesktopStickers }; Rollback={ Restore-WindowsStickers } },
+        @{ Key="EdgeDiscover"; Title="Disable Edge Discover Bing Bar"; Category="System"; Tier="Recommended"; Description="Removes the Bing Discover sidebar button from Microsoft Edge."; Apply={ Disable-EdgeDiscoverBar }; Rollback={ Restore-EdgeDiscoverBar } },
+        @{ Key="CopyMoveMenu"; Title="Add 'Copy To' & 'Move To' to Menu"; Category="System"; Tier="Safe"; Description="Adds convenient Copy To Folder and Move To Folder options to Explorer right-click."; Apply={ Enable-CopyMoveToContextMenu }; Rollback={ Restore-CopyMoveContextMenu } },
+        @{ Key="WindowShake"; Title="Disable Aero Shake Window Minimizing"; Category="System"; Tier="Safe"; Description="Prevents shaking a window title bar from minimizing all other open background windows."; Apply={ Disable-WindowShake }; Rollback={ Restore-WindowShake } },
+        @{ Key="SystemDarkMode"; Title="System-Wide Dark Mode"; Category="System"; Tier="Recommended"; Description="Enforces sleek dark mode across Windows shell, system dialogs, and applications."; Apply={ Enable-SystemDarkMode }; Rollback={ Restore-WindowsLightMode } },
+        @{ Key="VerboseLogon"; Title="Enable Verbose Startup Messages"; Category="System"; Tier="Safe"; Description="Displays step-by-step diagnostic messages (Applying policies, Loading services) during boot."; Apply={ Enable-VerboseLogon }; Rollback={ Restore-VerboseLogon } },
+        @{ Key="QuickAccessHistory"; Title="Disable Quick Access Recent Files"; Category="System"; Tier="Safe"; Description="Stops File Explorer from recording and displaying recently opened files and frequent folders."; Apply={ Disable-QuickAccessHistory }; Rollback={ Restore-QuickAccessHistory } },
+        @{ Key="MyPeople"; Title="Disable My People Taskbar Band"; Category="System"; Tier="Safe"; Description="Removes the legacy My People contacts integration from the Windows taskbar."; Apply={ Disable-MyPeople }; Rollback={ Restore-MyPeople } },
+        @{ Key="WindowsInk"; Title="Disable Windows Ink Workspace"; Category="System"; Tier="Safe"; Description="Disables stylus and pen workspace overlays to conserve background system memory."; Apply={ Disable-WindowsInk }; Rollback={ Restore-WindowsInk } },
+        @{ Key="CastToDevice"; Title="Disable 'Cast to Device' Menu"; Category="System"; Tier="Safe"; Description="Removes Cast to Device from the right-click menu of media files."; Apply={ Disable-CastToDevice }; Rollback={ Restore-CastToDevice } },
+
+        # --- PRIVACY & TELEMETRY ---
+        @{ Key="AppTelemetry"; Title="Disable 3rd-Party App Telemetry"; Category="Privacy"; Tier="Recommended"; Description="Suppresses telemetry daemons for Chrome, Firefox, Edge, Visual Studio, and NVIDIA drivers."; Apply={ Disable-ThirdPartyAppTelemetry }; Rollback={ Restore-AppTelemetry } },
+        @{ Key="BluetoothAdvertising"; Title="Disable Bluetooth Advertising"; Category="Privacy"; Tier="Recommended"; Description="Blocks Windows from broadcasting Bluetooth discovery beacons to nearby receivers."; Apply={ Disable-BluetoothAdvertising }; Rollback={ Restore-BluetoothAdvertising } },
+        @{ Key="CloudContent"; Title="Disable Cloud Optimized Content"; Category="Privacy"; Tier="Recommended"; Description="Prevents Windows from fetching dynamic cloud content and recommendations from Microsoft."; Apply={ Disable-CloudOptimizedContent }; Rollback={ Restore-CloudOptimizedContent } },
+        @{ Key="CdpServices"; Title="Disable CDP Connected Devices Service"; Category="Privacy"; Tier="Recommended"; Description="Disables Connected Devices Platform User Service to prevent cross-device activity syncing."; Apply={ Disable-CdpUserServices }; Rollback={ Restore-CdpServices } },
+        @{ Key="DiagnosticsToasts"; Title="Disable Feedback & Survey Toasts"; Category="Privacy"; Tier="Recommended"; Description="Stops Windows from displaying feedback surveys and diagnostic pop-up prompts."; Apply={ Disable-DiagnosticsToasts }; Rollback={ Restore-DiagnosticsToasts } },
+        @{ Key="OnlineSpeech"; Title="Disable Online Speech Recognition"; Category="Privacy"; Tier="Recommended"; Description="Prevents voice recordings from being transmitted to Microsoft cloud servers for analysis."; Apply={ Disable-OnlineSpeechPrivacy }; Rollback={ Restore-OnlineSpeechPrivacy } },
+        @{ Key="Arso"; Title="Disable Auto-Restart Apps on Reboot"; Category="Privacy"; Tier="Safe"; Description="Prevents open desktop applications from automatically launching and logging in after reboot."; Apply={ Disable-RestartAppsAfterReboot }; Rollback={ Restore-AutomaticRestartSignOn } },
+        @{ Key="TextInputCollection"; Title="Disable Inking & Typing Collection"; Category="Privacy"; Tier="Recommended"; Description="Prevents Windows from recording keystrokes and handwriting to build a dictionary profile."; Apply={ Disable-HandwritingTypingCollection }; Rollback={ Restore-TextInputCollection } },
+        @{ Key="ClipboardSync"; Title="Disable Clipboard Cloud Sync"; Category="Privacy"; Tier="Safe"; Description="Prevents copied text, tokens, and passwords from synchronizing across devices via cloud."; Apply={ Disable-ClipboardCloudSync }; Rollback={ Restore-ClipboardSync } },
+        @{ Key="SettingsMessageSync"; Title="Disable Settings & Message Sync"; Category="Privacy"; Tier="Safe"; Description="Suppresses automatic synchronization of Windows preferences and account metadata."; Apply={ Disable-SettingsAndMessageSync }; Rollback={ Restore-SettingsAndMessageSync } },
+        @{ Key="FindMyDevice"; Title="Disable 'Find My Device' Tracking"; Category="Privacy"; Tier="Safe"; Description="Disables periodic background GPS location beacons sent to Microsoft account servers."; Apply={ Disable-FindMyDevice }; Rollback={ Restore-FindMyDevice } },
+        @{ Key="SafeSearch"; Title="Disable SafeSearch Filtering Telemetry"; Category="Privacy"; Tier="Safe"; Description="Disables Windows search query telemetry filtering through Microsoft servers."; Apply={ Disable-SafeSearchFiltering }; Rollback={ Restore-SafeSearchMode } },
+        @{ Key="RemoteAssistanceRegistry"; Title="Disable Remote Assistance & Registry"; Category="Privacy"; Tier="Recommended"; Description="Blocks unsolicited incoming Remote Assistance connections and Remote Registry service."; Apply={ Disable-RemoteAssistanceAndRegistry }; Rollback={ Restore-RemoteAssistanceAndRegistry } },
+        @{ Key="DriverUpdatesExcluded"; Title="Exclude Drivers in Windows Update"; Category="Privacy"; Tier="Safe"; Description="Prevents Windows Update from overwriting custom or tuned GPU and audio drivers."; Apply={ Exclude-DriverUpdatesInWindowsUpdate }; Rollback={ Restore-DriverUpdatesFromWindowsUpdate } },
+        @{ Key="StoreAutoUpdates"; Title="Disable Store App Auto-Updates"; Category="Privacy"; Tier="Safe"; Description="Stops Microsoft Store apps from downloading bandwidth-heavy background updates during games."; Apply={ Disable-WindowsStoreAutoUpdates }; Rollback={ Restore-StoreAutoUpdates } },
+        @{ Key="SmartScreen"; Title="Disable SmartScreen Telemetry Filter"; Category="Privacy"; Tier="Safe"; Description="Prevents hash reporting of downloaded executables back to Microsoft verification servers."; Apply={ Disable-SmartScreenProtection }; Rollback={ Restore-SmartScreenFilter } },
+        @{ Key="CrashDumps"; Title="Disable System Crash Dumps"; Category="Privacy"; Tier="Safe"; Description="Suppresses generation of large memory crash dump files on disk after system errors."; Apply={ Disable-SystemCrashDumps }; Rollback={ Restore-CrashDumps } },
+        @{ Key="SystemTimeouts"; Title="Optimize Service Shutdown Timeouts"; Category="Privacy"; Tier="Recommended"; Description="Reduces WaitToKillServiceTimeout from 5000ms to 2000ms for near-instant system shutdown."; Apply={ Optimize-SystemTimeouts }; Rollback={ Restore-SystemTimeouts } }
+    )
+
+    # 6. Dynamic Card Factory & Fast Object Builders
+    $toggleStyle = $window.FindResource("FluentToggleSwitch")
+    $brushCardBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#121824")
+    $brushCardBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1F293D")
+    $brushWhite      = [System.Windows.Media.Brushes]::White
+    $brushTextDim    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+    $brushBadgeBg    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#182233")
+    $brushBadgeBdr   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#2C3B52")
+    $brushTierRec    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+    $brushTierEsp    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700")
+    $brushTierSafe   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+
+    function New-TweakCardElement {
+        param(
+            [hashtable]$Tweak,
+            [hashtable]$AuditState
+        )
+
         $card = [System.Windows.Controls.Border]::new()
-        $card.Width = 275
-        $card.Height = 110
-        $card.Background = $brushNormalBg
-        $card.BorderBrush = $brushNormalBorder
-        $card.BorderThickness = $thick1
-        $card.CornerRadius = $corn6
-        $card.Margin = $thick5
-        $card.Padding = $thick10
-        $card.Cursor = $handCursor
+        $card.Background = $brushCardBg
+        $card.BorderBrush = $brushCardBorder
+        $card.BorderThickness = [System.Windows.Thickness]::new(1)
+        $card.CornerRadius = [System.Windows.CornerRadius]::new(6)
+        $card.Padding = [System.Windows.Thickness]::new(14, 10, 14, 10)
+        $card.Margin = [System.Windows.Thickness]::new(0, 0, 0, 6)
+        $card.Tag = $Tweak
 
         $grid = [System.Windows.Controls.Grid]::new()
-        $col0 = [System.Windows.Controls.ColumnDefinition]::new(); $col0.Width = $autoGrid
-        $col1 = [System.Windows.Controls.ColumnDefinition]::new(); $col1.Width = $starGrid
+        $col0 = [System.Windows.Controls.ColumnDefinition]::new()
+        $col0.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+        $col1 = [System.Windows.Controls.ColumnDefinition]::new()
+        $col1.Width = [System.Windows.GridLength]::Auto
         [void]$grid.ColumnDefinitions.Add($col0)
         [void]$grid.ColumnDefinitions.Add($col1)
 
-        $chk = [System.Windows.Controls.CheckBox]::new()
-        $chk.Margin = $thickChk
-        $chk.Tag = $app.WingetId
-        $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
-        [System.Windows.Controls.Grid]::SetColumn($chk, 0)
-        [void]$grid.Children.Add($chk)
-
+        # Left Details Column
         $sp = [System.Windows.Controls.StackPanel]::new()
-        [System.Windows.Controls.Grid]::SetColumn($sp, 1)
+        $sp.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $sp.Margin = [System.Windows.Thickness]::new(0, 0, 14, 0)
 
-        $topRow = [System.Windows.Controls.Grid]::new()
-        $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
-        $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
-        [void]$topRow.ColumnDefinitions.Add($trCol0)
-        [void]$topRow.ColumnDefinitions.Add($trCol1)
+        $headerSp = [System.Windows.Controls.StackPanel]::new()
+        $headerSp.Orientation = [System.Windows.Controls.Orientation]::Horizontal
 
-        $titleBlock = [System.Windows.Controls.TextBlock]::new()
-        $titleBlock.Text = $app.Name
-        $titleBlock.FontWeight = [System.Windows.FontWeights]::SemiBold
-        $titleBlock.FontSize = 12
-        $titleBlock.Foreground = $whiteBrush
-        $titleBlock.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
-        [System.Windows.Controls.Grid]::SetColumn($titleBlock, 0)
-        [void]$topRow.Children.Add($titleBlock)
+        $txtTitle = [System.Windows.Controls.TextBlock]::new()
+        $txtTitle.Text = $Tweak.Title
+        $txtTitle.FontSize = 12
+        $txtTitle.FontWeight = [System.Windows.FontWeights]::SemiBold
+        $txtTitle.Foreground = $brushWhite
+        [void]$headerSp.Children.Add($txtTitle)
 
-        $catBadge = [System.Windows.Controls.Border]::new()
-        $catBadge.Background = $badgeBg
-        $catBadge.BorderBrush = $brushCyan
-        $catBadge.BorderThickness = $thick1
-        $catBadge.CornerRadius = $corn3
-        $catBadge.Padding = $thick4
-        $catBadge.Margin = $thickBadge
-        $catText = [System.Windows.Controls.TextBlock]::new()
-        $catText.Text = $app.Category
-        $catText.FontSize = 9
-        $catText.Foreground = $brushCyan
-        $catBadge.Child = $catText
-        [System.Windows.Controls.Grid]::SetColumn($catBadge, 1)
-        [void]$topRow.Children.Add($catBadge)
+        # Tier Pill Badge
+        $tier = if ($Tweak.Tier) { $Tweak.Tier } else { "Safe" }
+        $badgeBorder = [System.Windows.Controls.Border]::new()
+        $badgeBorder.Background = $brushBadgeBg
+        $badgeBorder.BorderBrush = $brushBadgeBdr
+        $badgeBorder.BorderThickness = [System.Windows.Thickness]::new(1)
+        $badgeBorder.CornerRadius = [System.Windows.CornerRadius]::new(3)
+        $badgeBorder.Padding = [System.Windows.Thickness]::new(6, 1, 6, 1)
+        $badgeBorder.Margin = [System.Windows.Thickness]::new(8, 0, 0, 0)
+        $badgeBorder.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
 
-        [void]$sp.Children.Add($topRow)
+        $txtTier = [System.Windows.Controls.TextBlock]::new()
+        $txtTier.Text = $tier
+        $txtTier.FontSize = 9
+        $txtTier.FontWeight = [System.Windows.FontWeights]::Bold
+        $txtTier.Foreground = if ($tier -eq "Esports") { $brushTierEsp } elseif ($tier -eq "Recommended") { $brushTierRec } else { $brushTierSafe }
+        $badgeBorder.Child = $txtTier
+        [void]$headerSp.Children.Add($badgeBorder)
+        [void]$sp.Children.Add($headerSp)
 
-        $descBlock = [System.Windows.Controls.TextBlock]::new()
-        $descBlock.Text = $app.Description
-        $descBlock.Foreground = $brushTextDim
-        $descBlock.FontSize = 10
-        $descBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
-        $descBlock.MaxHeight = 32
-        $descBlock.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
-        $descBlock.Margin = $thickDesc
-        [void]$sp.Children.Add($descBlock)
+        $txtDesc = [System.Windows.Controls.TextBlock]::new()
+        $txtDesc.Text = if ($Tweak.Description) { $Tweak.Description } else { "Optimizes Windows system parameters." }
+        $txtDesc.FontSize = 11
+        $txtDesc.Foreground = $brushTextDim
+        $txtDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+        $txtDesc.Margin = [System.Windows.Thickness]::new(0, 3, 0, 0)
+        [void]$sp.Children.Add($txtDesc)
 
-        $idBlock = [System.Windows.Controls.TextBlock]::new()
-        $idBlock.Text = $app.WingetId
-        $idBlock.Foreground = $brushTextSub
-        $idBlock.FontSize = 9
-        $idBlock.Margin = $thickDesc
-        [void]$sp.Children.Add($idBlock)
-
+        [System.Windows.Controls.Grid]::SetColumn($sp, 0)
         [void]$grid.Children.Add($sp)
+
+        # Right Column: Fluent Toggle Switch
+        $toggle = [System.Windows.Controls.Primitives.ToggleButton]::new()
+        if ($toggleStyle) { $toggle.Style = $toggleStyle }
+        $toggle.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $toggle.Tag = $Tweak
+        $isApplied = ($AuditState.State[$Tweak.Key] -eq $true)
+        $toggle.IsChecked = $isApplied
+
+        $Tweak.Toggle = $toggle
+        $Tweak.Card   = $card
+
+        # Wire Single-Tweak Toggle Event Handler
+        $toggle.Add_Click({
+            $tw = $this.Tag
+            $shouldApply = ($this.IsChecked -eq $true)
+            if ($shouldApply) {
+                & $script:LogToGui "[*] Activating $($tw.Title)..."
+                try {
+                    & $tw.Apply
+                    & $script:LogToGui "[+] $($tw.Title) activated successfully."
+                    if ($script:UpdateGuiAuditStatus) {
+                        & $script:UpdateGuiAuditStatus -ExcludeKey $tw.Key
+                    }
+                } catch {
+                    $this.IsChecked = $false
+                    & $script:LogToGui "[-] Failed to activate $($tw.Title): $($_.Exception.Message)" "ERROR"
+                }
+            } else {
+                & $script:LogToGui "[*] Restoring $($tw.Title) to Windows defaults..."
+                try {
+                    & $tw.Rollback
+                    & $script:LogToGui "[+] $($tw.Title) restored to Windows defaults."
+                    if ($script:UpdateGuiAuditStatus) {
+                        & $script:UpdateGuiAuditStatus -ExcludeKey $tw.Key
+                    }
+                } catch {
+                    $this.IsChecked = $true
+                    & $script:LogToGui "[-] Failed to restore $($tw.Title): $($_.Exception.Message)" "ERROR"
+                }
+            }
+        })
+
+        [System.Windows.Controls.Grid]::SetColumn($toggle, 1)
+        [void]$grid.Children.Add($toggle)
+
         $card.Child = $grid
-
-        # Card Interaction
-        $card.Add_MouseEnter({ $this.BorderBrush = $brushHoverBorder; $this.Background = $brushHoverBg })
-        $card.Add_MouseLeave({ $this.BorderBrush = $brushNormalBorder; $this.Background = $brushNormalBg })
-        $card.Add_MouseLeftButtonUp({
-            $targetChk = $this.Child.Children[0]
-            $targetChk.IsChecked = (-not $targetChk.IsChecked)
-            & $script:UpdateSelectionCount
-        })
-        $chk.Add_Click({ & $script:UpdateSelectionCount })
-
-        [void]$wrapPackages.Children.Add($card)
-        [void]$script:AllAppCards.Add([PSCustomObject]@{
-            App = $app
-            Border = $card
-            CheckBox = $chk
-        })
+        return $card
     }
 
-    $script:CurrentCategory = "All Apps (100+)"
+    # Initial Live Audit Probe
+    $auditInitial = Get-SystemAuditState
 
-    $script:UpdateSelectionCount = {
-        $count = ($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }).Count
-        $txtSelectedCount.Text = "$count apps selected"
-    }
-
-    $script:FilterCards = {
-        $query = $txtSearch.Text.Trim().ToLower()
-        $curCat = $script:CurrentCategory
-        foreach ($item in $script:AllAppCards) {
-            $matchQ = ($query -eq "") -or ($item.App.Name.ToLower().Contains($query)) -or ($item.App.Description.ToLower().Contains($query)) -or ($item.App.WingetId.ToLower().Contains($query))
-            $matchC = ($curCat -eq "All Apps (100+)") -or ($item.App.Category -eq $curCat)
-            if ($matchQ -and $matchC) {
-                $item.Border.Visibility = [System.Windows.Visibility]::Visible
-            } else {
-                $item.Border.Visibility = [System.Windows.Visibility]::Collapsed
-            }
+    # Build and Inject Cards Dynamically into Categories
+    foreach ($tw in $script:TweakDefinitions) {
+        $card = New-TweakCardElement -Tweak $tw -AuditState $auditInitial
+        if ($tw.Category -eq "Gaming" -and $panelGamingTweaks) {
+            [void]$panelGamingTweaks.Children.Add($card)
+        } elseif ($tw.Category -eq "Privacy" -and $panelPrivacyTweaks) {
+            [void]$panelPrivacyTweaks.Children.Add($card)
+        } elseif ($tw.Category -eq "System" -and $panelSystemTweaks) {
+            [void]$panelSystemTweaks.Children.Add($card)
         }
     }
 
-    $txtSearch.Add_TextChanged({ & $script:FilterCards })
-    $btnClearSearch.Add_Click({ $txtSearch.Clear(); & $script:FilterCards })
-
-    # Category Chips Map
-    $chipsMap = @{
-        "ChipCatAll"      = "All Apps (100+)"
-        "ChipCatBrowsers" = "Browsers"
-        "ChipCatComms"    = "Communications"
-        "ChipCatDev"      = "Development"
-        "ChipCatDoc"      = "Document"
-        "ChipCatGames"    = "Games"
-        "ChipCatMs"       = "Microsoft Tools"
-        "ChipCatMedia"    = "Multimedia Tools"
-        "ChipCatPro"      = "Pro Tools"
-        "ChipCatSelf"     = "Selfhosted Tools"
-        "ChipCatUtil"     = "Utilities"
-    }
-    foreach ($entry in $chipsMap.GetEnumerator()) {
-        $cBtn = $window.FindName($entry.Key)
-        if ($cBtn) {
-            $targetCategory = $entry.Value
-            $cBtn.Add_Click({
-                $script:CurrentCategory = $targetCategory
-                & $script:FilterCards
-                & $script:LogToGui "Displaying category: $targetCategory"
-            }.GetNewClosure())
-        }
-    }
-
-    $btnSelectAll.Add_Click({
-        foreach ($item in $script:AllAppCards) {
-            if ($item.Border.Visibility -eq [System.Windows.Visibility]::Visible) {
-                $item.CheckBox.IsChecked = $true
-            }
-        }
-        & $script:UpdateSelectionCount
-    })
-
-    $btnClearAll.Add_Click({
-        foreach ($item in $script:AllAppCards) {
-            $item.CheckBox.IsChecked = $false
-        }
-        & $script:UpdateSelectionCount
-    })
-
-    # WinGet Install / Uninstall / Upgrade Handlers
-    $btnInstallSelected.Add_Click({
-        $selected = $script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }
-        if ($selected.Count -eq 0) {
-            & $script:LogToGui "[-] No applications selected to install. Check desired app cards first!" "WARN"
-            return
-        }
-
-        & $script:LogToGui "[*] Preparing to install $($selected.Count) selected application(s)..."
-        $idx = 0
-        foreach ($item in $selected) {
-            $idx++
-            $pct = [int](($idx / $selected.Count) * 100)
-            & $script:SetProgress $pct
-            & $script:LogToGui "[$idx/$($selected.Count)] Processing: $($item.App.Name) ($($item.App.WingetId))"
-            Install-WinGetPackage -PackageId $item.App.WingetId -LogCallback { param($m) & $script:LogToGui $m }
-        }
-        & $script:SetProgress 0
-        & $script:LogToGui "[+] Installation batch complete!"
-    })
-
-    $btnUninstallSelected.Add_Click({
-        $selected = $script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }
-        if ($selected.Count -eq 0) {
-            & $script:LogToGui "[-] No applications selected to uninstall." "WARN"
-            return
-        }
-
-        & $script:LogToGui "[*] Uninstalling $($selected.Count) selected application(s)..."
-        $idx = 0
-        foreach ($item in $selected) {
-            $idx++
-            $pct = [int](($idx / $selected.Count) * 100)
-            & $script:SetProgress $pct
-            Uninstall-WinGetPackage -PackageId $item.App.WingetId -LogCallback { param($m) & $script:LogToGui $m }
-        }
-        & $script:SetProgress 0
-        & $script:LogToGui "[+] Uninstall batch complete!"
-    })
-
-    $btnUpgradeAll.Add_Click({
-        & $script:LogToGui "[*] Starting WinGet system-wide upgrade..."
-        & $script:SetProgress 50
-        Upgrade-AllWinGetPackages -LogCallback { param($m) & $script:LogToGui $m }
-        & $script:SetProgress 0
-        & $script:LogToGui "[+] WinGet upgrade complete!"
-    })
-
-    # Tab 2: Tweaks Handlers
-    $btnRunAllTweaks.Add_Click({
-        & $script:LogToGui "=== APPLYING ALL 23 GAMING OPTIMIZATIONS ==="
-        & $script:SetProgress 10
-        Optimize-Network
-        & $script:SetProgress 20
-        Optimize-GpuAuto
-        & $script:SetProgress 35
-        Optimize-HardwareMsiMode
-        Disable-DevicePowerSaving
-        Disable-MultiplaneOverlay
-        Set-MouseLinearCurve
-        & $script:SetProgress 50
-        Optimize-LatencyAndInput
-        Optimize-CsrssPriority
-        Optimize-CpuAndSystem
-        Optimize-DeviceManager
-        Optimize-SvcHostSplitting
-        & $script:SetProgress 65
-        Optimize-StartupAndDns
-        Apply-GameHooks
-        & $script:SetProgress 80
-        Enable-UltimatePerformancePlan
-        Strip-VisualEffects
-        Enable-EndTaskRightClick
-        Disable-StickyKeysPrompt
-        & $script:SetProgress 90
-        Debloat-BackgroundServices
-        Optimize-DiskIO
-        Enable-CompactOS
-        Enable-TakeOwnershipMenu
-        Disable-ScheduledJunkTasks
-        Harden-PrivacyTelemetry
-        & $script:SetProgress 100
-        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-        & $script:LogToGui "[+] ALL 23 GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
-
-    $btnRevertDefaults.Add_Click({
-        & $script:LogToGui "[*] Reverting all settings to Windows defaults..."
-        & $script:SetProgress 50
-        Restore-Defaults
-        & $script:SetProgress 100
-        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-        & $script:LogToGui "[+] Windows default settings restored successfully!"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
-
-    if ($btnClearDeepCacheBar) {
-        $btnClearDeepCacheBar.Add_Click({
-            & $script:LogToGui "[*] Starting Deep Cache, Prefetch & Windows Event Log Cleaner..."
-            & $script:SetProgress 40
-            Invoke-DeepCacheCleaner
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Deep Cache & Event Cleaner completed successfully!"
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnClearUpdateCache) {
-        $btnClearUpdateCache.Add_Click({
-            & $script:LogToGui "[*] Purging Windows Update & Delivery Optimization cache..."
-            & $script:SetProgress 40
-            Clear-WindowsUpdateCache
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnInstallDirectXDirect) {
-        $btnInstallDirectXDirect.Add_Click({
-            & $script:LogToGui "[*] Starting direct download and installation of DirectX Runtimes..."
-            & $script:SetProgress 20
-            Install-DirectXDirect -LogCallback $script:LogToGui
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnInstallVcRedistAio) {
-        $btnInstallVcRedistAio.Add_Click({
-            & $script:LogToGui "[*] Starting direct download and installation of Visual C++ Redistributables..."
-            & $script:SetProgress 20
-            Install-VcRedistAioDirect -LogCallback $script:LogToGui
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnBeastMode) {
-        $btnBeastMode.Add_Click({
-            & $script:LogToGui "[*] ENGAGING FULL BEAST MODE SUITE..."
-            & $script:SetProgress 15
-            Optimize-Network
-            & $script:SetProgress 30
-            Optimize-GpuAuto
-            & $script:SetProgress 45
-            Optimize-CpuAndSystem
-            & $script:SetProgress 60
-            Optimize-LatencyAndInput
-            & $script:SetProgress 75
-            Apply-GameHooks
-            & $script:SetProgress 85
-            Debloat-BackgroundServices
-            Enable-UltimatePerformancePlan
-            Harden-PrivacyTelemetry
-            Optimize-DiskIO
-            Disable-ScheduledJunkTasks
-            Optimize-StartupAndDns
-            Disable-MultiplaneOverlay
-            Set-MouseLinearCurve
-            Optimize-SvcHostSplitting
-            Enable-EndTaskRightClick
-            Disable-StickyKeysPrompt
-            & $script:SetProgress 100
-            if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-            & $script:LogToGui "================================================================================"
-            & $script:LogToGui "[OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
-            & $script:LogToGui "================================================================================"
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    # Tab 3: Match Booster Handlers
-    $updateStandbyStatus = {
-        if ($txtStandbyTaskStatus) {
-            $st = Get-StandbyListScheduledTaskStatus
-            $txtStandbyTaskStatus.Text = "Status: $($st.DisplayText)"
-            if ($st.IsActive) {
-                $txtStandbyTaskStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-            } else {
-                $txtStandbyTaskStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-            }
-        }
-    }
-
-    $btnPurgeStandby.Add_Click({
-        & $script:LogToGui "[*] Running One-Time Purge of Windows Standby List Cache..."
-        Invoke-EmptyStandbyListOneTime
-        & $script:LogToGui "[+] Standby memory purged successfully! Memory returned to free pool."
-    })
-
-    if ($btnSetStandbySchedule) {
-        $btnSetStandbySchedule.Add_Click({
-            $mins = 5
-            if ($cmbStandbyInterval -and $cmbStandbyInterval.SelectedItem -and $cmbStandbyInterval.SelectedItem.Tag) {
-                $mins = [int]$cmbStandbyInterval.SelectedItem.Tag
-            }
-            & $script:LogToGui "[*] Setting Background Auto-Cleaner schedule (Every $mins minutes)..."
-            $ok = Set-StandbyListScheduledTask -IntervalMinutes $mins
-            & $updateStandbyStatus
-            if ($ok) {
-                & $script:LogToGui "[+] PumpkiN_AutoEmptyStandbyList scheduled to run every $mins minutes!"
-            } else {
-                & $script:LogToGui "[!] Failed to configure scheduled task. Ensure running as Administrator."
-            }
-        })
-    }
-
-    if ($btnRemoveStandbySchedule) {
-        $btnRemoveStandbySchedule.Add_Click({
-            & $script:LogToGui "[*] Disabling Background Auto-Cleaner schedule..."
-            Remove-StandbyListScheduledTask
-            & $updateStandbyStatus
-            & $script:LogToGui "[+] Background Auto-Cleaner schedule removed/disabled."
-        })
-    }
-
-    $btnToggleWifiScan.Add_Click({
-        Toggle-WifiAutoconfig
-        & $script:LogToGui "[+] Wi-Fi AutoConfig state toggled."
-    })
-
-    $btnApplyGameHooks.Add_Click({
-        & $script:LogToGui "[*] Installing IFEO High-Priority Hooks for esports titles..."
-        Apply-GameHooks
-        & $script:LogToGui "[+] Esports Priority Hooks installed for CS2, Valorant, Apex, PUBG, Fortnite, COD!"
-    })
-
-    # Smart Game Booster Daemon Handlers
-    $updateDaemonStatusUI = {
-        if ($txtDaemonStatus) {
-            $dStat = Get-SmartGameBoosterStatus
-            $txtDaemonStatus.Text = "Status: $($dStat.DisplayText)"
-            if ($dStat.IsActive) {
-                $txtDaemonStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-            } else {
-                $txtDaemonStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-            }
-        }
-    }
-
-    if ($btnStartGameBooster) {
-        $btnStartGameBooster.Add_Click({
-            & $script:LogToGui "[*] Starting Smart Game Booster Daemon (Auto-Detection Engine)..."
-            $ok = Start-SmartGameBoosterDaemon
-            & $updateDaemonStatusUI
-            if ($ok) {
-                & $script:LogToGui "[+] Smart Game Booster Daemon is ACTIVE: Monitoring 20+ competitive games!"
-            }
-        })
-    }
-
-    if ($btnStopGameBooster) {
-        $btnStopGameBooster.Add_Click({
-            & $script:LogToGui "[*] Stopping Smart Game Booster Daemon..."
-            $ok = Stop-SmartGameBoosterDaemon
-            & $updateDaemonStatusUI
-            & $script:LogToGui "[+] Smart Game Booster Daemon stopped. Normal settings restored."
-        })
-    }
-
-    # Tab 4: System & Hardening Handlers
-    $btnApplyHardening.Add_Click({
-        & $script:LogToGui "=== APPLYING ALL SYSTEM & HARDENING TWEAKS ==="
-        & $script:SetProgress 20
-        Block-WpbtExecution
-        Block-PeripheralBloat
-        Remove-WindowsAI
-        Set-SecurityUpdatesOnly
-        & $script:SetProgress 50
-        Enable-ClassicContextMenu
-        Disable-StartMenuBing
-        Disable-ExplorerAutoDiscovery
-        Set-ShowFileExtensionsAndHidden
-        & $script:SetProgress 75
-        Enable-LongPaths
-        Disable-LockScreen
-        Enable-BsodVerbose
-        Disable-ReservedStorage
-        & $script:SetProgress 100
-        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-        & $script:LogToGui "[+] All hardening tweaks applied successfully!"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
-
-    # Master Brushes for Audit Status Badges
-    $brushOptimalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#002D1E")
-    $brushOptimalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-    $brushOptimalText   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-    $brushNeededBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
-    $brushNeededBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#26354A")
-    $brushNeededText    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-
-    # Master Tweak Registry: Schema maps Audit Keys to Apply, Rollback, Badges and Buttons
-    $script:TweakDefinitions = @(
-        # 1. Gaming & Hardware Performance
-        @{ Key="GpuAuto"; Title="GPU Auto-Tuning"; Category="Gaming"; Apply={ Optimize-GpuAuto }; Rollback={ Restore-GpuAuto }; ApplyBtn="BtnApply_GpuAuto"; RollbackBtn="BtnRollback_GpuAuto"; Badge="Badge_GpuAuto"; TxtBadge="TxtBadge_GpuAuto" },
-        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-HardwareMsiMode }; ApplyBtn="BtnApply_HardwareMsi"; RollbackBtn="BtnRollback_HardwareMsi"; Badge="Badge_HardwareMsi"; TxtBadge="TxtBadge_HardwareMsi" },
-        @{ Key="DisablePowerSaving"; Title="Disable USB Sleep"; Category="Gaming"; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-DevicePowerSaving }; ApplyBtn="BtnApply_DisablePowerSaving"; RollbackBtn="BtnRollback_DisablePowerSaving"; Badge="Badge_DisablePowerSaving"; TxtBadge="TxtBadge_DisablePowerSaving" },
-        @{ Key="Mpo"; Title="Disable MPO"; Category="Gaming"; Apply={ Disable-MultiplaneOverlay }; Rollback={ Restore-MultiplaneOverlay }; ApplyBtn="BtnApply_Mpo"; RollbackBtn="BtnRollback_Mpo"; Badge="Badge_Mpo"; TxtBadge="TxtBadge_Mpo" },
-        @{ Key="MouseCurve"; Title="Raw Mouse Input"; Category="Gaming"; Apply={ Set-MouseLinearCurve }; Rollback={ Restore-MouseLinearCurve }; ApplyBtn="BtnApply_MouseCurve"; RollbackBtn="BtnRollback_MouseCurve"; Badge="Badge_MouseCurve"; TxtBadge="TxtBadge_MouseCurve" },
-        @{ Key="InputLatency"; Title="8000Hz Input Tuning"; Category="Gaming"; Apply={ Optimize-LatencyAndInput }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_InputLatency"; RollbackBtn="BtnRollback_InputLatency"; Badge="Badge_InputLatency"; TxtBadge="TxtBadge_InputLatency" },
-        @{ Key="CsrssPriority"; Title="CSRSS Realtime I/O"; Category="Gaming"; Apply={ Optimize-CsrssPriority }; Rollback={ Restore-CsrssPriority }; ApplyBtn="BtnApply_CsrssPriority"; RollbackBtn="BtnRollback_CsrssPriority"; Badge="Badge_CsrssPriority"; TxtBadge="TxtBadge_CsrssPriority" },
-        @{ Key="CpuSystem"; Title="CPU Gaming Quantum"; Category="Gaming"; Apply={ Optimize-CpuAndSystem }; Rollback={ Restore-CpuAndSystem }; ApplyBtn="BtnApply_CpuSystem"; RollbackBtn="BtnRollback_CpuSystem"; Badge="Badge_CpuSystem"; TxtBadge="TxtBadge_CpuSystem" },
-        @{ Key="SvcHost"; Title="SvcHost RAM Splitting"; Category="Gaming"; Apply={ Optimize-SvcHostSplitting }; Rollback={ Restore-SvcHostSplitting }; ApplyBtn="BtnApply_SvcHost"; RollbackBtn="BtnRollback_SvcHost"; Badge="Badge_SvcHost"; TxtBadge="TxtBadge_SvcHost" },
-        @{ Key="Network"; Title="TCP/IP Gaming Stack"; Category="Gaming"; Apply={ Optimize-Network }; Rollback={ Restore-Network }; ApplyBtn="BtnApply_Network"; RollbackBtn="BtnRollback_Network"; Badge="Badge_Network"; TxtBadge="TxtBadge_Network" },
-        @{ Key="WifiScan"; Title="Wi-Fi Ping Shield"; Category="Gaming"; Apply={ Toggle-WifiAutoconfig }; Rollback={ Toggle-WifiAutoconfig }; ApplyBtn="BtnApply_WifiScan"; RollbackBtn="BtnRollback_WifiScan"; Badge="Badge_WifiScan"; TxtBadge="TxtBadge_WifiScan" },
-        @{ Key="StartupDns"; Title="Gaming DNS & Startup Tuning"; Category="Gaming"; Apply={ Optimize-StartupAndDns }; Rollback={ Reset-DnsToAutomatic }; ApplyBtn="BtnApply_StartupDns"; RollbackBtn="BtnRollback_StartupDns"; Badge="Badge_StartupDns"; TxtBadge="TxtBadge_StartupDns" },
-        @{ Key="GameHooks"; Title="Esports Game Priority Hooks"; Category="Gaming"; Apply={ Apply-GameHooks }; Rollback={ Restore-GameHooks }; ApplyBtn="BtnApply_GameHooks"; RollbackBtn="BtnRollback_GameHooks"; Badge="Badge_GameHooks"; TxtBadge="TxtBadge_GameHooks" },
-        @{ Key="UltimatePower"; Title="PumpkiN Esports Power Plan"; Category="Gaming"; Apply={ Invoke-PumpkiNEsportsPowerPlan }; Rollback={ Restore-BalancedPowerPlan }; ApplyBtn="BtnApply_UltimatePower"; RollbackBtn="BtnRollback_UltimatePower"; Badge="Badge_UltimatePower"; TxtBadge="TxtBadge_UltimatePower" },
-        @{ Key="CoreUnpark"; Title="100% CPU Core Unparking"; Category="Gaming"; Apply={ Invoke-CpuCoreUnparking }; Rollback={ Restore-CpuCoreParking }; ApplyBtn="BtnApply_CoreUnpark"; RollbackBtn="BtnRollback_CoreUnpark"; Badge="Badge_CoreUnpark"; TxtBadge="TxtBadge_CoreUnpark" },
-        @{ Key="StripVisual"; Title="Strip Visual Animations"; Category="Gaming"; Apply={ Strip-VisualEffects }; Rollback={ Restore-VisualEffects }; ApplyBtn="BtnApply_StripVisual"; RollbackBtn="BtnRollback_StripVisual"; Badge="Badge_StripVisual"; TxtBadge="TxtBadge_StripVisual" },
-        @{ Key="EndTask"; Title="Taskbar End Task"; Category="Gaming"; Apply={ Enable-EndTaskRightClick }; Rollback={ Restore-EndTaskRightClick }; ApplyBtn="BtnApply_EndTask"; RollbackBtn="BtnRollback_EndTask"; Badge="Badge_EndTask"; TxtBadge="TxtBadge_EndTask" },
-        @{ Key="StickyKeys"; Title="Disable Sticky Keys"; Category="Gaming"; Apply={ Disable-StickyKeysPrompt }; Rollback={ Restore-StickyKeysPrompt }; ApplyBtn="BtnApply_StickyKeys"; RollbackBtn="BtnRollback_StickyKeys"; Badge="Badge_StickyKeys"; TxtBadge="TxtBadge_StickyKeys" },
-        @{ Key="CompactMetrics"; Title="Compact Window Metrics"; Category="Gaming"; Apply={ Set-CompactWindowMetrics }; Rollback={ Restore-CompactWindowMetrics }; ApplyBtn="BtnApply_CompactMetrics"; RollbackBtn="BtnReset_CompactMetrics"; Badge="Badge_CompactMetrics"; TxtBadge="TxtBadge_CompactMetrics" },
-        @{ Key="DebloatServices"; Title="Debloat Services"; Category="Gaming"; Apply={ Debloat-BackgroundServices }; Rollback={ Restore-BackgroundServices }; ApplyBtn="BtnApply_DebloatServices"; RollbackBtn="BtnRollback_DebloatServices"; Badge="Badge_DebloatServices"; TxtBadge="TxtBadge_DebloatServices" },
-        @{ Key="DiskIo"; Title="Optimize Disk I/O"; Category="Gaming"; Apply={ Optimize-DiskIO }; Rollback={ Restore-DiskIO }; ApplyBtn="BtnApply_DiskIo"; RollbackBtn="BtnRollback_DiskIo"; Badge="Badge_DiskIo"; TxtBadge="TxtBadge_DiskIo" },
-        @{ Key="CompactOs"; Title="CompactOS Compression"; Category="Gaming"; Apply={ Enable-CompactOS }; Rollback={ Disable-CompactOS }; ApplyBtn="BtnApply_CompactOs"; RollbackBtn="BtnRollback_CompactOs"; Badge="Badge_CompactOs"; TxtBadge="TxtBadge_CompactOs" },
-        @{ Key="TakeOwnership"; Title="Take Ownership Menu"; Category="Gaming"; Apply={ Enable-TakeOwnershipMenu }; Rollback={ Disable-TakeOwnershipMenu }; ApplyBtn="BtnApply_TakeOwnership"; RollbackBtn="BtnRollback_TakeOwnership"; Badge="Badge_TakeOwnership"; TxtBadge="TxtBadge_TakeOwnership" },
-        @{ Key="JunkTasks"; Title="Disable Junk Tasks"; Category="Gaming"; Apply={ Disable-ScheduledJunkTasks }; Rollback={ Restore-ScheduledJunkTasks }; ApplyBtn="BtnApply_JunkTasks"; RollbackBtn="BtnRollback_JunkTasks"; Badge="Badge_JunkTasks"; TxtBadge="TxtBadge_JunkTasks" },
-        @{ Key="Privacy"; Title="Disable Telemetry"; Category="Gaming"; Apply={ Harden-PrivacyTelemetry }; Rollback={ Restore-PrivacyTelemetry }; ApplyBtn="BtnApply_Privacy"; RollbackBtn="BtnRollback_Privacy"; Badge="Badge_Privacy"; TxtBadge="TxtBadge_Privacy" },
-        @{ Key="AudioDpc"; Title="Audio DPC & Anti-Popping"; Category="Gaming"; Apply={ Optimize-AudioDpcLatency }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_AudioDpc"; RollbackBtn="BtnRollback_AudioDpc"; Badge="Badge_AudioDpc"; TxtBadge="TxtBadge_AudioDpc" },
-        @{ Key="UsbxHci"; Title="USB xHCI Realtime Thread"; Category="Gaming"; Apply={ Optimize-UsbLatencyAndBuffers }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_UsbxHci"; RollbackBtn="BtnRollback_UsbxHci"; Badge="Badge_UsbxHci"; TxtBadge="TxtBadge_UsbxHci" },
-        @{ Key="DeviceManager"; Title="Device Manager Tuning"; Category="Gaming"; Apply={ Optimize-DeviceManager }; Rollback={ Restore-DeviceManager }; ApplyBtn="BtnApply_DeviceManager"; RollbackBtn="BtnRollback_DeviceManager"; Badge="Badge_DeviceManager"; TxtBadge="TxtBadge_DeviceManager" },
-
-        # 2. Hardening & Security Tweaks
-        @{ Key="BlockWpbt"; Title="Block WPBT Bloat"; Category="Hardening"; Apply={ Block-WpbtExecution }; Rollback={ Restore-WpbtExecution }; ApplyBtn="BtnApply_BlockWpbt"; RollbackBtn="BtnRollback_BlockWpbt"; Badge="Badge_BlockWpbt"; TxtBadge="TxtBadge_BlockWpbt" },
-        @{ Key="BlockPeripheral"; Title="Block Peripheral Bloat"; Category="Hardening"; Apply={ Block-PeripheralBloat }; Rollback={ Restore-PeripheralBloat }; ApplyBtn="BtnApply_BlockPeripheral"; RollbackBtn="BtnRollback_BlockPeripheral"; Badge="Badge_BlockPeripheral"; TxtBadge="TxtBadge_BlockPeripheral" },
-        @{ Key="RemoveAi"; Title="Purge Windows AI"; Category="Hardening"; Apply={ Remove-WindowsAI }; Rollback={ Restore-WindowsAI }; ApplyBtn="BtnApply_RemoveAi"; RollbackBtn="BtnRollback_RemoveAi"; Badge="Badge_RemoveAi"; TxtBadge="TxtBadge_RemoveAi" },
-        @{ Key="SecurityUpdatesOnly"; Title="Security-Only Updates"; Category="Hardening"; Apply={ Set-SecurityUpdatesOnly }; Rollback={ Restore-SecurityUpdatesOnly }; ApplyBtn="BtnApply_SecurityUpdatesOnly"; RollbackBtn="BtnRollback_SecurityUpdatesOnly"; Badge="Badge_SecurityUpdatesOnly"; TxtBadge="TxtBadge_SecurityUpdatesOnly" },
-        @{ Key="ClassicContext"; Title="Classic Right-Click"; Category="Hardening"; Apply={ Enable-ClassicContextMenu }; Rollback={ Restore-ClassicContextMenu }; ApplyBtn="BtnApply_ClassicContext"; RollbackBtn="BtnRollback_ClassicContext"; Badge="Badge_ClassicContext"; TxtBadge="TxtBadge_ClassicContext" },
-        @{ Key="DisableBing"; Title="Disable Web Search"; Category="Hardening"; Apply={ Disable-StartMenuBing }; Rollback={ Restore-StartMenuBing }; ApplyBtn="BtnApply_DisableBing"; RollbackBtn="BtnRollback_DisableBing"; Badge="Badge_DisableBing"; TxtBadge="TxtBadge_DisableBing" },
-        @{ Key="DisableAutoDiscovery"; Title="Disable Auto-Discovery"; Category="Hardening"; Apply={ Disable-ExplorerAutoDiscovery }; Rollback={ Restore-ExplorerAutoDiscovery }; ApplyBtn="BtnApply_DisableAutoDiscovery"; RollbackBtn="BtnRollback_DisableAutoDiscovery"; Badge="Badge_DisableAutoDiscovery"; TxtBadge="TxtBadge_DisableAutoDiscovery" },
-        @{ Key="ShowExtensions"; Title="Show File Extensions"; Category="Hardening"; Apply={ Set-ShowFileExtensionsAndHidden }; Rollback={ Restore-ShowFileExtensionsAndHidden }; ApplyBtn="BtnApply_ShowExtensions"; RollbackBtn="BtnRollback_ShowExtensions"; Badge="Badge_ShowExtensions"; TxtBadge="TxtBadge_ShowExtensions" },
-        @{ Key="DisableAds"; Title="Disable Windows Ads"; Category="Hardening"; Apply={ Disable-WindowsAds }; Rollback={ Enable-WindowsAds }; ApplyBtn="BtnApply_DisableAds"; RollbackBtn="BtnReset_DisableAds"; Badge="Badge_DisableAds"; TxtBadge="TxtBadge_DisableAds" },
-        @{ Key="NoShortcutArrows"; Title="Remove Shortcut Arrows"; Category="Hardening"; Apply={ Disable-ShortcutArrow }; Rollback={ Restore-ShortcutArrow }; ApplyBtn="BtnApply_NoShortcutArrows"; RollbackBtn="BtnReset_ShortcutArrows"; Badge="Badge_NoShortcutArrows"; TxtBadge="TxtBadge_NoShortcutArrows" },
-        @{ Key="EnableLongPaths"; Title="Enable Long Paths"; Category="Hardening"; Apply={ Enable-LongPaths }; Rollback={ Restore-LongPaths }; ApplyBtn="BtnApply_EnableLongPaths"; RollbackBtn="BtnRollback_EnableLongPaths"; Badge="Badge_EnableLongPaths"; TxtBadge="TxtBadge_EnableLongPaths" },
-        @{ Key="DisableLockScreen"; Title="Disable Lock Screen"; Category="Hardening"; Apply={ Disable-LockScreen }; Rollback={ Restore-LockScreen }; ApplyBtn="BtnApply_DisableLockScreen"; RollbackBtn="BtnRollback_DisableLockScreen"; Badge="Badge_DisableLockScreen"; TxtBadge="TxtBadge_DisableLockScreen" },
-        @{ Key="BsodVerbose"; Title="Verbose BSOD"; Category="Hardening"; Apply={ Enable-BsodVerbose }; Rollback={ Restore-BsodVerbose }; ApplyBtn="BtnApply_BsodVerbose"; RollbackBtn="BtnRollback_BsodVerbose"; Badge="Badge_BsodVerbose"; TxtBadge="TxtBadge_BsodVerbose" },
-        @{ Key="DisableReservedStorage"; Title="Reclaim Reserved Storage"; Category="Hardening"; Apply={ Disable-ReservedStorage }; Rollback={ Restore-ReservedStorage }; ApplyBtn="BtnApply_DisableReservedStorage"; RollbackBtn="BtnRollback_DisableReservedStorage"; Badge="Badge_DisableReservedStorage"; TxtBadge="TxtBadge_DisableReservedStorage" },
-        @{ Key="BitLocker"; Title="Turn Off BitLocker"; Category="Hardening"; Apply={ Disable-BitLockerPermanently }; Rollback={ Restore-BitLockerDefaults }; ApplyBtn="BtnApply_BitLocker"; RollbackBtn="BtnRollback_BitLocker"; Badge="Badge_BitLocker"; TxtBadge="TxtBadge_BitLocker" },
-
-        # 3. Windows 11 Exclusives & Shell Usability
-        @{ Key="VbsSecurity"; Title="Disable VBS Security"; Category="Shell"; Apply={ Disable-VbsSecurity }; Rollback={ Restore-VbsSecurity }; ApplyBtn="BtnApply_VbsSecurity"; RollbackBtn="BtnRollback_VbsSecurity"; Badge="Badge_VbsSecurity"; TxtBadge="TxtBadge_VbsSecurity" },
-        @{ Key="TaskbarLeft"; Title="Align Taskbar to Left"; Category="Shell"; Apply={ Set-TaskbarLeftAlign }; Rollback={ Restore-TaskbarAlignmentCenter }; ApplyBtn="BtnApply_TaskbarLeft"; RollbackBtn="BtnRollback_TaskbarLeft"; Badge="Badge_TaskbarLeft"; TxtBadge="TxtBadge_TaskbarLeft" },
-        @{ Key="RecommendedStart"; Title="Hide Start Recommended"; Category="Shell"; Apply={ Disable-RecommendedStartSection }; Rollback={ Restore-StartMenuRecommended }; ApplyBtn="BtnApply_RecommendedStart"; RollbackBtn="BtnRollback_RecommendedStart"; Badge="Badge_RecommendedStart"; TxtBadge="TxtBadge_RecommendedStart" },
-        @{ Key="TaskbarChat"; Title="Disable Taskbar Chat"; Category="Shell"; Apply={ Disable-TaskbarChat }; Rollback={ Restore-TaskbarChat }; ApplyBtn="BtnApply_TaskbarChat"; RollbackBtn="BtnRollback_TaskbarChat"; Badge="Badge_TaskbarChat"; TxtBadge="TxtBadge_TaskbarChat" },
-        @{ Key="FilesCompact"; Title="Files Compact View"; Category="Shell"; Apply={ Enable-FilesCompactMode }; Rollback={ Restore-FilesCompactMode }; ApplyBtn="BtnApply_FilesCompact"; RollbackBtn="BtnRollback_FilesCompact"; Badge="Badge_FilesCompact"; TxtBadge="TxtBadge_FilesCompact" },
-        @{ Key="SnapAssist"; Title="Disable Snap Assist"; Category="Shell"; Apply={ Disable-SnapAssist }; Rollback={ Restore-SnapAssist }; ApplyBtn="BtnApply_SnapAssist"; RollbackBtn="BtnRollback_SnapAssist"; Badge="Badge_SnapAssist"; TxtBadge="TxtBadge_SnapAssist" },
-        @{ Key="WindowsStickers"; Title="Disable Desktop Stickers"; Category="Shell"; Apply={ Disable-DesktopStickers }; Rollback={ Restore-WindowsStickers }; ApplyBtn="BtnApply_WindowsStickers"; RollbackBtn="BtnRollback_WindowsStickers"; Badge="Badge_WindowsStickers"; TxtBadge="TxtBadge_WindowsStickers" },
-        @{ Key="EdgeDiscover"; Title="Disable Edge Discover Bar"; Category="Shell"; Apply={ Disable-EdgeDiscoverBar }; Rollback={ Restore-EdgeDiscoverBar }; ApplyBtn="BtnApply_EdgeDiscover"; RollbackBtn="BtnRollback_EdgeDiscover"; Badge="Badge_EdgeDiscover"; TxtBadge="TxtBadge_EdgeDiscover" },
-        @{ Key="CopyMoveMenu"; Title="Add Copy/Move to Menu"; Category="Shell"; Apply={ Enable-CopyMoveToContextMenu }; Rollback={ Restore-CopyMoveContextMenu }; ApplyBtn="BtnApply_CopyMoveMenu"; RollbackBtn="BtnRollback_CopyMoveMenu"; Badge="Badge_CopyMoveMenu"; TxtBadge="TxtBadge_CopyMoveMenu" },
-        @{ Key="WindowShake"; Title="Disable Window Shake"; Category="Shell"; Apply={ Disable-WindowShake }; Rollback={ Restore-WindowShake }; ApplyBtn="BtnApply_WindowShake"; RollbackBtn="BtnRollback_WindowShake"; Badge="Badge_WindowShake"; TxtBadge="TxtBadge_WindowShake" },
-        @{ Key="SystemDarkMode"; Title="System Dark Mode"; Category="Shell"; Apply={ Enable-SystemDarkMode }; Rollback={ Restore-WindowsLightMode }; ApplyBtn="BtnApply_SystemDarkMode"; RollbackBtn="BtnRollback_SystemDarkMode"; Badge="Badge_SystemDarkMode"; TxtBadge="TxtBadge_SystemDarkMode" },
-        @{ Key="VerboseLogon"; Title="Enable Verbose Logon"; Category="Shell"; Apply={ Enable-VerboseLogon }; Rollback={ Restore-VerboseLogon }; ApplyBtn="BtnApply_VerboseLogon"; RollbackBtn="BtnRollback_VerboseLogon"; Badge="Badge_VerboseLogon"; TxtBadge="TxtBadge_VerboseLogon" },
-        @{ Key="QuickAccessHistory"; Title="Disable Quick Access History"; Category="Shell"; Apply={ Disable-QuickAccessHistory }; Rollback={ Restore-QuickAccessHistory }; ApplyBtn="BtnApply_QuickAccessHistory"; RollbackBtn="BtnRollback_QuickAccessHistory"; Badge="Badge_QuickAccessHistory"; TxtBadge="TxtBadge_QuickAccessHistory" },
-        @{ Key="MyPeople"; Title="Disable My People Band"; Category="Shell"; Apply={ Disable-MyPeople }; Rollback={ Restore-MyPeople }; ApplyBtn="BtnApply_MyPeople"; RollbackBtn="BtnRollback_MyPeople"; Badge="Badge_MyPeople"; TxtBadge="TxtBadge_MyPeople" },
-        @{ Key="WindowsInk"; Title="Disable Windows Ink"; Category="Shell"; Apply={ Disable-WindowsInk }; Rollback={ Restore-WindowsInk }; ApplyBtn="BtnApply_WindowsInk"; RollbackBtn="BtnRollback_WindowsInk"; Badge="Badge_WindowsInk"; TxtBadge="TxtBadge_WindowsInk" },
-        @{ Key="CastToDevice"; Title="Disable Cast to Device"; Category="Shell"; Apply={ Disable-CastToDevice }; Rollback={ Restore-CastToDevice }; ApplyBtn="BtnApply_CastToDevice"; RollbackBtn="BtnRollback_CastToDevice"; Badge="Badge_CastToDevice"; TxtBadge="TxtBadge_CastToDevice" },
-
-        # 4. Privacy & App Telemetry
-        @{ Key="AppTelemetry"; Title="Disable App Telemetry"; Category="Privacy"; Apply={ Disable-ThirdPartyAppTelemetry }; Rollback={ Restore-AppTelemetry }; ApplyBtn="BtnApply_AppTelemetry"; RollbackBtn="BtnRollback_AppTelemetry"; Badge="Badge_AppTelemetry"; TxtBadge="TxtBadge_AppTelemetry" },
-        @{ Key="BluetoothAdvertising"; Title="Disable Bluetooth Advertising"; Category="Privacy"; Apply={ Disable-BluetoothAdvertising }; Rollback={ Restore-BluetoothAdvertising }; ApplyBtn="BtnApply_BluetoothAdvertising"; RollbackBtn="BtnRollback_BluetoothAdvertising"; Badge="Badge_BluetoothAdvertising"; TxtBadge="TxtBadge_BluetoothAdvertising" },
-        @{ Key="CloudContent"; Title="Disable Cloud Content"; Category="Privacy"; Apply={ Disable-CloudOptimizedContent }; Rollback={ Restore-CloudOptimizedContent }; ApplyBtn="BtnApply_CloudContent"; RollbackBtn="BtnRollback_CloudContent"; Badge="Badge_CloudContent"; TxtBadge="TxtBadge_CloudContent" },
-        @{ Key="CdpServices"; Title="Disable CDP Services"; Category="Privacy"; Apply={ Disable-CdpUserServices }; Rollback={ Restore-CdpServices }; ApplyBtn="BtnApply_CdpServices"; RollbackBtn="BtnRollback_CdpServices"; Badge="Badge_CdpServices"; TxtBadge="TxtBadge_CdpServices" },
-        @{ Key="DiagnosticsToasts"; Title="Disable Diagnostics Toasts"; Category="Privacy"; Apply={ Disable-DiagnosticsToasts }; Rollback={ Restore-DiagnosticsToasts }; ApplyBtn="BtnApply_DiagnosticsToasts"; RollbackBtn="BtnRollback_DiagnosticsToasts"; Badge="Badge_DiagnosticsToasts"; TxtBadge="TxtBadge_DiagnosticsToasts" },
-        @{ Key="OnlineSpeech"; Title="Disable Online Speech Privacy"; Category="Privacy"; Apply={ Disable-OnlineSpeechPrivacy }; Rollback={ Restore-OnlineSpeechPrivacy }; ApplyBtn="BtnApply_OnlineSpeech"; RollbackBtn="BtnRollback_OnlineSpeech"; Badge="Badge_OnlineSpeech"; TxtBadge="TxtBadge_OnlineSpeech" },
-        @{ Key="Arso"; Title="Disable Restart Apps On Reboot"; Category="Privacy"; Apply={ Disable-RestartAppsAfterReboot }; Rollback={ Restore-AutomaticRestartSignOn }; ApplyBtn="BtnApply_Arso"; RollbackBtn="BtnRollback_Arso"; Badge="Badge_Arso"; TxtBadge="TxtBadge_Arso" },
-        @{ Key="TextInputCollection"; Title="Disable Inking & Typing Collection"; Category="Privacy"; Apply={ Disable-HandwritingTypingCollection }; Rollback={ Restore-TextInputCollection }; ApplyBtn="BtnApply_TextInputCollection"; RollbackBtn="BtnRollback_TextInputCollection"; Badge="Badge_TextInputCollection"; TxtBadge="TxtBadge_TextInputCollection" },
-        @{ Key="ClipboardSync"; Title="Disable Clipboard Cloud Sync"; Category="Privacy"; Apply={ Disable-ClipboardCloudSync }; Rollback={ Restore-ClipboardSync }; ApplyBtn="BtnApply_ClipboardSync"; RollbackBtn="BtnRollback_ClipboardSync"; Badge="Badge_ClipboardSync"; TxtBadge="TxtBadge_ClipboardSync" },
-        @{ Key="SettingsMessageSync"; Title="Disable Settings & Message Sync"; Category="Privacy"; Apply={ Disable-SettingsAndMessageSync }; Rollback={ Restore-SettingsAndMessageSync }; ApplyBtn="BtnApply_SettingsMessageSync"; RollbackBtn="BtnRollback_SettingsMessageSync"; Badge="Badge_SettingsMessageSync"; TxtBadge="TxtBadge_SettingsMessageSync" },
-        @{ Key="FindMyDevice"; Title="Disable Find My Device"; Category="Privacy"; Apply={ Disable-FindMyDevice }; Rollback={ Restore-FindMyDevice }; ApplyBtn="BtnApply_FindMyDevice"; RollbackBtn="BtnRollback_FindMyDevice"; Badge="Badge_FindMyDevice"; TxtBadge="TxtBadge_FindMyDevice" },
-        @{ Key="SafeSearch"; Title="Disable SafeSearch"; Category="Privacy"; Apply={ Disable-SafeSearchFiltering }; Rollback={ Restore-SafeSearchMode }; ApplyBtn="BtnApply_SafeSearch"; RollbackBtn="BtnRollback_SafeSearch"; Badge="Badge_SafeSearch"; TxtBadge="TxtBadge_SafeSearch" },
-        @{ Key="RemoteAssistanceRegistry"; Title="Disable Remote Assistance & Reg"; Category="Privacy"; Apply={ Disable-RemoteAssistanceAndRegistry }; Rollback={ Restore-RemoteAssistanceAndRegistry }; ApplyBtn="BtnApply_RemoteAssistanceRegistry"; RollbackBtn="BtnRollback_RemoteAssistanceRegistry"; Badge="Badge_RemoteAssistanceRegistry"; TxtBadge="TxtBadge_RemoteAssistanceRegistry" },
-        @{ Key="DriverUpdatesExcluded"; Title="Exclude Drivers in Windows Update"; Category="Privacy"; Apply={ Exclude-DriverUpdatesInWindowsUpdate }; Rollback={ Restore-DriverUpdatesFromWindowsUpdate }; ApplyBtn="BtnApply_DriverUpdatesExcluded"; RollbackBtn="BtnRollback_DriverUpdatesExcluded"; Badge="Badge_DriverUpdatesExcluded"; TxtBadge="TxtBadge_DriverUpdatesExcluded" },
-        @{ Key="StoreAutoUpdates"; Title="Disable Store Auto-Updates"; Category="Privacy"; Apply={ Disable-WindowsStoreAutoUpdates }; Rollback={ Restore-StoreAutoUpdates }; ApplyBtn="BtnApply_StoreAutoUpdates"; RollbackBtn="BtnRollback_StoreAutoUpdates"; Badge="Badge_StoreAutoUpdates"; TxtBadge="TxtBadge_StoreAutoUpdates" },
-        @{ Key="SmartScreen"; Title="Disable SmartScreen Filter"; Category="Privacy"; Apply={ Disable-SmartScreenProtection }; Rollback={ Restore-SmartScreenFilter }; ApplyBtn="BtnApply_SmartScreen"; RollbackBtn="BtnRollback_SmartScreen"; Badge="Badge_SmartScreen"; TxtBadge="TxtBadge_SmartScreen" },
-        @{ Key="CrashDumps"; Title="Disable Crash Dumps"; Category="Privacy"; Apply={ Disable-SystemCrashDumps }; Rollback={ Restore-CrashDumps }; ApplyBtn="BtnApply_CrashDumps"; RollbackBtn="BtnRollback_CrashDumps"; Badge="Badge_CrashDumps"; TxtBadge="TxtBadge_CrashDumps" },
-        @{ Key="SystemTimeouts"; Title="Optimize System Timeouts"; Category="Privacy"; Apply={ Optimize-SystemTimeouts }; Rollback={ Restore-SystemTimeouts }; ApplyBtn="BtnApply_SystemTimeouts"; RollbackBtn="BtnRollback_SystemTimeouts"; Badge="Badge_SystemTimeouts"; TxtBadge="TxtBadge_SystemTimeouts" }
-    )
-
-    # Thread-Safe Live Audit & Score Gauge Updater
+    # 7. Live Audit & Score Gauge Synchronizer
     $script:UpdateGuiAuditStatus = {
+        param(
+            [string]$ExcludeKey = $null,
+            [switch]$LogDetails
+        )
         try {
             $audit = Get-SystemAuditState
             $scorePct = [int]$audit.ScorePercent
             $scorePctText = "$scorePct%"
             $gradeText    = "$($audit.ScoreGrade)"
-            $ratioText    = "[Active: $($audit.ScoreApplied) / $($audit.ScoreTotal)]"
+            $ratioText    = "Active: $($audit.ScoreApplied) / $($audit.ScoreTotal)"
 
-            $brushGauge = if ($scorePct -ge 80) { $brushOptimalBorder } elseif ($scorePct -ge 50) { $brushNeededText } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700") }
+            $brushGauge = if ($scorePct -ge 80) { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88") } elseif ($scorePct -ge 50) { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF") } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700") }
 
             if ($txtScorePercent) {
                 $txtScorePercent.Text = $scorePctText
                 $txtScorePercent.Foreground = $brushGauge
             }
-            if ($txtScoreGrade)   { $txtScoreGrade.Text   = $gradeText }
+            if ($txtScoreGrade)       { $txtScoreGrade.Text = $gradeText }
             if ($txtActiveTweakRatio) { $txtActiveTweakRatio.Text = $ratioText }
+            if ($borderScoreGauge)    { $borderScoreGauge.BorderBrush = $brushGauge }
+            if ($progressBar)         { $progressBar.Value = $scorePct }
+            if ($txtStatus)           { $txtStatus.Text = "System Audit: $($audit.ScoreApplied)/$($audit.ScoreTotal) Tweaks Active ($scorePctText)" }
 
-            $borderGauge = $window.FindName("BorderScoreGauge")
-            if ($borderGauge) {
-                $borderGauge.BorderBrush = $brushGauge
-            }
+            # Calculate active tweaks per category
+            $gamingTweaks  = @($script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" })
+            $privacyTweaks = @($script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" })
+            $systemTweaks  = @($script:TweakDefinitions | Where-Object { $_.Category -eq "System" })
 
-            if ($txtScorePercentTab4) {
-                $txtScorePercentTab4.Text = $scorePctText
-                $txtScorePercentTab4.Foreground = $brushGauge
-            }
-            if ($txtScoreGradeTab4)   { $txtScoreGradeTab4.Text   = $gradeText }
-            if ($txtActiveTweakRatioTab4) { $txtActiveTweakRatioTab4.Text = $ratioText }
+            $activeGaming  = @($gamingTweaks  | Where-Object { $audit.State[$_.Key] -eq $true })
+            $activePrivacy = @($privacyTweaks | Where-Object { $audit.State[$_.Key] -eq $true })
+            $activeSystem  = @($systemTweaks  | Where-Object { $audit.State[$_.Key] -eq $true })
 
-            $borderGaugeTab4 = $window.FindName("BorderScoreGaugeTab4")
-            if ($borderGaugeTab4) {
-                $borderGaugeTab4.BorderBrush = $brushGauge
+            if ($txtActiveGamingCount)  { $txtActiveGamingCount.Text  = "$($activeGaming.Count) / $($gamingTweaks.Count) Active" }
+            if ($txtActivePrivacyCount) { $txtActivePrivacyCount.Text = "$($activePrivacy.Count) / $($privacyTweaks.Count) Active" }
+            if ($txtActiveSystemCount)  { $txtActiveSystemCount.Text  = "$($activeSystem.Count) / $($systemTweaks.Count) Active" }
+
+            if ($txtScoreSubtitle) {
+                $txtScoreSubtitle.Text = "Active: Gaming ($($activeGaming.Count)/$($gamingTweaks.Count)) | Privacy ($($activePrivacy.Count)/$($privacyTweaks.Count)) | System ($($activeSystem.Count)/$($systemTweaks.Count))  [Score: $scorePctText]"
             }
 
             foreach ($tw in $script:TweakDefinitions) {
-                $isApplied = ($audit.State[$tw.Key] -eq $true)
-                if ($tw.Badge) {
-                    $b = $window.FindName($tw.Badge)
-                    $tb = $window.FindName($tw.TxtBadge)
-                    if ($b -and $tb) {
-                        if ($isApplied) {
-                            $b.Background = $brushOptimalBg
-                            $b.BorderBrush = $brushOptimalBorder
-                            $tb.Text = "Applied [v]"
-                            $tb.Foreground = $brushOptimalText
-                        } else {
-                            $b.Background = $brushNeededBg
-                            $b.BorderBrush = $brushNeededBorder
-                            $tb.Text = "Needed"
-                            $tb.Foreground = $brushNeededText
-                        }
+                if ($tw.Toggle) {
+                    if ($ExcludeKey -and $tw.Key -eq $ExcludeKey) {
+                        continue
                     }
+                    $isApplied = ($audit.State[$tw.Key] -eq $true)
+                    $tw.Toggle.IsChecked = $isApplied
                 }
+            }
 
-                if ($tw.ApplyBtn) {
-                    $btnApp = $window.FindName($tw.ApplyBtn)
-                    if ($btnApp) {
-                        if ($isApplied) {
-                            $btnApp.Content = "Applied [v]"
-                            $btnApp.Opacity = 0.75
-                            $btnApp.ToolTip = "Already applied. Click to re-apply if desired."
-                        } else {
-                            $btnApp.Content = "Apply"
-                            $btnApp.Opacity = 1.0
-                            $btnApp.ToolTip = "Click to apply this optimization."
-                        }
+            if ($LogDetails) {
+                & $script:ExpandLogDrawer
+                & $script:LogToGui "================================================================================"
+                & $script:LogToGui "  [AUDIT] SYSTEM SCAN RESULTS: $($audit.ScoreApplied) / $($audit.ScoreTotal) TWEAKS ACTIVE ($gradeText)"
+                & $script:LogToGui "================================================================================"
+                & $script:LogToGui "  >>> ACTIVE GAMING & LATENCY TWEAKS ($($activeGaming.Count)/$($gamingTweaks.Count)): "
+                foreach ($tw in $activeGaming) {
+                    & $script:LogToGui "      [+] $($tw.Title)  --  $($tw.Description)"
+                }
+                & $script:LogToGui "  >>> ACTIVE PRIVACY & TELEMETRY TWEAKS ($($activePrivacy.Count)/$($privacyTweaks.Count)): "
+                foreach ($tw in $activePrivacy) {
+                    & $script:LogToGui "      [+] $($tw.Title)  --  $($tw.Description)"
+                }
+                & $script:LogToGui "  >>> ACTIVE SYSTEM & USABILITY TWEAKS ($($activeSystem.Count)/$($systemTweaks.Count)): "
+                foreach ($tw in $activeSystem) {
+                    & $script:LogToGui "      [+] $($tw.Title)  --  $($tw.Description)"
+                }
+                $unapplied = @($script:TweakDefinitions | Where-Object { $audit.State[$_.Key] -ne $true })
+                if ($unapplied.Count -gt 0) {
+                    & $script:LogToGui "  >>> UNAPPLIED / NEEDED TWEAKS ($($unapplied.Count) Remaining): "
+                    foreach ($tw in $unapplied) {
+                        & $script:LogToGui "      [-] $($tw.Title) ($($tw.Category))" "WARN"
                     }
                 }
-
-                if ($tw.RollbackBtn) {
-                    $btnRoll = $window.FindName($tw.RollbackBtn)
-                    if ($btnRoll) {
-                        if ($isApplied) {
-                            $btnRoll.IsEnabled = $true
-                            $btnRoll.Opacity = 1.0
-                            $btnRoll.ToolTip = "Click to rollback this tweak to Windows default."
-                        } else {
-                            $btnRoll.Opacity = 0.5
-                            $btnRoll.ToolTip = "Tweak is not currently applied."
-                        }
-                    }
-                }
+                & $script:LogToGui "================================================================================"
             }
         } catch {
-            Write-Verbose "Audit UI update failed: $($_.Exception.Message)"
+            & $script:LogToGui "[-] Audit sync error: $($_.Exception.Message)" "ERROR"
         }
     }
 
-    # Register individual Apply and Rollback buttons dynamically
-    foreach ($tw in $script:TweakDefinitions) {
-        $def = $tw
-        if ($def.ApplyBtn) {
-            $btnApp = $window.FindName($def.ApplyBtn)
-            if ($btnApp) {
-                $btnApp.Add_Click({
-                    & $script:LogToGui "[*] Applying $($def.Title)..."
-                    & $script:SetProgress 40
-                    & $def.Apply
-                    & $script:SetProgress 100
-                    & $script:UpdateGuiAuditStatus
-                    & $script:LogToGui "[+] $($def.Title) applied successfully!"
-                    Start-Sleep -Milliseconds 150
-                    & $script:SetProgress 0
-                })
-            }
-        }
-        if ($def.RollbackBtn) {
-            $btnRoll = $window.FindName($def.RollbackBtn)
-            if ($btnRoll) {
-                $btnRoll.Add_Click({
-                    & $script:LogToGui "[*] Rolling back $($def.Title) to Windows default..."
-                    & $script:SetProgress 40
-                    & $def.Rollback
-                    & $script:SetProgress 100
-                    & $script:UpdateGuiAuditStatus
-                    & $script:LogToGui "[+] $($def.Title) rolled back successfully!"
-                    Start-Sleep -Milliseconds 150
-                    & $script:SetProgress 0
-                })
-            }
-        }
-    }
-
-    # Standalone Special Tool Buttons
-    $btnApplyDeepCache = $window.FindName("BtnApply_DeepCache")
-    if ($btnApplyDeepCache) {
-        $btnApplyDeepCache.Add_Click({
-            & $script:LogToGui "[*] Running Deep Cache, Prefetch & Event Cleaner..."
-            & $script:SetProgress 40
-            Invoke-DeepCacheCleaner
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Deep Cache & Event Cleaner completed successfully!"
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
+    # Re-Scan Audit Button Handler
+    if ($btnScanSystemStateBanner) {
+        $btnScanSystemStateBanner.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Re-scanning live Windows registry, policies, and service state..."
+            & $script:UpdateGuiAuditStatus -LogDetails
+            & $script:LogToGui "[+] System audit re-scan complete."
         })
     }
 
-    $btnApplyShaderCache = $window.FindName("BtnApply_ShaderCache")
-    if ($btnApplyShaderCache) {
-        $btnApplyShaderCache.Add_Click({
-            & $script:LogToGui "[*] Purging GPU Shader & Browser Caches..."
-            & $script:SetProgress 40
-            Invoke-ShaderAndBrowserCacheCleaner
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Shader & Browser Cache purge completed!"
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
+    # View Active Tweaks Button Handler
+    if ($btnViewActiveTweaks) {
+        $btnViewActiveTweaks.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:UpdateGuiAuditStatus -LogDetails
         })
     }
 
-    $btnResetDns = $window.FindName("BtnResetDns")
-    if ($btnResetDns) {
-        $btnResetDns.Add_Click({
-            & $script:LogToGui "[*] Resetting DNS servers to automatic DHCP..."
-            Reset-DnsToAutomatic
-            & $script:LogToGui "[+] Network DNS restored to DHCP defaults."
-        })
-    }
-
-    $btnApplyRecycle = $window.FindName("BtnApply_RecycleBinIcon")
-    if ($btnApplyRecycle) {
-        $btnApplyRecycle.Add_Click({
-            & $script:LogToGui "[*] Applying Pop Cat Recycle Bin custom icon..."
-            Set-RecycleBinCustomIcon
-            & $script:LogToGui "[+] Pop Cat Recycle Bin active!"
-        })
-    }
-
-    $btnResetRecycle = $window.FindName("BtnReset_RecycleBinIcon")
-    if ($btnResetRecycle) {
-        $btnResetRecycle.Add_Click({
-            & $script:LogToGui "[*] Restoring default Windows Recycle Bin icon..."
-            Restore-RecycleBinDefaultIcon
-            & $script:LogToGui "[+] Default Recycle Bin icon restored."
-        })
-    }
-
-    # Equicord Quick-Action Handlers
-    $btnInstallEquicord = $window.FindName("BtnInstallEquicord")
-    if ($btnInstallEquicord) {
-        $btnInstallEquicord.Add_Click({
-            & $script:LogToGui "[*] Installing Equicord client via WinGet (Equicord.Equilotl)..."
-            & $script:SetProgress 30
-            Install-WinGetPackage -PackageId "Equicord.Equilotl" -LogCallback { param($m) & $script:LogToGui $m }
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-    $btnOpenEquicordSite = $window.FindName("BtnOpenEquicordSite")
-    if ($btnOpenEquicordSite) {
-        $btnOpenEquicordSite.Add_Click({
-            & $script:LogToGui "[*] Opening Equicord download page: https://equicord.org/download"
-            Start-Process "https://equicord.org/download"
-        })
-    }
-
-    # --------------------------------------------------------------------------
-    # Custom Gaming Cursors Controller
-    # --------------------------------------------------------------------------
-    $cmbCursors = $window.FindName("CmbCursorSchemes")
-    $btnInstallCursor = $window.FindName("BtnInstallCursor")
-    $btnRestoreCursor = $window.FindName("BtnRestoreCursor")
-    $txtActiveCursor = $window.FindName("TxtActiveCursorScheme")
-
-    if ($cmbCursors) {
-        try {
-            $cursorSchemes = Get-AvailableCursorSchemes
-            $cmbCursors.ItemsSource = $cursorSchemes
-            $cmbCursors.DisplayMemberPath = "Name"
-            $cmbCursors.SelectedValuePath = "FolderPath"
-            if ($cursorSchemes.Count -gt 0) {
-                $cmbCursors.SelectedIndex = 0
-            }
-
-            $currentScheme = Get-ActiveCursorSchemeName
-            if ($txtActiveCursor) {
-                $txtActiveCursor.Text = "Active: $currentScheme"
-            }
-        } catch {
-            Write-Verbose "Cursor initialization failed: $($_.Exception.Message)"
-        }
-    }
-
-    if ($btnInstallCursor -and $cmbCursors) {
-        $btnInstallCursor.Add_Click({
-            $selected = $cmbCursors.SelectedItem
-            if (-not $selected) {
-                & $script:LogToGui "[-] Please select a cursor scheme from the dropdown list." "WARN"
+    # Apply Unapplied on Dashboard
+    if ($btnApplyUnappliedDashboard) {
+        $btnApplyUnappliedDashboard.Add_Click({
+            $audit = Get-SystemAuditState
+            $unappliedTweaks = @($script:TweakDefinitions | Where-Object { $audit.State[$_.Key] -ne $true })
+            if ($unappliedTweaks.Count -eq 0) {
+                & $script:LogToGui "[OK] All tweaks are already active! Optimization score is at 100%."
                 return
             }
-            & $script:LogToGui "[*] Installing custom cursor scheme: $($selected.Name)..."
-            & $script:SetProgress 40
-            $success = Install-CursorScheme -SchemeName $selected.Name
-            & $script:SetProgress 100
-            if ($success) {
-                & $script:LogToGui "[+] Successfully applied cursor scheme: $($selected.Name)!"
-                if ($txtActiveCursor) {
-                    $txtActiveCursor.Text = "Active: $($selected.Name)"
+            & $script:InvokeSequentialTweakAction -Tweaks $unappliedTweaks -Action "Apply"
+        })
+    }
+
+    # 8. Sequential Step-by-Step Execution Engine
+    $script:InvokeSequentialTweakAction = {
+        param(
+            [array]$Tweaks,
+            [string]$Action # "Apply" or "Rollback"
+        )
+
+        & $script:ExpandLogDrawer
+        $total = $Tweaks.Count
+        if ($total -eq 0) {
+            & $script:LogToGui "[!] No tweaks selected for this action."
+            return
+        }
+
+        & $script:LogToGui "=== STARTING SEQUENTIAL $($Action.ToUpper()) ACTION ($total Tweaks) ==="
+        for ($i = 0; $i -lt $total; $i++) {
+            $tw = $Tweaks[$i]
+            $pct = [int]((($i + 1) / $total) * 100)
+            & $script:SetProgress $pct
+
+            if ($Action -eq "Apply") {
+                & $script:LogToGui "[$($i+1)/$total] Applying $($tw.Title)..."
+                try {
+                    & $tw.Apply
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $true }
+                    & $script:LogToGui "  [+] $($tw.Title): OK"
+                } catch {
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $false }
+                    & $script:LogToGui "  [-] $($tw.Title) FAILED: $($_.Exception.Message)" "ERROR"
                 }
             } else {
-                & $script:LogToGui "[-] Failed to apply cursor scheme: $($selected.Name)." "WARN"
-            }
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnRestoreCursor) {
-        $btnRestoreCursor.Add_Click({
-            & $script:LogToGui "[*] Restoring Windows default cursor scheme..."
-            & $script:SetProgress 40
-            Restore-DefaultCursors
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Windows default cursors restored successfully!"
-            if ($txtActiveCursor) {
-                $txtActiveCursor.Text = "Active: Windows Default"
-            }
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-
-    # Action Dashboard Banners: Live Audit Scanner
-    $scanAction = {
-        & $script:LogToGui "[*] Scanning system optimization state across all 75+ parameters..."
-        & $script:SetProgress 30
-        & $script:UpdateGuiAuditStatus
-        $audit = Get-SystemAuditState
-        & $script:SetProgress 100
-        & $script:LogToGui "[+] System Audit Complete: $($audit.ScoreApplied)/$($audit.ScoreTotal) tweaks active (Score: $($audit.ScoreGrade))"
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnScanSystemStateBanner) { $btnScanSystemStateBanner.Add_Click($scanAction) }
-    if ($btnScanSystemStateTab4Banner) { $btnScanSystemStateTab4Banner.Add_Click($scanAction) }
-    if ($btnScanSystemStateTab4) { $btnScanSystemStateTab4.Add_Click($scanAction) }
-
-    # Action Dashboard Banners: Apply Unapplied Gaming Tweaks
-    $applyUnappliedGaming = {
-        & $script:LogToGui "=== APPLYING ALL UNAPPLIED GAMING TWEAKS ==="
-        $audit = Get-SystemAuditState
-        $unapplied = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" -and (-not $audit.State[$_.Key]) }
-        $total = $unapplied.Count
-        if ($total -eq 0) {
-            & $script:LogToGui "[+] All gaming tweaks are already active and optimal!"
-            return
-        }
-        $i = 0
-        foreach ($tw in $unapplied) {
-            $i++
-            $pct = [math]::Round(($i / $total) * 100)
-            & $script:SetProgress $pct
-            & $script:LogToGui "[$i/$total] Applying $($tw.Title)..."
-            & $tw.Apply
-        }
-        & $script:UpdateGuiAuditStatus
-        & $script:LogToGui "[OK] All unapplied gaming tweaks successfully applied!"
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnApplyUnappliedBanner) { $btnApplyUnappliedBanner.Add_Click($applyUnappliedGaming) }
-    if ($btnApplyUnappliedTab2)   { $btnApplyUnappliedTab2.Add_Click($applyUnappliedGaming) }
-
-    # Action Dashboard Banners: Apply Unapplied Hardening & Privacy Tweaks
-    $applyUnappliedHardening = {
-        & $script:LogToGui "=== APPLYING ALL UNAPPLIED HARDENING & PRIVACY TWEAKS ==="
-        $audit = Get-SystemAuditState
-        $unapplied = $script:TweakDefinitions | Where-Object { ($_.Category -in "Shell","Hardening","Privacy") -and (-not $audit.State[$_.Key]) }
-        $total = $unapplied.Count
-        if ($total -eq 0) {
-            & $script:LogToGui "[+] All hardening and privacy tweaks are already active and optimal!"
-            return
-        }
-        $i = 0
-        foreach ($tw in $unapplied) {
-            $i++
-            $pct = [math]::Round(($i / $total) * 100)
-            & $script:SetProgress $pct
-            & $script:LogToGui "[$i/$total] Applying $($tw.Title)..."
-            & $tw.Apply
-        }
-        & $script:UpdateGuiAuditStatus
-        & $script:LogToGui "[OK] All unapplied hardening and privacy tweaks successfully applied!"
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnApplyUnappliedHardening) { $btnApplyUnappliedHardening.Add_Click($applyUnappliedHardening) }
-    if ($btnApplyUnappliedHardeningBanner) { $btnApplyUnappliedHardeningBanner.Add_Click($applyUnappliedHardening) }
-
-    # Action Dashboard Banners: Revert All Tweaks to Defaults
-    $revertAllAction = {
-        & $script:LogToGui "[*] Reverting all system tweaks to Windows defaults..."
-        & $script:SetProgress 30
-        Restore-Defaults
-        & $script:SetProgress 90
-        & $script:UpdateGuiAuditStatus
-        & $script:SetProgress 100
-        & $script:LogToGui "[+] Windows default parameters restored. System audit refreshed."
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnRevertDefaultsBanner) { $btnRevertDefaultsBanner.Add_Click($revertAllAction) }
-    if ($btnRevertDefaultsTab4)   { $btnRevertDefaultsTab4.Add_Click($revertAllAction) }
-
-    # Hardware MSI & Interrupt Audit Report
-    $btnReportInterrupts = $window.FindName("BtnReport_Interrupts")
-    if ($btnReportInterrupts) {
-        $btnReportInterrupts.Add_Click({
-            & $script:LogToGui "`n=== HARDWARE MSI & INTERRUPT AUDIT REPORT ==="
-            try {
-                $report = Get-HardwareInterruptReport
-                & $script:LogToGui ("{0,-12} | {1,-5} | {2,-10} | {3}" -f "CATEGORY", "MSI", "PRIORITY", "CONTROLLER")
-                & $script:LogToGui ("----------------------------------------------------------------------")
-                foreach ($r in $report) {
-                    $msiStr = if ($r.MSISupported) { "YES" } else { "NO" }
-                    & $script:LogToGui ("{0,-12} | {1,-5} | {2,-10} | {3}" -f $r.Category, $msiStr, $r.Priority, $r.DeviceName)
-                }
-                & $script:LogToGui ("======================================================================")
-                & $script:LogToGui "[OK] Hardware interrupt audit complete. Total controllers inspected: $($report.Count)"
-            } catch {
-                & $script:LogToGui "[!] Interrupt report error: $($_.Exception.Message)"
-            }
-        })
-    }
-
-    # Gaming DNS Benchmark & Auto-Apply Winner
-    $btnBenchmarkDns = $window.FindName("BtnBenchmarkDns")
-    if ($btnBenchmarkDns) {
-        $btnBenchmarkDns.Add_Click({
-            $btnBenchmarkDns.IsEnabled = $false
-            & $script:LogToGui "[*] Starting Gaming DNS Benchmark across top providers..."
-            & $script:SetProgress 20
-            [System.Threading.ThreadPool]::QueueUserWorkItem({
+                & $script:LogToGui "[$($i+1)/$total] Restoring $($tw.Title) to defaults..."
                 try {
-                    $results = Test-GamingDnsBenchmark
-                    $window.Dispatcher.Invoke([action]{
-                        & $script:SetProgress 70
-                        if ($results -and $results.Count -gt 0) {
-                            $fastest = $results[0]
-                            & $script:LogToGui "`n--- DNS BENCHMARK LEADERBOARD ---"
-                            foreach ($r in $results) {
-                                $pingStr = if ($r.AvgPingMs -lt 999) { "$($r.AvgPingMs) ms" } else { "TIMEOUT" }
-                                & $script:LogToGui "  $($r.Name.PadRight(12)): $pingStr ($($r.Primary))"
-                            }
-                            & $script:LogToGui "[+] Fastest Provider: $($fastest.Name) ($($fastest.AvgPingMs) ms)"
-                            & $script:LogToGui "[*] Auto-applying $($fastest.Name) DNS to active network adapters..."
-                            Set-GamingDnsProvider -PrimaryDns $fastest.Primary -SecondaryDns $fastest.Secondary -ProviderName $fastest.Name
-                            & $script:LogToGui "[+] Gaming DNS successfully configured to $($fastest.Name)!"
-                        } else {
-                            & $script:LogToGui "[!] No DNS ping responses received. Keeping current settings."
-                        }
-                        & $script:SetProgress 100
-                        Start-Sleep -Milliseconds 200
-                        & $script:SetProgress 0
-                        $btnBenchmarkDns.IsEnabled = $true
-                    })
+                    & $tw.Rollback
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $false }
+                    & $script:LogToGui "  [+] $($tw.Title): Restored"
                 } catch {
-                    $exMsg = $_.Exception.Message
-                    $window.Dispatcher.Invoke([action]{
-                        & $script:LogToGui "[!] DNS benchmark error: $exMsg"
-                        & $script:SetProgress 0
-                        $btnBenchmarkDns.IsEnabled = $true
-                    })
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $true }
+                    & $script:LogToGui "  [-] $($tw.Title) FAILED: $($_.Exception.Message)" "ERROR"
                 }
-            })
+            }
+            Start-Sleep -Milliseconds 40
+        }
+
+        & $script:SetProgress 100
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+        & $script:LogToGui "=== SEQUENTIAL $($Action.ToUpper()) ACTION COMPLETED! ==="
+    }
+
+    # 9. Master Controls & Profile Handlers
+    # Profile Buttons on Dashboard
+    if ($btnApplyProfileEsports) {
+        $btnApplyProfileEsports.Add_Click({
+            $esportsTweaks = $script:TweakDefinitions | Where-Object { $_.Tier -eq "Esports" -or ($_.Category -eq "Gaming" -and $_.Tier -eq "Recommended") }
+            & $script:InvokeSequentialTweakAction -Tweaks $esportsTweaks -Action "Apply"
+        })
+    }
+
+    if ($btnApplyProfileRecommended) {
+        $btnApplyProfileRecommended.Add_Click({
+            $recTweaks = $script:TweakDefinitions | Where-Object { $_.Tier -eq "Recommended" }
+            & $script:InvokeSequentialTweakAction -Tweaks $recTweaks -Action "Apply"
+        })
+    }
+
+    if ($btnApplyProfilePrivacy) {
+        $btnApplyProfilePrivacy.Add_Click({
+            $privTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" }
+            & $script:InvokeSequentialTweakAction -Tweaks $privTweaks -Action "Apply"
+        })
+    }
+
+    if ($btnRevertDefaults) {
+        $btnRevertDefaults.Add_Click({
+            $result = [System.Windows.MessageBox]::Show(
+                "Are you sure you want to restore ALL settings to default Windows values?",
+                "Confirm Rollback",
+                [System.Windows.MessageBoxButton]::YesNo,
+                [System.Windows.MessageBoxImage]::Warning
+            )
+            if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
+                & $script:InvokeSequentialTweakAction -Tweaks $script:TweakDefinitions -Action "Rollback"
+            }
+        })
+    }
+
+    # Gaming Category Master Buttons
+    if ($btnGamingApplyAll) {
+        $btnGamingApplyAll.Add_Click({
+            $gamingTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" }
+            & $script:InvokeSequentialTweakAction -Tweaks $gamingTweaks -Action "Apply"
+        })
+    }
+    if ($btnGamingRollbackAll) {
+        $btnGamingRollbackAll.Add_Click({
+            $gamingTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" }
+            & $script:InvokeSequentialTweakAction -Tweaks $gamingTweaks -Action "Rollback"
+        })
+    }
+
+    # Privacy Category Master Buttons
+    if ($btnPrivacyApplyAll) {
+        $btnPrivacyApplyAll.Add_Click({
+            $privacyTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" }
+            & $script:InvokeSequentialTweakAction -Tweaks $privacyTweaks -Action "Apply"
+        })
+    }
+    if ($btnPrivacyRollbackAll) {
+        $btnPrivacyRollbackAll.Add_Click({
+            $privacyTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" }
+            & $script:InvokeSequentialTweakAction -Tweaks $privacyTweaks -Action "Rollback"
+        })
+    }
+
+    # System Category Master Buttons
+    if ($btnSystemApplyAll) {
+        $btnSystemApplyAll.Add_Click({
+            $systemTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "System" }
+            & $script:InvokeSequentialTweakAction -Tweaks $systemTweaks -Action "Apply"
+        })
+    }
+    if ($btnSystemRollbackAll) {
+        $btnSystemRollbackAll.Add_Click({
+            $systemTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "System" }
+            & $script:InvokeSequentialTweakAction -Tweaks $systemTweaks -Action "Rollback"
+        })
+    }
+
+    # 10. Filter Chips Handlers
+    $script:FilterCards = {
+        param([string]$Category, [string]$TierFilter, [switch]$ActiveOnly)
+        $audit = Get-SystemAuditState
+        foreach ($tw in $script:TweakDefinitions) {
+            if ($tw.Category -eq $Category -and $tw.Card) {
+                $isMatch = $true
+                if ($TierFilter -and $TierFilter -ne "All") {
+                    if ($tw.Tier -ne $TierFilter) { $isMatch = $false }
+                }
+                if ($ActiveOnly) {
+                    if ($audit.State[$tw.Key] -ne $true) { $isMatch = $false }
+                }
+                $tw.Card.Visibility = if ($isMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+            }
+        }
+    }
+
+    # Gaming Chips
+    if ($chipGamingAll)         { $chipGamingAll.Add_Click({ & $script:FilterCards "Gaming" "All" }) }
+    if ($chipGamingRecommended) { $chipGamingRecommended.Add_Click({ & $script:FilterCards "Gaming" "Recommended" }) }
+    if ($chipGamingEsports)     { $chipGamingEsports.Add_Click({ & $script:FilterCards "Gaming" "Esports" }) }
+    if ($chipGamingActive)      { $chipGamingActive.Add_Click({ & $script:FilterCards "Gaming" "" -ActiveOnly }) }
+
+    # Privacy Chips
+    if ($chipPrivacyAll)    { $chipPrivacyAll.Add_Click({ & $script:FilterCards "Privacy" "All" }) }
+    if ($chipPrivacyActive) { $chipPrivacyActive.Add_Click({ & $script:FilterCards "Privacy" "" -ActiveOnly }) }
+
+    # System Chips
+    if ($chipSystemAll)    { $chipSystemAll.Add_Click({ & $script:FilterCards "System" "All" }) }
+    if ($chipSystemActive) { $chipSystemActive.Add_Click({ & $script:FilterCards "System" "" -ActiveOnly }) }
+
+    # 11. Universal Instant Search Filter
+    if ($txtSearch) {
+        $txtSearch.Add_TextChanged({
+            $q = $txtSearch.Text.Trim().ToLower()
+            # Filter Tweak Cards
+            foreach ($tw in $script:TweakDefinitions) {
+                if ($tw.Card) {
+                    if ([string]::IsNullOrWhiteSpace($q)) {
+                        $tw.Card.Visibility = [System.Windows.Visibility]::Visible
+                    } else {
+                        $titleMatch = ($tw.Title -and $tw.Title.ToLower().Contains($q))
+                        $descMatch  = ($tw.Description -and $tw.Description.ToLower().Contains($q))
+                        $tw.Card.Visibility = if ($titleMatch -or $descMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+                    }
+                }
+            }
+
+            # Filter App Cards if in Software Downloader
+            if ($script:AllAppCards) {
+                foreach ($item in $script:AllAppCards) {
+                    if ($item.Border) {
+                        if ([string]::IsNullOrWhiteSpace($q)) {
+                            $item.Border.Visibility = [System.Windows.Visibility]::Visible
+                        } else {
+                            $match = ($item.Name.ToLower().Contains($q) -or $item.Desc.ToLower().Contains($q))
+                            $item.Border.Visibility = if ($match) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    if ($btnClearSearch) {
+        $btnClearSearch.Add_Click({
+            if ($txtSearch) { $txtSearch.Text = "" }
+        })
+    }
+
+    # 12. Top Action Buttons (Beast Mode, Restore Point, MAS)
+    if ($btnBeastMode) {
+        $btnBeastMode.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "=== ENGAGING MAXIMUM BEAST MODE (LOW LATENCY + ANTI-LAG) ==="
+            & $script:SetProgress 20
+            try { Optimize-KernelAndCpu } catch {}
+            & $script:SetProgress 40
+            try { Optimize-InputLatency } catch {}
+            & $script:SetProgress 60
+            try { Optimize-Network } catch {}
+            & $script:SetProgress 80
+            try { Optimize-GpuAuto } catch {}
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+            if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+            & $script:LogToGui "[+] BEAST MODE ENGAGED: Max FPS, lowest DPC latency & flat ping active!"
         })
     }
 
@@ -4958,328 +2995,628 @@ function Start-PumpkiNGui {
         & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS) in elevated terminal..."
         Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`"" -Verb RunAs
     }
-    $btnMasActivate.Add_Click($masAction)
-    $btnMasActivateTop.Add_Click($masAction)
+    if ($btnMasActivateTop) { $btnMasActivateTop.Add_Click($masAction) }
 
     $restoreAction = {
         & $script:LogToGui "[*] Creating Windows System Restore Point..."
-        Create-RestorePoint
-        & $script:LogToGui "[+] Restore point creation process completed."
-    }
-    $btnRestorePoint.Add_Click($restoreAction)
-    $btnRestorePointTop.Add_Click($restoreAction)
-
-    $btnRunDiagnostics.Add_Click({
-        & $script:LogToGui "[*] Running System Diagnostics..."
-        Run-Diagnostics
-    })
-
-    if ($btnInstallTrafficMonitor) {
-        $btnInstallTrafficMonitor.Add_Click({
-            & $script:LogToGui "[*] Starting TrafficMonitor (Latest x64) Download & Installation..."
-            & $script:SetProgress 20
-            [void](Install-TrafficMonitorLatest -LogCallback $script:LogToGui)
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnInstallMiSansFonts) {
-        $btnInstallMiSansFonts.Add_Click({
-            & $script:LogToGui "[*] Starting MiSans Fonts Installation..."
-            & $script:SetProgress 20
-            [void](Install-MiSansFonts -LogCallback $script:LogToGui)
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnApplyTrafficMonitorConfig) {
-        $btnApplyTrafficMonitorConfig.Add_Click({
-            & $script:LogToGui "[*] Applying Custom TrafficMonitor config.ini..."
-            & $script:SetProgress 20
-            [void](Apply-TrafficMonitorConfig -LogCallback $script:LogToGui)
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnLaunchTrafficMonitor) {
-        $btnLaunchTrafficMonitor.Add_Click({
-            [void](Start-TrafficMonitorApp -LogCallback $script:LogToGui)
-        })
-    }
-
-    # --------------------------------------------------------------------------
-    # TAB 5: DEVICE SPECIFICATIONS & COPY ACTIONS
-    # --------------------------------------------------------------------------
-    $script:UpdateDeviceSpecsView = {
-        param([switch]$Force)
         try {
-            $p = Get-DeviceDetailProfile -ForceRefresh:$Force
-            if (-not $p) { return }
+            New-SystemRestorePointSafe
+            & $script:LogToGui "[+] Windows System Restore Point created successfully."
+        } catch {
+            & $script:LogToGui "[-] Restore point creation failed: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    if ($btnRestorePointTop) { $btnRestorePointTop.Add_Click($restoreAction) }
 
-            $txtDevCompName = $window.FindName("TxtDev_CompName")
-            $txtDevSubTitle = $window.FindName("TxtDev_SubTitle")
-            if ($txtDevCompName) { $txtDevCompName.Text = $p.DeviceName }
-            if ($txtDevSubTitle) { $txtDevSubTitle.Text = $p.HeaderSummary }
-
-            # OS
-            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $p.OsName }
-            $t = $window.FindName("TxtDev_OsVersion"); if ($t) { $t.Text = $p.OsVersion }
-            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $p.OsBuildNumber }
-            $t = $window.FindName("TxtDev_OsArch"); if ($t) { $t.Text = $p.OsArchitecture }
-            $t = $window.FindName("TxtDev_OsInstallDate"); if ($t) { $t.Text = $p.OsInstallDate }
-            $t = $window.FindName("TxtDev_OsUser"); if ($t) { $t.Text = $p.OsRegisteredUser }
-            $t = $window.FindName("TxtDev_OsWinDir"); if ($t) { $t.Text = $p.OsWindowsDir }
-            $t = $window.FindName("TxtDev_OsSysDir"); if ($t) { $t.Text = $p.OsSystemDir }
-            $t = $window.FindName("TxtDev_OsBootTime"); if ($t) { $t.Text = $p.OsLastBootTime }
-
-            # CPU
-            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $p.CpuName }
-            $t = $window.FindName("TxtDev_CpuManufacturer"); if ($t) { $t.Text = $p.CpuManufacturer }
-            $t = $window.FindName("TxtDev_CpuArchitecture"); if ($t) { $t.Text = $p.CpuArchitecture }
-            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = $p.CpuCores }
-            $t = $window.FindName("TxtDev_CpuLogical"); if ($t) { $t.Text = $p.CpuLogical }
-            $t = $window.FindName("TxtDev_CpuMaxSpeed"); if ($t) { $t.Text = $p.CpuMaxSpeed }
-            $t = $window.FindName("TxtDev_CpuSocket"); if ($t) { $t.Text = $p.CpuSocket }
-            $t = $window.FindName("TxtDev_CpuL2"); if ($t) { $t.Text = $p.CpuL2Cache }
-            $t = $window.FindName("TxtDev_CpuL3"); if ($t) { $t.Text = $p.CpuL3Cache }
-
-            # GPU
-            if ($p.PrimaryGpu) {
-                $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $p.PrimaryGpu.Name }
-                $t = $window.FindName("TxtDev_GpuManufacturer"); if ($t) { $t.Text = $p.PrimaryGpu.Manufacturer }
-                $t = $window.FindName("TxtDev_GpuDriverVersion"); if ($t) { $t.Text = $p.PrimaryGpu.DriverVersion }
-                $t = $window.FindName("TxtDev_GpuDriverDate"); if ($t) { $t.Text = $p.PrimaryGpu.DriverDate }
-                $t = $window.FindName("TxtDev_GpuVram"); if ($t) { $t.Text = $p.PrimaryGpu.Vram }
-                $t = $window.FindName("TxtDev_GpuResolution"); if ($t) { $t.Text = $p.PrimaryGpu.Resolution }
-                $t = $window.FindName("TxtDev_GpuRefreshRate"); if ($t) { $t.Text = $p.PrimaryGpu.RefreshRate }
+    # Smart Game Booster & Memory Purger
+    if ($btnPurgeStandby) {
+        $btnPurgeStandby.Add_Click({
+            & $script:LogToGui "[*] Purging Windows memory standby list cache..."
+            try {
+                Invoke-MatchBooster
+                & $script:LogToGui "[+] Standby memory list purged successfully!"
+            } catch {
+                & $script:LogToGui "[-] Memory purge failed: $($_.Exception.Message)" "ERROR"
             }
+        })
+    }
 
-            # RAM
-            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = $p.RamTotal }
-            $t = $window.FindName("TxtDev_RamUsable"); if ($t) { $t.Text = $p.RamUsable }
-            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = $p.RamSpeed }
-            $t = $window.FindName("TxtDev_RamManufacturer"); if ($t) { $t.Text = $p.RamManufacturer }
-            $t = $window.FindName("TxtDev_RamPartNumber"); if ($t) { $t.Text = $p.RamPartNumber }
-            $t = $window.FindName("TxtDev_RamSlots"); if ($t) { $t.Text = $p.RamSlots }
+    if ($btnStartGameBooster) {
+        $btnStartGameBooster.Add_Click({
+            & $script:LogToGui "[*] Starting Smart Game Booster Daemon..."
+            try {
+                $ok = Start-SmartGameBoosterDaemon
+                if ($ok) {
+                    & $script:LogToGui "[+] Smart Game Booster Daemon is ACTIVE: Monitoring 20+ competitive games!"
+                }
+            } catch {}
+        })
+    }
 
-            # Storage
-            $t = $window.FindName("TxtDev_StorageDisks"); if ($t) { $t.Text = ($p.Disks -join ' | ') }
-            $t = $window.FindName("TxtDev_StorageVolumes"); if ($t) { $t.Text = ($p.Volumes -join ' | ') }
+    # 13. Dynamic WinGet Software Catalog Construction
+    $script:AllAppCards = [System.Collections.Generic.List[PSCustomObject]]::new()
+    $brushNormalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#121824")
+    $brushHoverBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1A2234")
+    $brushNormalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1F293D")
+    $brushHoverBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+    $brushCyan         = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+    $thick1  = [System.Windows.Thickness]::new(1)
+    $thick5  = [System.Windows.Thickness]::new(5)
+    $thick10 = [System.Windows.Thickness]::new(10)
+    $corn6   = [System.Windows.CornerRadius]::new(6)
+    $starGrid = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+    $autoGrid = [System.Windows.GridLength]::Auto
 
-            # Network
-            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $p.NetAdapterName }
-            $t = $window.FindName("TxtDev_NetDesc"); if ($t) { $t.Text = $p.NetDescription }
-            $t = $window.FindName("TxtDev_NetMac"); if ($t) { $t.Text = $p.NetMacAddress }
-            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $p.NetLinkSpeed }
-            $t = $window.FindName("TxtDev_NetIp"); if ($t) { $t.Text = $p.NetIpAddress }
-            $t = $window.FindName("TxtDev_NetStatus"); if ($t) { $t.Text = $p.NetStatus }
+    if (Get-Command Get-AppCatalog -ErrorAction SilentlyContinue) {
+        $catalog = Get-AppCatalog
+        foreach ($app in $catalog) {
+            $card = [System.Windows.Controls.Border]::new()
+            $card.Width = 275
+            $card.Height = 110
+            $card.Background = $brushNormalBg
+            $card.BorderBrush = $brushNormalBorder
+            $card.BorderThickness = $thick1
+            $card.CornerRadius = $corn6
+            $card.Margin = $thick5
+            $card.Padding = $thick10
+            $card.Cursor = [System.Windows.Input.Cursors]::Hand
 
-            # Battery
-            $t = $window.FindName("TxtDev_BatteryStatus"); if ($t) { $t.Text = $p.BatteryStatus }
-            $t = $window.FindName("TxtDev_BatteryName"); if ($t) { $t.Text = $p.BatteryName }
-            $t = $window.FindName("TxtDev_BatteryPercent"); if ($t) { $t.Text = $p.BatteryPercent }
+            $grid = [System.Windows.Controls.Grid]::new()
+            $col0 = [System.Windows.Controls.ColumnDefinition]::new(); $col0.Width = $autoGrid
+            $col1 = [System.Windows.Controls.ColumnDefinition]::new(); $col1.Width = $starGrid
+            [void]$grid.ColumnDefinitions.Add($col0)
+            [void]$grid.ColumnDefinitions.Add($col1)
+
+            $chk = [System.Windows.Controls.CheckBox]::new()
+            $chk.Margin = [System.Windows.Thickness]::new(0, 4, 10, 0)
+            $chk.Tag = $app.Id
+            $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
+            [System.Windows.Controls.Grid]::SetColumn($chk, 0)
+            [void]$grid.Children.Add($chk)
+
+            $sp = [System.Windows.Controls.StackPanel]::new()
+            [System.Windows.Controls.Grid]::SetColumn($sp, 1)
+
+            $topRow = [System.Windows.Controls.Grid]::new()
+            $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
+            $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
+            [void]$topRow.ColumnDefinitions.Add($trCol0)
+            [void]$topRow.ColumnDefinitions.Add($trCol1)
+
+            $txtTitle = [System.Windows.Controls.TextBlock]::new()
+            $txtTitle.Text = $app.Name
+            $txtTitle.FontWeight = [System.Windows.FontWeights]::Bold
+            $txtTitle.FontSize = 12
+            $txtTitle.Foreground = [System.Windows.Media.Brushes]::White
+            $txtTitle.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+            [System.Windows.Controls.Grid]::SetColumn($txtTitle, 0)
+            [void]$topRow.Children.Add($txtTitle)
+
+            $badge = [System.Windows.Controls.Border]::new()
+            $badge.Background = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#182233")
+            $badge.CornerRadius = [System.Windows.CornerRadius]::new(3)
+            $badge.Padding = [System.Windows.Thickness]::new(4, 1, 4, 1)
+            $badge.Margin = [System.Windows.Thickness]::new(4, 0, 0, 0)
+            $txtBadge = [System.Windows.Controls.TextBlock]::new()
+            $txtBadge.Text = $app.Category
+            $txtBadge.FontSize = 9
+            $txtBadge.Foreground = $brushCyan
+            $badge.Child = $txtBadge
+            [System.Windows.Controls.Grid]::SetColumn($badge, 1)
+            [void]$topRow.Children.Add($badge)
+
+            [void]$sp.Children.Add($topRow)
+
+            $txtDesc = [System.Windows.Controls.TextBlock]::new()
+            $txtDesc.Text = $app.Description
+            $txtDesc.FontSize = 10
+            $txtDesc.Foreground = $brushTextDim
+            $txtDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+            $txtDesc.Margin = [System.Windows.Thickness]::new(0, 3, 0, 0)
+            $txtDesc.MaxHeight = 42
+            $txtDesc.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+            [void]$sp.Children.Add($txtDesc)
+
+            [void]$grid.Children.Add($sp)
+            $card.Child = $grid
+
+            $card.Add_MouseEnter({
+                $this.Background = $brushHoverBg
+                $this.BorderBrush = $brushHoverBorder
+            })
+            $card.Add_MouseLeave({
+                $this.Background = $brushNormalBg
+                $this.BorderBrush = $brushNormalBorder
+            })
+
+            $card.Add_MouseLeftButtonUp({
+                param($s, $e)
+                if ($e.OriginalSource -isnot [System.Windows.Controls.CheckBox]) {
+                    $c = $s.Child.Children[0]
+                    $c.IsChecked = -not $c.IsChecked
+                }
+                & $script:UpdateSelectedCount
+            })
+
+            $chk.Add_Checked({ & $script:UpdateSelectedCount })
+            $chk.Add_Unchecked({ & $script:UpdateSelectedCount })
+
+            if ($wrapPackages) { [void]$wrapPackages.Children.Add($card) }
+
+            $script:AllAppCards.Add([PSCustomObject]@{
+                Border   = $card
+                CheckBox = $chk
+                Category = $app.Category
+                Name     = $app.Name
+                Desc     = $app.Description
+                Id       = $app.Id
+            })
+        }
+    }
+
+    $script:UpdateSelectedCount = {
+        $count = ($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }).Count
+        if ($txtSelectedCount) {
+            $txtSelectedCount.Text = "$count apps selected"
+        }
+    }
+
+    if ($btnSelectAll) {
+        $btnSelectAll.Add_Click({
+            foreach ($card in $script:AllAppCards) {
+                if ($card.Border.Visibility -eq [System.Windows.Visibility]::Visible) {
+                    $card.CheckBox.IsChecked = $true
+                }
+            }
+            & $script:UpdateSelectedCount
+        })
+    }
+
+    if ($btnClearAll) {
+        $btnClearAll.Add_Click({
+            foreach ($card in $script:AllAppCards) {
+                $card.CheckBox.IsChecked = $false
+            }
+            & $script:UpdateSelectedCount
+        })
+    }
+
+    if ($btnInstallSelected) {
+        $btnInstallSelected.Add_Click({
+            $selected = @($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true })
+            if ($selected.Count -eq 0) {
+                & $script:LogToGui "[-] No applications selected to install. Check packages in the grid first." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting installation batch for $($selected.Count) application(s)..."
+            $idx = 0
+            foreach ($item in $selected) {
+                $idx++
+                $pct = [int](($idx / $selected.Count) * 100)
+                & $script:SetProgress $pct
+                & $script:LogToGui "[$idx/$($selected.Count)] Installing $($item.Name) ($($item.Id))..."
+                Install-WinGetPackage -PackageId $item.Id -LogCallback { param($m) & $script:LogToGui $m }
+            }
+            & $script:SetProgress 0
+            & $script:LogToGui "[+] WinGet installation batch complete!"
+        })
+    }
+
+    if ($btnUninstallSelected) {
+        $btnUninstallSelected.Add_Click({
+            $selected = @($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true })
+            if ($selected.Count -eq 0) {
+                & $script:LogToGui "[-] No applications selected to uninstall." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Uninstalling $($selected.Count) selected application(s)..."
+            $idx = 0
+            foreach ($item in $selected) {
+                $idx++
+                $pct = [int](($idx / $selected.Count) * 100)
+                & $script:SetProgress $pct
+                Uninstall-WinGetPackage -PackageId $item.Id -LogCallback { param($m) & $script:LogToGui $m }
+            }
+            & $script:SetProgress 0
+            & $script:LogToGui "[+] WinGet uninstall batch complete!"
+        })
+    }
+
+    if ($btnUpgradeAll) {
+        $btnUpgradeAll.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting WinGet system-wide upgrade for all installed packages..."
+            & $script:SetProgress 30
+            Upgrade-AllWinGetPackages -LogCallback { param($m) & $script:LogToGui $m }
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+            & $script:LogToGui "[+] WinGet upgrade complete!"
+        })
+    }
+
+    # Software Category Filter Chips
+    $categoryMap = @{
+        "ChipCatAll"      = "All"
+        "ChipCatBrowsers" = "Browsers"
+        "ChipCatComms"    = "Communication"
+        "ChipCatDev"      = "Dev & Tools"
+        "ChipCatDoc"      = "Productivity"
+        "ChipCatGames"    = "Gaming"
+        "ChipCatMs"       = "Utilities & System"
+        "ChipCatMedia"    = "Media & Creative"
+        "ChipCatPro"      = "Security & Privacy"
+        "ChipCatSelf"     = "Runtimes & Drivers"
+        "ChipCatUtil"     = "Emulators & Gaming Tools"
+    }
+
+    foreach ($chipName in $categoryMap.Keys) {
+        $btnChip = $window.FindName($chipName)
+        if ($btnChip) {
+            $catFilter = $categoryMap[$chipName]
+            $btnChip.Add_Click({
+                param($s, $e)
+                $selectedCat = $s.Tag
+                foreach ($appCard in $script:AllAppCards) {
+                    if ($selectedCat -eq "All" -or $appCard.Category -like "*$selectedCat*") {
+                        $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+                    } else {
+                        $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
+                    }
+                }
+            })
+            $btnChip.Tag = $catFilter
+        }
+    }
+
+    # Equicord Installers
+    if ($btnInstallEquicord) {
+        $btnInstallEquicord.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting Equicord / Equilotl automated installation..."
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Equicord/Equilotl/main/install.ps1 | iex`"" -Verb RunAs
+        })
+    }
+    if ($btnOpenEquicordSite) {
+        $btnOpenEquicordSite.Add_Click({
+            Start-Process "https://equicord.org"
+        })
+    }
+
+    # 14. Device Hardware Specs Populator
+    $script:UpdateDeviceSpecsView = {
+        try {
+            $hw = Get-HardwareProfile
+            if (-not $hw) { return }
+
+            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $hw.CpuName }
+            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = "$($hw.CpuCores) Cores / $($hw.CpuThreads) Threads" }
+            $t = $window.FindName("TxtDev_CpuClock"); if ($t) { $t.Text = "$($hw.CpuBaseClock) GHz" }
+
+            $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $hw.GpuPrimary }
+            $t = $window.FindName("TxtDev_GpuDriver"); if ($t) { $t.Text = $hw.GpuDriverVersion }
+            $t = $window.FindName("TxtDev_GpuRam"); if ($t) { $t.Text = "$($hw.GpuMemoryGb) GB" }
+
+            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = "$($hw.TotalRamGb) GB" }
+            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = "$($hw.RamSpeedMhz) MHz" }
+
+            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $hw.OsName }
+            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $hw.OsBuild }
+
+            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $hw.ActiveAdapterName }
+            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $hw.ActiveAdapterSpeed }
         } catch {}
     }
 
-    # Wire expand/collapse toggles
-    $categories = @('Os', 'Cpu', 'Gpu', 'Ram', 'Storage', 'Net', 'Battery')
-    foreach ($cat in $categories) {
+    # Device spec copy buttons
+    $copyBtnMap = @{
+        "BtnCopy_DevCpu" = "TxtDev_CpuName"
+        "BtnCopy_DevGpu" = "TxtDev_GpuName"
+        "BtnCopy_DevRam" = "TxtDev_RamTotal"
+        "BtnCopy_DevOs"  = "TxtDev_OsName"
+        "BtnCopy_DevNet" = "TxtDev_NetName"
+    }
+    foreach ($btnName in $copyBtnMap.Keys) {
+        $b = $window.FindName($btnName)
+        if ($b) {
+            $txtElName = $copyBtnMap[$btnName]
+            $b.Add_Click({
+                param($s, $e)
+                $txtEl = $window.FindName($s.Tag)
+                if ($txtEl -and $txtEl.Text) {
+                    [System.Windows.Clipboard]::SetText($txtEl.Text)
+                    & $script:LogToGui "[+] Copied: $($txtEl.Text)"
+                    $s.Content = "Copied!"
+                    $timer = [System.Windows.Threading.DispatcherTimer]::new()
+                    $timer.Interval = [TimeSpan]::FromMilliseconds(1200)
+                    $timer.Add_Tick({ param($ts, $te) $s.Content = "Copy"; $ts.Stop() })
+                    $timer.Start()
+                }
+            })
+            $b.Tag = $txtElName
+        }
+    }
+
+    # Expand/collapse for device spec cards
+    $devCats = @('Cpu', 'Gpu', 'Ram', 'Os', 'Net')
+    foreach ($cat in $devCats) {
         $btnToggle = $window.FindName("BtnToggle_Dev$cat")
-        $panel = $window.FindName("Panel_Dev$cat")
+        $panel     = $window.FindName("Panel_Dev$cat")
         if ($btnToggle -and $panel) {
             $btnToggle.Tag = $panel
             $btnToggle.Add_Click({
                 param($s, $e)
-                $targetPanel = $s.Tag
-                if ($targetPanel.Visibility -eq [System.Windows.Visibility]::Visible) {
-                    $targetPanel.Visibility = [System.Windows.Visibility]::Collapsed
+                $target = $s.Tag
+                if ($target.Visibility -eq [System.Windows.Visibility]::Visible) {
+                    $target.Visibility = [System.Windows.Visibility]::Collapsed
                     $s.Content = "v"
                 } else {
-                    $targetPanel.Visibility = [System.Windows.Visibility]::Visible
+                    $target.Visibility = [System.Windows.Visibility]::Visible
                     $s.Content = "^"
                 }
             })
         }
     }
 
-    # Wire copy buttons for individual categories
-    $copyActions = @{
-        'BtnCopy_DevOs' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Operating System`r`n  OS Name: $($p.OsName)`r`n  Version: $($p.OsVersion)`r`n  Build: $($p.OsBuildNumber)`r`n  Arch: $($p.OsArchitecture)`r`n  Install Date: $($p.OsInstallDate)`r`n  User: $($p.OsRegisteredUser)`r`n  WinDir: $($p.OsWindowsDir)`r`n  SysDir: $($p.OsSystemDir)`r`n  Last Boot: $($p.OsLastBootTime)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Operating System details copied to clipboard."
-        }
-        'BtnCopy_DevCpu' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Processor`r`n  Name: $($p.CpuName)`r`n  Manufacturer: $($p.CpuManufacturer)`r`n  Arch: $($p.CpuArchitecture)`r`n  Cores/Threads: $($p.CpuCores) / $($p.CpuLogical)`r`n  Max Speed: $($p.CpuMaxSpeed)`r`n  Socket: $($p.CpuSocket)`r`n  L2 Cache: $($p.CpuL2Cache)`r`n  L3 Cache: $($p.CpuL3Cache)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Processor details copied to clipboard."
-        }
-        'BtnCopy_DevGpu' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Graphics`r`n  Name: $($p.PrimaryGpu.Name)`r`n  Manufacturer: $($p.PrimaryGpu.Manufacturer)`r`n  Driver Version: $($p.PrimaryGpu.DriverVersion)`r`n  Driver Date: $($p.PrimaryGpu.DriverDate)`r`n  VRAM: $($p.PrimaryGpu.Vram)`r`n  Resolution: $($p.PrimaryGpu.Resolution) @ $($p.PrimaryGpu.RefreshRate)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Graphics details copied to clipboard."
-        }
-        'BtnCopy_DevRam' = {
-            $p = Get-DeviceDetailProfile
-            $text = "RAM`r`n  Total Installed: $($p.RamTotal)`r`n  Usable: $($p.RamUsable)`r`n  Speed: $($p.RamSpeed)`r`n  Manufacturer: $($p.RamManufacturer)`r`n  Part Number: $($p.RamPartNumber)`r`n  Slots: $($p.RamSlots)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] RAM details copied to clipboard."
-        }
-        'BtnCopy_DevStorage' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Storage`r`n  Physical Disks: $($p.Disks -join ' | ')`r`n  Volumes: $($p.Volumes -join ' | ')"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Storage details copied to clipboard."
-        }
-        'BtnCopy_DevNet' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Network`r`n  Adapter: $($p.NetAdapterName)`r`n  Description: $($p.NetDescription)`r`n  MAC Address: $($p.NetMacAddress)`r`n  Speed: $($p.NetLinkSpeed)`r`n  IPv4: $($p.NetIpAddress)`r`n  Status: $($p.NetStatus)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Network details copied to clipboard."
-        }
-        'BtnCopy_DevBattery' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Battery / Power`r`n  Status: $($p.BatteryStatus)`r`n  Device: $($p.BatteryName)`r`n  Level: $($p.BatteryPercent)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Battery / Power details copied to clipboard."
-        }
+    # Custom Gaming Cursors (23 Packs) Manager
+    if ($cmbCursorSchemes) {
+        try {
+            $schemes = Get-AvailableCursorSchemes
+            $cmbCursorSchemes.ItemsSource = $schemes
+            $cmbCursorSchemes.DisplayMemberPath = "Name"
+            if ($schemes -and $schemes.Count -gt 0) { $cmbCursorSchemes.SelectedIndex = 0 }
+        } catch {}
     }
 
-    foreach ($btnName in $copyActions.Keys) {
-        $btn = $window.FindName($btnName)
-        if ($btn) {
-            $action = $copyActions[$btnName]
-            $btn.Add_Click({
-                param($s, $e)
-                try {
-                    & $action
-                    $s.Content = "Copied!"
-                    $timer = [System.Windows.Threading.DispatcherTimer]::new()
-                    $timer.Interval = [TimeSpan]::FromMilliseconds(1500)
-                    $timer.Add_Tick({
-                        param($ts, $te)
-                        $s.Content = "Copy"
-                        $ts.Stop()
-                    })
-                    $timer.Start()
-                } catch {}
-            })
-        }
-    }
-
-    # Wire Refresh and Copy All Specs
-    $btnRefreshSpecs = $window.FindName("BtnRefreshDeviceSpecs")
-    if ($btnRefreshSpecs) {
-        $btnRefreshSpecs.Add_Click({
-            & $script:UpdateDeviceSpecsView -Force
-            & $script:LogToGui "[+] Device hardware specifications refreshed."
+    if ($btnInstallCursor) {
+        $btnInstallCursor.Add_Click({
+            $selected = $cmbCursorSchemes.SelectedItem
+            if (-not $selected) {
+                & $script:LogToGui "[-] Please select a cursor scheme from the dropdown." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Installing custom cursor scheme: $($selected.Name)..."
+            try {
+                $ok = Install-CursorScheme -SchemeName $selected.Name
+                if ($ok) {
+                    if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = $selected.Name }
+                    & $script:LogToGui "[+] Cursor scheme '$($selected.Name)' installed and live-reloaded successfully!"
+                } else {
+                    & $script:LogToGui "[-] Failed to apply cursor scheme: $($selected.Name)" "ERROR"
+                }
+            } catch {
+                & $script:LogToGui "[-] Cursor install error: $($_.Exception.Message)" "ERROR"
+            }
         })
     }
 
-    $btnCopyAllSpecs = $window.FindName("BtnCopyAllDeviceSpecs")
-    if ($btnCopyAllSpecs) {
-        $btnCopyAllSpecs.Add_Click({
-            param($s, $e)
+    if ($btnRestoreCursor) {
+        $btnRestoreCursor.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Restoring Windows default cursor scheme..."
             try {
-                $p = Get-DeviceDetailProfile
-                $sb = [System.Text.StringBuilder]::new()
-                [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("                    DEVICE HARDWARE & OPERATING SYSTEM REPORT                   ")
-                [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("Device Name:       $($p.DeviceName)")
-                [void]$sb.AppendLine("System Summary:    $($p.HeaderSummary)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Operating System]")
-                [void]$sb.AppendLine("  OS Name:         $($p.OsName)")
-                [void]$sb.AppendLine("  Version:         $($p.OsVersion)")
-                [void]$sb.AppendLine("  Build Number:    $($p.OsBuildNumber)")
-                [void]$sb.AppendLine("  Architecture:    $($p.OsArchitecture)")
-                [void]$sb.AppendLine("  Install Date:    $($p.OsInstallDate)")
-                [void]$sb.AppendLine("  Registered User: $($p.OsRegisteredUser)")
-                [void]$sb.AppendLine("  Windows Dir:     $($p.OsWindowsDir)")
-                [void]$sb.AppendLine("  System Dir:      $($p.OsSystemDir)")
-                [void]$sb.AppendLine("  Last Boot Up:    $($p.OsLastBootTime)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Processor]")
-                [void]$sb.AppendLine("  Name:            $($p.CpuName)")
-                [void]$sb.AppendLine("  Manufacturer:    $($p.CpuManufacturer)")
-                [void]$sb.AppendLine("  Architecture:    $($p.CpuArchitecture)")
-                [void]$sb.AppendLine("  Cores / Threads: $($p.CpuCores) Cores / $($p.CpuLogical) Logical Processors")
-                [void]$sb.AppendLine("  Max Speed:       $($p.CpuMaxSpeed)")
-                [void]$sb.AppendLine("  Socket:          $($p.CpuSocket)")
-                [void]$sb.AppendLine("  L2 Cache:        $($p.CpuL2Cache)")
-                [void]$sb.AppendLine("  L3 Cache:        $($p.CpuL3Cache)")
-                [void]$sb.AppendLine()
-                if ($p.PrimaryGpu) {
-                    [void]$sb.AppendLine("[Graphics]")
-                    [void]$sb.AppendLine("  Name:            $($p.PrimaryGpu.Name)")
-                    [void]$sb.AppendLine("  Manufacturer:    $($p.PrimaryGpu.Manufacturer)")
-                    [void]$sb.AppendLine("  Driver Version:  $($p.PrimaryGpu.DriverVersion)")
-                    [void]$sb.AppendLine("  Driver Date:     $($p.PrimaryGpu.DriverDate)")
-                    [void]$sb.AppendLine("  VRAM:            $($p.PrimaryGpu.Vram)")
-                    [void]$sb.AppendLine("  Resolution:      $($p.PrimaryGpu.Resolution) @ $($p.PrimaryGpu.RefreshRate)")
-                    [void]$sb.AppendLine()
-                }
-                [void]$sb.AppendLine("[RAM]")
-                [void]$sb.AppendLine("  Total Installed: $($p.RamTotal) (Usable: $($p.RamUsable))")
-                [void]$sb.AppendLine("  Speed:           $($p.RamSpeed)")
-                [void]$sb.AppendLine("  Manufacturer:    $($p.RamManufacturer)")
-                [void]$sb.AppendLine("  Part Number:     $($p.RamPartNumber)")
-                [void]$sb.AppendLine("  Slots:           $($p.RamSlots)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Storage]")
-                [void]$sb.AppendLine("  Physical Disks:  $($p.Disks -join ' | ')")
-                [void]$sb.AppendLine("  Volumes:         $($p.Volumes -join ' | ')")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Network]")
-                [void]$sb.AppendLine("  Adapter Name:    $($p.NetAdapterName)")
-                [void]$sb.AppendLine("  Description:     $($p.NetDescription)")
-                [void]$sb.AppendLine("  MAC Address:     $($p.NetMacAddress)")
-                [void]$sb.AppendLine("  Link Speed:      $($p.NetLinkSpeed)")
-                [void]$sb.AppendLine("  IPv4 Address:    $($p.NetIpAddress)")
-                [void]$sb.AppendLine("  Status:          $($p.NetStatus)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Battery / Power]")
-                [void]$sb.AppendLine("  Power Status:    $($p.BatteryStatus)")
-                [void]$sb.AppendLine("  Battery Device:  $($p.BatteryName)")
-                [void]$sb.AppendLine("  Charge Level:    $($p.BatteryPercent)")
-                [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("Generated by PumpkiN Ultimate Windows Optimizer v5.5.0")
+                Restore-DefaultCursors
+                if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = "Windows Default" }
+                & $script:LogToGui "[+] Windows default cursors restored successfully!"
+            } catch {
+                & $script:LogToGui "[-] Cursor restore error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
 
-                [System.Windows.Clipboard]::SetText($sb.ToString())
-                & $script:LogToGui "[+] Complete Device Specifications report copied to clipboard!"
-                $s.Content = "Copied!"
-                $timer = [System.Windows.Threading.DispatcherTimer]::new()
-                $timer.Interval = [TimeSpan]::FromMilliseconds(1500)
-                $timer.Add_Tick({
-                    param($ts, $te)
-                    $s.Content = "Copy All Specs"
-                    $ts.Stop()
-                })
-                $timer.Start()
+    $btnRestoreDefaultCursors = $window.FindName("BtnRestoreDefaultCursors")
+    if ($btnRestoreDefaultCursors) {
+        $btnRestoreDefaultCursors.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Restoring default Windows cursor schemes..."
+            try {
+                Restore-DefaultCursors
+                if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = "Windows Default" }
+                & $script:LogToGui "[+] Default Windows cursors restored successfully!"
+            } catch {
+                & $script:LogToGui "[-] Cursor restore failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # Gaming DNS Benchmark & Fast Switcher
+    if ($btnBenchmarkDns) {
+        $btnBenchmarkDns.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting Gaming DNS latency benchmark (Cloudflare, Google, Quad9, OpenDNS)..."
+            try {
+                Optimize-StartupAndDns
+                & $script:LogToGui "[+] Fastest gaming DNS successfully applied to active network adapter!"
+                if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+            } catch {
+                & $script:LogToGui "[-] DNS benchmark failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnResetDns) {
+        $btnResetDns.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Resetting DNS servers to router automatic DHCP..."
+            try {
+                Reset-DnsToAutomatic
+                & $script:LogToGui "[+] DNS servers reset to automatic DHCP!"
+                if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+            } catch {
+                & $script:LogToGui "[-] DNS reset error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # System Health, Diagnostics & Cleaners
+    if ($btnRunDiagnostics) {
+        $btnRunDiagnostics.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Launching Windows System File Checker (SFC) and DISM health repair..."
+            try {
+                Repair-SystemHealth
+                & $script:LogToGui "[+] System health repair routine completed!"
+            } catch {
+                & $script:LogToGui "[-] Repair failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnClearUpdateCache) {
+        $btnClearUpdateCache.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Purging corrupted Windows Update download cache..."
+            try {
+                Clear-WindowsUpdateCache
+                & $script:LogToGui "[+] Windows Update cache cleared successfully!"
+            } catch {
+                & $script:LogToGui "[-] Failed to clear WU cache: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnClearDeepCacheBar) {
+        $btnClearDeepCacheBar.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Running Deep Junk & Shader Temp Cache Cleaner..."
+            try {
+                Invoke-DeepCacheCleaner
+                & $script:LogToGui "[+] Deep Cache Cleaner finished!"
+            } catch {
+                & $script:LogToGui "[-] Cache cleaner failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnReport_Interrupts) {
+        $btnReport_Interrupts.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Checking DPC Interrupt Latency and Device Manager state..."
+            try {
+                $status = Get-DeviceManagerOptimizationStatus
+                & $script:LogToGui "[+] Device Manager optimization status: $status (HPET/SMBus/Timers)"
             } catch {}
         })
     }
 
-    # Trigger initial load of device specs
-    & $script:UpdateDeviceSpecsView
+    # Top Bar Actions
+    if ($btnRestorePointTop) {
+        $btnRestorePointTop.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Creating safe Windows System Restore Point..."
+            try {
+                New-SystemRestorePointSafe -Description "PumpkiN Optimizer Pre-Tune Point"
+                & $script:LogToGui "[+] System Restore Point created successfully!"
+            } catch {
+                & $script:LogToGui "[-] Restore point failed: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnMasActivateTop) {
+        $btnMasActivateTop.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS)..."
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`"" -Verb RunAs
+        })
+    }
+    if ($btnBeastMode) {
+        $btnBeastMode.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "=== ENGAGING FULL BEAST MODE (Applying all recommended tweaks) ==="
+            $safeTweaks = @($script:TweakDefinitions | Where-Object { $_.Tier -ne "Esports" })
+            & $script:InvokeSequentialTweakAction -Tweaks $safeTweaks -Action "Apply"
+        })
+    }
 
-    # Initial Log Greeting & Status
-    & $updateStandbyStatus
-    $hw = Get-HardwareProfile
-    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.5.0 initialized."
-    & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"
-    & $script:LogToGui "Select tweaks or software to install, then click the action button."
-    if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+    # Match Booster & Standby Purge
+    if ($btnStartGameBooster) {
+        $btnStartGameBooster.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting PumpkiN Match Booster Daemon..."
+            try {
+                Invoke-MatchBooster
+                & $script:LogToGui "[+] Match Booster active: gaming processes prioritized, standby memory purged!"
+            } catch {
+                & $script:LogToGui "[-] Match Booster error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+    if ($btnPurgeStandby) {
+        $btnPurgeStandby.Add_Click({
+            & $script:LogToGui "[*] Purging Windows standby memory cache via EmptyStandbyList..."
+            try {
+                $exe = Join-Path (Split-Path $PSScriptRoot -Parent) "EmptyStandbyList.exe"
+                if (Test-Path $exe) {
+                    Start-Process -FilePath $exe -ArgumentList "workingsets standby" -NoNewWindow -Wait
+                    & $script:LogToGui "[+] Standby memory list purged successfully!"
+                } else {
+                    & $script:LogToGui "[-] EmptyStandbyList.exe not found in root directory." "WARN"
+                }
+            } catch {
+                & $script:LogToGui "[-] Standby purge error: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # Device Page Actions
+    if ($btnRefreshDeviceSpecs) {
+        $btnRefreshDeviceSpecs.Add_Click({
+            & $script:LogToGui "[*] Refreshing live device hardware specifications..."
+            & $script:UpdateDeviceSpecsView
+            & $script:LogToGui "[+] Hardware profile refreshed."
+        })
+    }
+    if ($btnCopyAllDeviceSpecs) {
+        $btnCopyAllDeviceSpecs.Add_Click({
+            try {
+                $hw = Get-HardwareProfile
+                $specsText = @"
+PumpkiN Windows Optimizer - Hardware Specifications Report
+----------------------------------------------------------
+Computer Name:  $($env:COMPUTERNAME)
+CPU:            $($hw.CpuName) ($($hw.CpuCores) Cores / $($hw.CpuThreads) Threads @ $($hw.CpuBaseClock) GHz)
+GPU:            $($hw.GpuPrimary) (Driver: $($hw.GpuDriverVersion), VRAM: $($hw.GpuMemoryGb) GB)
+RAM:            $($hw.TotalRamGb) GB ($($hw.RamSpeedMhz) MHz)
+OS:             $($hw.OsName) (Build $($hw.OsBuild))
+Network:        $($hw.ActiveAdapterName) ($($hw.ActiveAdapterSpeed))
+"@
+                [System.Windows.Clipboard]::SetText($specsText)
+                & $script:LogToGui "[+] Full system hardware specifications copied to clipboard!"
+            } catch {
+                & $script:LogToGui "[-] Failed to copy specs: $($_.Exception.Message)" "ERROR"
+            }
+        })
+    }
+
+    # TrafficMonitor Buttons
+    $btnInstallTrafficMonitor = $window.FindName("BtnInstallTrafficMonitor")
+    $btnInstallMiSansFonts    = $window.FindName("BtnInstallMiSansFonts")
+    $btnLaunchTrafficMonitor  = $window.FindName("BtnLaunchTrafficMonitor")
+    if ($btnInstallTrafficMonitor) {
+        $btnInstallTrafficMonitor.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Downloading and installing TrafficMonitor..."
+            try { Install-TrafficMonitorLatest -LogCallback $script:LogToGui } catch {}
+        })
+    }
+    if ($btnInstallMiSansFonts) {
+        $btnInstallMiSansFonts.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Installing MiSans fonts..."
+            try { Install-MiSansFonts -LogCallback $script:LogToGui } catch {}
+        })
+    }
+    if ($btnLaunchTrafficMonitor) {
+        $btnLaunchTrafficMonitor.Add_Click({
+            try { Start-TrafficMonitorApp -LogCallback $script:LogToGui } catch {}
+        })
+    }
+
+    # 15. Initial Load & Telemetry Loop
+    & $script:UpdateDeviceSpecsView
+    & $script:UpdateGuiAuditStatus
+
+    & $script:LogToGui "PumpkiN Ultimate Windows Optimizer v5.6.0 initialized."
+    & $script:LogToGui "Live audit complete. Use toggle switches to control individual optimizations."
 
     # Live Hardware Telemetry DispatcherTimer
     $telemetryTimer = [System.Windows.Threading.DispatcherTimer]::new()
@@ -5287,82 +3624,37 @@ function Start-PumpkiNGui {
     $updateTelemetryAction = {
         try {
             $t = Get-LiveHardwareTelemetry
-            if ($txtLiveCpu) { $txtLiveCpu.Text = "$($t.CpuLoad)%" }
-            if ($txtLiveRam) { $txtLiveRam.Text = "$($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%)" }
-            if ($txtLivePing) {
-                $txtLivePing.Text = if ($t.PingMs -ge 0) { "$($t.PingMs) ms" } else { "--" }
-            }
+            if ($txtLiveCpu)  { $txtLiveCpu.Text = "$($t.CpuLoad)%" }
+            if ($txtLiveRam)  { $txtLiveRam.Text = "$($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%)" }
+            if ($txtLivePing) { $txtLivePing.Text = if ($t.PingMs -ge 0) { "$($t.PingMs) ms" } else { "--" } }
             if ($txtLiveBooster) {
                 $txtLiveBooster.Text = $t.BoosterStatus
-                if ($t.BoosterStatus -like "BOOST*") {
-                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-                } elseif ($t.BoosterStatus -like "ACTIVE*") {
-                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#A855F7")
-                } else {
-                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-                }
+                $txtLiveBooster.Foreground = if ($t.BoosterStatus -like "BOOST*") { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88") } elseif ($t.BoosterStatus -like "ACTIVE*") { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#A855F7") } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8") }
             }
-            & $updateDaemonStatusUI
         } catch {}
     }
     $telemetryTimer.Add_Tick($updateTelemetryAction)
     $telemetryTimer.Start()
     & $updateTelemetryAction
 
-    # Complete shutdown and force-close engine (releases 100% of RAM memory)
+    # Exit Handler
     $script:ExitOptimizer = {
-        try {
-            if ($telemetryTimer) { $telemetryTimer.Stop() }
-        } catch {}
-        try {
-            Stop-SmartGameBoosterDaemon
-        } catch {}
-        try {
-            Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-        } catch {}
-        try {
-            if ([System.Windows.Application]::Current) {
-                [System.Windows.Application]::Current.Shutdown(0)
-            }
-        } catch {}
-        try {
-            if ($window -and $window.IsVisible) {
-                $window.Close()
-            }
-        } catch {}
-        try {
-            [System.Diagnostics.Process]::GetCurrentProcess().Kill()
-        } catch {
-            Stop-Process -Id $PID -Force
-        }
+        try { if ($telemetryTimer) { $telemetryTimer.Stop() } } catch {}
+        try { Stop-SmartGameBoosterDaemon } catch {}
+        try { Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue } catch {}
+        try { if ([System.Windows.Application]::Current) { [System.Windows.Application]::Current.Shutdown(0) } } catch {}
+        try { if ($window -and $window.IsVisible) { $window.Close() } } catch {}
+        try { [System.Diagnostics.Process]::GetCurrentProcess().Kill() } catch { Stop-Process -Id $PID -Force }
     }
 
-    if ($btnExitTop) {
-        $btnExitTop.Add_Click({
-            & $script:ExitOptimizer
-        })
-    }
-
-    # Clean shutdown on window close
-    $window.Add_Closing({
-        try {
-            if ($telemetryTimer) { $telemetryTimer.Stop() }
-            Stop-SmartGameBoosterDaemon
-        } catch {}
-    })
-
-    $window.Add_Closed({
-        & $script:ExitOptimizer
-    })
+    if ($btnExitTop) { $btnExitTop.Add_Click({ & $script:ExitOptimizer }) }
+    $window.Add_Closing({ try { if ($telemetryTimer) { $telemetryTimer.Stop() }; Stop-SmartGameBoosterDaemon } catch {} })
+    $window.Add_Closed({ & $script:ExitOptimizer })
 
     # Launch GUI Window
     [void]$window.ShowDialog()
-
-    # Guaranteed force-close fallback once window dialog exits
     & $script:ExitOptimizer
 }
-
-# ==============================================================================
 
 # ------------------------------------------------------------------------------
 # MODULE: Optimize-AmdGpu
@@ -5966,30 +4258,57 @@ if (-not $Script:IsBundled -and $MyInvocation.InvocationName -ne '.') {
 #>
 
 function Toggle-WifiAutoconfig {
+    param(
+        [string]$Action
+    )
     Write-Host "`n================================================================================" -ForegroundColor Cyan
     Write-Host "                       WI-FI BACKGROUND SCAN MITIGATOR                          " -ForegroundColor Cyan
     Write-Host "================================================================================" -ForegroundColor Cyan
     Write-Host "Windows scans for Wi-Fi networks every 60s in the background, causing 100-300ms ping spikes."
     Write-Host "Disabling AutoConfig during gaming gives flat, wired-like ping."
     Write-Host ""
-    $wifi = Get-NetAdapter | Where-Object { $_.InterfaceType -eq 71 -or $_.InterfaceDescription -match 'Wi-Fi|Wireless' } | Select-Object -First 1
+    $wifi = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.InterfaceType -eq 71 -or $_.InterfaceDescription -match 'Wi-Fi|Wireless' } | Select-Object -First 1
     if (-not $wifi) {
         Write-Host "[!] No active Wi-Fi adapter detected on this PC." -ForegroundColor Yellow
-        Read-Host "Press Enter to return"
-        return
+        return $false
     }
     Write-Host "Active Wi-Fi Adapter: $($wifi.Name)" -ForegroundColor Green
+
+    # If Action specified or programmatic call
+    if ($Action -match 'Disable|no|off') {
+        netsh wlan set autoconfig enabled=no interface="$($wifi.Name)" 2>$null | Out-Null
+        Write-Host "[OK] Wi-Fi AutoConfig DISABLED! Background scanning is frozen for 0ms ping spikes." -ForegroundColor Green
+        return $true
+    } elseif ($Action -match 'Enable|yes|on') {
+        netsh wlan set autoconfig enabled=yes interface="$($wifi.Name)" 2>$null | Out-Null
+        Write-Host "[OK] Wi-Fi AutoConfig ENABLED! Normal Wi-Fi discovery restored." -ForegroundColor Green
+        return $true
+    }
+
+    # If invoked programmatically without action, toggle automatically
+    if ($MyInvocation.InvocationName -eq '.' -or (-not [Environment]::UserInteractive)) {
+        $curState = netsh wlan show interfaces 2>$null
+        if ($curState -match 'disabled|Disabled') {
+            netsh wlan set autoconfig enabled=yes interface="$($wifi.Name)" 2>$null | Out-Null
+            Write-Host "[OK] Wi-Fi AutoConfig ENABLED! Normal Wi-Fi discovery restored." -ForegroundColor Green
+        } else {
+            netsh wlan set autoconfig enabled=no interface="$($wifi.Name)" 2>$null | Out-Null
+            Write-Host "[OK] Wi-Fi AutoConfig DISABLED! Background scanning is frozen for 0ms ping spikes." -ForegroundColor Green
+        }
+        return $true
+    }
+
     Write-Host "  [1] DISABLE Background Scan (Competitive Gaming Mode - ZERO Ping Spikes)" -ForegroundColor Green
     Write-Host "  [2] ENABLE Background Scan (Normal Mode - Discover New Wi-Fi Networks)" -ForegroundColor Yellow
     Write-Host "  [0] Back to Main Menu"
     $wChoice = Read-Host "`nSelect option [0-2]"
     switch ($wChoice) {
         "1" {
-            netsh wlan set autoconfig enabled=no interface="$($wifi.Name)"
+            netsh wlan set autoconfig enabled=no interface="$($wifi.Name)" 2>$null | Out-Null
             Write-Host "`n[OK] Wi-Fi AutoConfig DISABLED! Background scanning is frozen for 0ms ping spikes." -ForegroundColor Green
         }
         "2" {
-            netsh wlan set autoconfig enabled=yes interface="$($wifi.Name)"
+            netsh wlan set autoconfig enabled=yes interface="$($wifi.Name)" 2>$null | Out-Null
             Write-Host "`n[OK] Wi-Fi AutoConfig ENABLED! Normal Wi-Fi discovery restored." -ForegroundColor Green
         }
     }
@@ -10002,6 +8321,143 @@ function Run-Diagnostics {
         $maxCf = ($pingCf | Measure-Object -Property ResponseTime -Maximum).Maximum
         Write-Host "Cloudflare DNS (1.1.1.1): Avg: $avgCf ms | Min: $minCf ms | Max: $maxCf ms (Jitter: $([math]::Round($maxCf - $minCf, 1)) ms)" -ForegroundColor Green
     }
+
+    Show-SystemAuditReport
+}
+
+function Show-SystemAuditReport {
+    <#
+    .SYNOPSIS
+        Displays a structured, categorized console report of all active vs unapplied
+        optimizations across Gaming & Latency, Privacy & Telemetry, and System & Usability.
+    #>
+    [CmdletBinding()]
+    param()
+
+    Write-Host "`n================================================================================" -ForegroundColor Cyan
+    Write-Host "                LIVE SYSTEM AUDIT & TWEAK STATUS REPORT                         " -ForegroundColor Cyan
+    Write-Host "================================================================================" -ForegroundColor Cyan
+    $audit = Get-SystemAuditState
+    $scCol = if ($audit.ScorePercent -ge 80) { 'Green' } elseif ($audit.ScorePercent -ge 50) { 'Yellow' } else { 'Cyan' }
+    Write-Host "Overall System Tuning Score: $($audit.ScoreGrade) ($($audit.ScoreApplied)/$($audit.ScoreTotal) Active - $($audit.ScorePercent)%)" -ForegroundColor $scCol
+
+    # Category 1: Gaming & Latency
+    $gamingMap = [ordered]@{
+        'GpuAuto'             = 'GPU Driver Latency Auto-Tuning'
+        'HardwareMsi'         = 'Hardware MSI Mode (GPU/Net/Audio/USB)'
+        'DisablePowerSaving'  = 'Disable Device Power Saving Suspensions'
+        'Mpo'                 = 'Disable Multiplane Overlay (MPO)'
+        'MouseCurve'          = '1:1 Raw Mouse Linear Curve'
+        'InputLatency'        = '8000Hz USB Keyboard Response Buffers'
+        'CsrssPriority'       = 'CSRSS Realtime I/O Priority'
+        'CpuSystem'           = 'Win32PrioritySeparation Quantum (0x26)'
+        'SvcHost'             = 'SvcHost RAM Thread Splitting'
+        'Network'             = 'TCP/IP Low-Latency Anti-Lag Stack'
+        'WifiScan'            = 'Wi-Fi 0ms Roaming Ping Shield'
+        'StartupDns'          = 'Gaming DNS & Fast Startup Tuning'
+        'GameHooks'           = 'Esports Process Priority Hooks'
+        'UltimatePower'       = 'PumpkiN Ultimate Power Plan (0% Core Parking)'
+        'CoreUnpark'          = '100% CPU Core Unparking'
+        'StripVisual'         = 'Strip Desktop Visual Animations'
+        'EndTask'             = 'Taskbar End Task Right-Click'
+        'StickyKeys'          = 'Disable Sticky Keys Prompt'
+        'CompactMetrics'      = 'Compact Window Metrics (8px Scrollbars)'
+        'DebloatServices'     = 'Debloat Background Services'
+        'DiskIo'              = 'Optimize Disk I/O & NTFS (No 8.3/LastAccess)'
+        'CompactOs'           = 'CompactOS System Compression'
+        'TakeOwnership'       = 'Take Ownership Context Menu'
+        'JunkTasks'           = 'Disable Scheduled Junk Tasks'
+        'Privacy'             = 'Harden Core Windows Telemetry (Level 0)'
+        'AudioDpc'            = 'Audio DPC & Anti-Popping (MMCSS High)'
+        'UsbxHci'             = 'USB xHCI Realtime Thread Priority (31)'
+        'DeviceManager'       = 'Device Manager Latency Tuning (HPET/Timers)'
+    }
+    $activeGamingCount = 0
+    foreach ($k in $gamingMap.Keys) { if ($audit.State[$k] -eq $true) { $activeGamingCount++ } }
+    Write-Host "`n>>> GAMING & LATENCY TWEAKS ($activeGamingCount/$($gamingMap.Count) Active):" -ForegroundColor Cyan
+    foreach ($k in $gamingMap.Keys) {
+        $isActive = ($audit.State[$k] -eq $true)
+        $glyph = if ($isActive) { "[+]" } else { "[-]" }
+        $col   = if ($isActive) { "Green" } else { "DarkGray" }
+        Write-Host "  $glyph $($gamingMap[$k])" -ForegroundColor $col
+    }
+
+    # Category 2: Privacy & Telemetry
+    $privacyMap = [ordered]@{
+        'AppTelemetry'             = 'Disable 3rd-Party App Telemetry (Edge/Chrome/NV)'
+        'BluetoothAdvertising'     = 'Disable Bluetooth Advertising Beacons'
+        'CloudContent'             = 'Disable Cloud Optimized Content'
+        'CdpServices'              = 'Disable CDP Connected Devices Platform'
+        'DiagnosticsToasts'        = 'Disable Feedback & Survey Toasts'
+        'OnlineSpeech'             = 'Disable Online Speech Recognition'
+        'Arso'                     = 'Disable Auto-Restart Apps on Reboot'
+        'TextInputCollection'      = 'Disable Handwriting & Typing Collection'
+        'ClipboardSync'            = 'Disable Clipboard Cloud Synchronization'
+        'SettingsMessageSync'      = 'Disable Settings & Message Sync'
+        'FindMyDevice'             = 'Disable Find My Device GPS Tracking'
+        'SafeSearch'               = 'Disable SafeSearch Query Telemetry'
+        'RemoteAssistanceRegistry' = 'Disable Remote Assistance & Remote Registry'
+        'DriverUpdatesExcluded'    = 'Exclude Drivers from Windows Update'
+        'StoreAutoUpdates'         = 'Disable Microsoft Store Background Updates'
+        'SmartScreen'              = 'Disable SmartScreen Hash Verification'
+        'CrashDumps'               = 'Disable System Memory Crash Dumps'
+        'SystemTimeouts'           = 'Optimize Service Shutdown Timeouts (2000ms)'
+    }
+    $activePrivCount = 0
+    foreach ($k in $privacyMap.Keys) { if ($audit.State[$k] -eq $true) { $activePrivCount++ } }
+    Write-Host "`n>>> PRIVACY & TELEMETRY TWEAKS ($activePrivCount/$($privacyMap.Count) Active):" -ForegroundColor Magenta
+    foreach ($k in $privacyMap.Keys) {
+        $isActive = ($audit.State[$k] -eq $true)
+        $glyph = if ($isActive) { "[+]" } else { "[-]" }
+        $col   = if ($isActive) { "Green" } else { "DarkGray" }
+        Write-Host "  $glyph $($privacyMap[$k])" -ForegroundColor $col
+    }
+
+    # Category 3: System, Shell & Usability
+    $systemMap = [ordered]@{
+        'BlockWpbt'               = 'Block UEFI WPBT Binary Execution'
+        'BlockPeripheral'         = 'Block Peripheral Bloatware Auto-Install'
+        'RemoveAi'                = 'Purge Windows AI, Copilot & Recall'
+        'SecurityUpdatesOnly'     = 'Security-Only Updates (Defer Feature Builds)'
+        'ClassicContext'          = 'Classic Windows 10 Right-Click Menu'
+        'DisableBing'             = 'Disable Start Menu Web & Bing Search'
+        'DisableAutoDiscovery'    = 'Disable Network Explorer Auto-Discovery'
+        'ShowExtensions'          = 'Show File Extensions & Hidden Files'
+        'DisableAds'              = 'Disable All Windows Desktop & Shell Ads'
+        'NoShortcutArrows'        = 'Remove Shortcut Arrow Icon Overlays'
+        'EnableLongPaths'         = 'Enable Win32 Long Paths (MAX_PATH 32767)'
+        'DisableLockScreen'       = 'Disable Windows Lock Screen Swipe'
+        'BsodVerbose'             = 'Verbose BSOD Stop Codes & Drivers'
+        'DisableReservedStorage'  = 'Reclaim 7GB Windows Reserved Storage'
+        'BitLocker'               = 'Turn Off BitLocker Drive Encryption'
+        'VbsSecurity'             = 'Disable VBS / HVCI Memory Integrity'
+        'TaskbarLeft'             = 'Align Taskbar Icons to Left'
+        'RecommendedStart'        = 'Hide Start Menu Recommended Section'
+        'TaskbarChat'             = 'Disable Taskbar Chat & Teams Widget'
+        'FilesCompact'            = 'File Explorer Compact View Mode'
+        'SnapAssist'              = 'Disable Snap Assist Window Suggestions'
+        'WindowsStickers'         = 'Disable Desktop Stickers'
+        'EdgeDiscover'            = 'Disable Edge Discover Bing Sidebar'
+        'CopyMoveMenu'            = 'Add Copy To & Move To Context Menu'
+        'WindowShake'             = 'Disable Aero Shake Window Minimizing'
+        'SystemDarkMode'          = 'System-Wide Dark Mode'
+        'VerboseLogon'            = 'Enable Verbose Startup Boot Messages'
+        'QuickAccessHistory'      = 'Disable Quick Access Recent Files History'
+        'MyPeople'                = 'Disable My People Taskbar Band'
+        'WindowsInk'              = 'Disable Windows Ink Workspace'
+        'CastToDevice'            = 'Disable Cast to Device Context Menu'
+    }
+    $activeSysCount = 0
+    foreach ($k in $systemMap.Keys) { if ($audit.State[$k] -eq $true) { $activeSysCount++ } }
+    Write-Host "`n>>> SYSTEM & USABILITY TWEAKS ($activeSysCount/$($systemMap.Count) Active):" -ForegroundColor Yellow
+    foreach ($k in $systemMap.Keys) {
+        $isActive = ($audit.State[$k] -eq $true)
+        $glyph = if ($isActive) { "[+]" } else { "[-]" }
+        $col   = if ($isActive) { "Green" } else { "DarkGray" }
+        Write-Host "  $glyph $($systemMap[$k])" -ForegroundColor $col
+    }
+
+    Write-Host "`n================================================================================" -ForegroundColor Cyan
 }
 
 function Get-SystemAuditState {
@@ -10014,6 +8470,10 @@ function Get-SystemAuditState {
     param()
 
     $state = @{}
+
+    if (-not (Get-PSDrive -Name HKCR -ErrorAction SilentlyContinue)) {
+        New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT -ErrorAction SilentlyContinue | Out-Null
+    }
 
     # 1. GPU & Display Latency
     try {
@@ -10058,8 +8518,9 @@ function Get-SystemAuditState {
     } catch { $state['AudioDpc'] = $false }
 
     try {
-        $xhciPrio = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).ThreadPriority
-        $state['UsbxHci'] = ($xhciPrio -eq 31)
+        $xhciPrio1 = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\PriorityControl' -ErrorAction SilentlyContinue).ThreadPriority
+        $xhciPrio2 = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Services\USBXHCI\Parameters' -ErrorAction SilentlyContinue).ThreadPriority
+        $state['UsbxHci'] = ($xhciPrio1 -eq 31 -or $xhciPrio2 -eq 31)
     } catch { $state['UsbxHci'] = $false }
 
     # 4. Network & Anti-Lag
@@ -10076,11 +8537,14 @@ function Get-SystemAuditState {
 
     try {
         $state['WifiScan'] = $false
-        if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) {
-            $hw = Get-HardwareProfile
-            if ($hw -and $hw.IsWifi) {
-                $wlanOut = netsh wlan show interfaces 2>$null
-                $state['WifiScan'] = ($wlanOut -match 'disabled|Disabled')
+        $wlanOut = netsh wlan show interfaces 2>$null
+        if ($wlanOut -match 'disabled|Disabled') {
+            $state['WifiScan'] = $true
+        } else {
+            $hw = if (Get-Command Get-HardwareProfile -ErrorAction SilentlyContinue) { Get-HardwareProfile } else { $null }
+            if ($hw -and (-not $hw.IsWifi)) {
+                # Ethernet PC - AutoConfig scanning does not cause ping spikes on wired Ethernet
+                $state['WifiScan'] = $true
             }
         }
     } catch { $state['WifiScan'] = $false }
@@ -10099,7 +8563,7 @@ function Get-SystemAuditState {
 
     try {
         $coreAttr = (Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-48e0-a5e0-94168290a945\0cc5b647-c1df-4637-891a-dec35c318583' -ErrorAction SilentlyContinue).Attributes
-        $state['CoreUnpark'] = ($coreAttr -eq 0)
+        $state['CoreUnpark'] = ($coreAttr -eq 0 -or $coreAttr -eq 2)
     } catch { $state['CoreUnpark'] = $false }
 
     # 6. Visuals & System Tweaks
@@ -10140,7 +8604,7 @@ function Get-SystemAuditState {
     } catch { $state['CompactOs'] = $false }
 
     try {
-        $state['TakeOwnership'] = (Test-Path 'HKCR:\*\shell\runas' -ErrorAction SilentlyContinue)
+        $state['TakeOwnership'] = (Test-Path -LiteralPath 'HKCR:\*\shell\runas' -ErrorAction SilentlyContinue)
     } catch { $state['TakeOwnership'] = $false }
 
     try {
@@ -10186,7 +8650,8 @@ function Get-SystemAuditState {
 
     try {
         $noNet = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -ErrorAction SilentlyContinue).NoNetCrawling
-        $state['DisableAutoDiscovery'] = ($noNet -eq 1)
+        $folderType = (Get-ItemProperty 'HKCU:\Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell' -ErrorAction SilentlyContinue).FolderType
+        $state['DisableAutoDiscovery'] = ($noNet -eq 1 -or $folderType -eq 'NotSpecified')
     } catch { $state['DisableAutoDiscovery'] = $false }
 
     try {
@@ -10238,7 +8703,7 @@ function Get-SystemAuditState {
             $state['DeviceManager'] = (Get-DeviceManagerOptimizationStatus)
         } else {
             $hpet = Get-PnpDevice -FriendlyName 'High precision event timer' -ErrorAction SilentlyContinue | Select-Object -First 1
-            $state['DeviceManager'] = ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or $hpet.Status -eq 'Error'))
+            $state['DeviceManager'] = ($hpet -and ($hpet.ConfigManagerErrorCode -eq 22 -or "$($hpet.ConfigManagerErrorCode)" -match 'DISABLED|22' -or $hpet.Status -eq 'Error'))
         }
     } catch { $state['DeviceManager'] = $false }
 
@@ -10437,8 +8902,10 @@ function Get-SystemAuditState {
     # Compute Live Optimization Score & Grade
     $appliedCount = 0
     $totalCount = 0
+    $stateCopy = @{}
     foreach ($k in $state.Keys) {
         $totalCount++
+        $stateCopy[$k] = $state[$k]
         if ($state[$k] -eq $true) { $appliedCount++ }
     }
     $scorePct = if ($totalCount -gt 0) { [math]::Round(($appliedCount / $totalCount) * 100) } else { 0 }
@@ -10451,7 +8918,7 @@ function Get-SystemAuditState {
     $state['ScoreTotal']   = $totalCount
     $state['ScorePercent'] = $scorePct
     $state['ScoreGrade']   = $scoreGrade
-    $state['State']        = $state
+    $state['State']        = $stateCopy
 
     return $state
 }
@@ -10744,7 +9211,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.5.0"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.1"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -10821,6 +9288,7 @@ function Show-PumpkiNBanner {
     Write-Host "  [53] Device Manager Tuning (Disable HPET, SMBus, System Speaker & Legacy Timers)" -ForegroundColor Yellow
     Write-Host "  [54] Turn Off BitLocker Permanently (Disable Encryption, BDESVC & Decrypt Drives)" -ForegroundColor Red
     Write-Host "  [55] Custom Gaming Cursors Manager (23 Packs - 1-Click Install & Rollback)" -ForegroundColor Magenta
+    Write-Host "  [56] Re-Scan System Audit (Categorized Breakdown of Active & Unapplied Tweaks)" -ForegroundColor Cyan
     Write-Host "  [0]  Exit" -ForegroundColor Red
     Write-Host "================================================================================"
 }
@@ -10828,7 +9296,7 @@ function Show-PumpkiNBanner {
 function Show-ConsoleMenu {
     do {
         Show-PumpkiNBanner
-        $choice = Read-Host "Select an option [0-55]"
+        $choice = Read-Host "Select an option [0-56]"
         switch ($choice) {
             "1" {
                 Optimize-Network
@@ -11263,6 +9731,10 @@ function Show-ConsoleMenu {
                         Install-CursorScheme -SchemeName $selected.Name
                     }
                 }
+                Read-Host "`nPress Enter to return to menu"
+            }
+            "56" {
+                Show-SystemAuditReport
                 Read-Host "`nPress Enter to return to menu"
             }
             "0" {
