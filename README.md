@@ -1,14 +1,14 @@
 <div align="center">
 
 # 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite
-### *v5.5.0 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
+### *v5.6.0 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
 
 <p align="center" style="font-size: 1.15rem; color: #00FFCC; font-weight: bold;">
   <strong>Streamline • Optimize • Dominate</strong><br>
   <span style="font-size: 0.95rem; color: #8892B0; font-weight: normal;">Hardware-Probed Performance • 100% Symmetrical Rollback Guarantee • Zero Bloatware • 115+ App Catalog • 23 Custom Gaming Cursors</span>
 </p>
 
-[![Release](https://img.shields.io/badge/Release-v5.5.0-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
+[![Release](https://img.shields.io/badge/Release-v5.6.0-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207+-5391FE?style=for-the-badge&logo=powershell&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![Reversibility](https://img.shields.io/badge/Reversibility-100%25%20Symmetrical-FF0055?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
@@ -64,31 +64,19 @@ PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dar
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.5.0]        [🛡️ Restore Point]  [🔑 MAS Activation]    │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│ [📦 Software]  [🎮 Gaming]  [🚀 Match Booster]  [🛡️ System & Tools]  [💻 Device Details]│
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│                                                                                        │
-│  📊 SYSTEM AUDIT & OPTIMIZATION SCORE                                                  │
-│  ┌──────────────────────────────────────────────────────────────────────────────────┐  │
-│  │ ⚡ OPTIMIZATION SCORE: 88% [GRADE A - HIGH PERFORMANCE]                          │  │
-│  │ 52 / 77 Tweaks Applied • 25 Tweaks Recommend Optimization                        │  │
-│  │ [🔍 Re-Scan System State]  [⚡ Apply Unapplied Tweaks Only]  [↺ Revert All Defaults]│  │
-│  └──────────────────────────────────────────────────────────────────────────────────┘  │
-│                                                                                        │
-│  🎮 GAMING & LOW LATENCY TWEAKS:                                                       │
-│  ┌──────────────────────────────────────────────────────────────────────────────────┐  │
-│  │ [Applied ✓] Win32Priority Separation (0x26)    [Applied ✓]  [↺ Rollback]          │  │
-│  │ [Applied ✓] Device Manager High-Latency Tuning [Applied ✓]  [↺ Rollback]          │  │
-│  │ [Applied ✓] Turn Off BitLocker Permanently     [Applied ✓]  [↺ Rollback]          │  │
-│  │ [Applied ✓] Multiplane Overlay (MPO) Fix       [Applied ✓]  [↺ Rollback]          │  │
-│  │ [Applied ✓] 1:1 Raw Mouse Linear Curve         [Applied ✓]  [↺ Rollback]          │  │
-│  │ [Needed]    8000Hz USB Keyboard Response Rate  [Apply]      [↺ Rollback]          │  │
-│  │ [Applied ✓] TCP / IP NoDelay & Anti-Lag Engine [Applied ✓]  [↺ Rollback]          │  │
-│  └──────────────────────────────────────────────────────────────────────────────────┘  │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│ OUTPUT LOG: [12:00:00] PumpkiN Ultimate Gaming Optimizer v5.5.0 initialized.           │
-│ ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 100%      │
+│ ⚡ PUMPKIN ULTIMATE OPTIMIZER [v5.6.0]   [ 🔍 Search... ]  [🛡️ Restore Point]  [🔑 MAS]   │
+├───────────────┬────────────────────────────────────────────────────────────────────────┤
+│ ⚡ Dashboard   │  🎮 Gaming & Low Latency                                               │
+│ 🎮 Gaming     │  Preset: [ All ] [⭐ Recommended Safe ] [ 🔥 Esports Extreme ] [ Active ]│
+│ 🛡️ Privacy    │  Master: [⚡ Turn All ON ]  [↺ Turn All OFF (Defaults) ]  [🔍 Live Audit]│
+│ ⚙️ System     │ ────────────────────────────────────────────────────────────────────── │
+│ 📦 Software   │  Hardware MSI Mode (Lowest DPC Latency)                   [ ● ON  ]    │
+│ 💻 Device     │  8000Hz USB Keyboard Response Rate                        [ ○ OFF ]    │
+│               │  Multiplane Overlay (MPO) Stutter Fix                     [ ● ON  ]    │
+│               │  1:1 Raw Mouse Linear Curve                               [ ● ON  ]    │
+│               │  TCP / IP Anti-Lag Gaming Stack                           [ ● ON  ]    │
+├───────────────┴────────────────────────────────────────────────────────────────────────┤
+│ [▲ Show Console]  ● System Ready • Score: 88% (Grade A) • 54 / 82 Tweaks Active        │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 

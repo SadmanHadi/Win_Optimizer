@@ -8,7 +8,7 @@ $psFiles = Get-ChildItem -Path (Join-Path $projectRoot "modules") -Filter "*.ps1
 $hasAstErrors = $false
 foreach ($f in $psFiles) {
     $errs = $null
-    [System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errs)
+    [void][System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$null, [ref]$errs)
     if ($errs -and $errs.Count -gt 0) {
         Write-Host "[-] $($f.Name): $($errs.Count) syntax errors!" -ForegroundColor Red
         $hasAstErrors = $true
