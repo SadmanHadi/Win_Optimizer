@@ -6,7 +6,7 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-            ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.1
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.2
             Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
@@ -31,7 +31,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.1"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.2"
 
 # ==============================================================================
 # 2. EMBEDDED ENGINE MODULES (ALL-IN-ONE STANDALONE BUNDLE)
@@ -1166,7 +1166,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.1"
+    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.2"
     Height="840" Width="1260"
     MinHeight="700" MinWidth="1040"
     WindowStartupLocation="CenterScreen"
@@ -1440,6 +1440,128 @@ $Global:xamlContent = @'
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- ComboBoxItem Dark Style -->
+        <Style x:Key="FluentDarkComboBoxItem" TargetType="ComboBoxItem">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Padding" Value="10,7"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#F1F5F9"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBoxItem">
+                        <Border x:Name="ItemBorder" Background="{TemplateBinding Background}" BorderThickness="0" CornerRadius="4" Padding="{TemplateBinding Padding}" Margin="2,1">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#1E293D"/>
+                                <Setter Property="Foreground" Value="#00D2FF"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="ItemBorder" Property="Background" Value="#14263D"/>
+                                <Setter Property="Foreground" Value="#00FF88"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ComboBox Dropdown ToggleButton Template -->
+        <ControlTemplate x:Key="ComboBoxToggleButtonTemplate" TargetType="ToggleButton">
+            <Border x:Name="TemplateRoot" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="28"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Arrow Icon -->
+                    <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="#94A3B8"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="TemplateRoot" Property="BorderBrush" Value="#00D2FF"/>
+                    <Setter TargetName="Arrow" Property="Fill" Value="#00D2FF"/>
+                </Trigger>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter TargetName="TemplateRoot" Property="BorderBrush" Value="#00D2FF"/>
+                    <Setter TargetName="Arrow" Property="Fill" Value="#00D2FF"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <!-- ComboBox Dark Style -->
+        <Style x:Key="FluentDarkComboBox" TargetType="ComboBox">
+            <Setter Property="ItemContainerStyle" Value="{StaticResource FluentDarkComboBoxItem}"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="Background" Value="#0D131F"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#2C3B52"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton"
+                                          Template="{StaticResource ComboBoxToggleButtonTemplate}"
+                                          Focusable="false"
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"/>
+                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="10,3,28,3"
+                                              VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            <Popup x:Name="PART_Popup" AllowsTransparency="True"
+                                   IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Placement="Bottom" PopupAnimation="Slide" Focusable="False">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True"
+                                      MinWidth="{TemplateBinding ActualWidth}"
+                                      MaxHeight="260">
+                                    <Border x:Name="DropDownBorder" Background="#0D131F"
+                                            BorderBrush="#2C3B52" BorderThickness="1"
+                                            CornerRadius="6" Margin="0,3,0,6">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.6" Color="#000000"/>
+                                        </Border.Effect>
+                                        <ScrollViewer Margin="2,4" SnapsToDevicePixels="True">
+                                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="False">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="30"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="BorderBrush" Value="#00D2FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Default ComboBox & ComboBoxItem Implicit Styles -->
+        <Style TargetType="ComboBox" BasedOn="{StaticResource FluentDarkComboBox}"/>
+        <Style TargetType="ComboBoxItem" BasedOn="{StaticResource FluentDarkComboBoxItem}"/>
     </Window.Resources>
 
     <Grid>
@@ -1468,7 +1590,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="16" FontWeight="Bold" Foreground="#00D2FF"/>
                             <TextBlock Text=" OPTIMIZER" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.6.1" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
+                                <TextBlock Text="v5.6.2" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Windows 11 Fluent Gaming Suite" FontSize="11" Foreground="#64748B"/>
@@ -1767,7 +1889,7 @@ $Global:xamlContent = @'
                                             </StackPanel>
                                         </StackPanel>
                                         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                                            <ComboBox Name="CmbCursorSchemes" Width="180" Height="30" Background="#0D131F" Foreground="#FFFFFF" BorderBrush="#2C3B52" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
+                                            <ComboBox Name="CmbCursorSchemes" Width="220" Height="30" Style="{StaticResource FluentDarkComboBox}" Margin="0,0,8,0" VerticalContentAlignment="Center"/>
                                             <Button Name="BtnInstallCursor" Content="Install Scheme" Style="{StaticResource CyanButton}" Margin="0,0,6,0"/>
                                             <Button Name="BtnRestoreCursor" Content="Restore Default" Style="{StaticResource DarkOutlineButton}"/>
                                         </StackPanel>
@@ -9211,7 +9333,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.1"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.2"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'

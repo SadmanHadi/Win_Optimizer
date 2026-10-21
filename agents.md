@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Operating instructions and development standards for coding agents working on **PumpkiN's Ultimate Windows Optimizer & Software Suite v5.6.1** (`Win_Optimizer`). Read this file before every task.
+Operating instructions and development standards for coding agents working on **PumpkiN's Ultimate Windows Optimizer & Software Suite v5.6.2** (`Win_Optimizer`). Read this file before every task.
 
 **Working code only. Finish the job. Plausibility is not correctness.**
 

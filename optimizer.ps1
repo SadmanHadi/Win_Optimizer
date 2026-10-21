@@ -6,7 +6,7 @@
   |  __/| |_| | | | | | | |_) |   <| | | | | |\  |
   |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|
                         |_|                       
-            ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.1
+            ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.2
             Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
 One-line run:
@@ -31,7 +31,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.1"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.2"
 
 # ==============================================================================
 # 2. MODULAR LOADER ENGINE (LOCAL + REMOTE GITHUB FALLBACK)
@@ -110,7 +110,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.1"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.2"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
