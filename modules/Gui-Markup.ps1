@@ -9,7 +9,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.3"
+    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.7.0"
     Height="840" Width="1260"
     MinHeight="700" MinWidth="1040"
     WindowStartupLocation="CenterScreen"
@@ -433,7 +433,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="16" FontWeight="Bold" Foreground="#00D2FF"/>
                             <TextBlock Text=" OPTIMIZER" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.6.3" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
+                                <TextBlock Text="v5.7.0" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Windows 11 Fluent Gaming Suite" FontSize="11" Foreground="#64748B"/>
@@ -865,6 +865,7 @@ $Global:xamlContent = @'
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                             <StackPanel Name="StackCategoryChips" Orientation="Horizontal">
                                 <Button Name="ChipCatAll" Content="All Apps (115+)" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatUpdates" Content="Updates Available (0)" Style="{StaticResource CategoryChip}"/>
                                 <Button Name="ChipCatBrowsers" Content="Browsers" Style="{StaticResource CategoryChip}"/>
                                 <Button Name="ChipCatComms" Content="Communications" Style="{StaticResource CategoryChip}"/>
                                 <Button Name="ChipCatDev" Content="Development" Style="{StaticResource CategoryChip}"/>
@@ -898,9 +899,11 @@ $Global:xamlContent = @'
 
                             <StackPanel Grid.Row="0">
                                 <TextBlock Text="ACTIONS" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
-                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,8"/>
-                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,8"/>
-                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,12"/>
+                                <Button Name="BtnCheckUpdates" Content="Check for Updates" Style="{StaticResource CyanButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnUpgradeSelected" Content="Upgrade Selected" Style="{StaticResource OrangeButton}" Margin="0,0,0,8"/>
+                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,12"/>
                                 
                                 <Border Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,12">
                                     <StackPanel>
@@ -925,6 +928,7 @@ $Global:xamlContent = @'
                                 <Button Name="BtnSelectAll" Content="Select Visible" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
                                 <Button Name="BtnClearAll" Content="Clear Selection" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
                                 <TextBlock Name="TxtSelectedCount" Text="0 apps selected" FontSize="12" Foreground="#00D2FF" FontWeight="SemiBold"/>
+                                <TextBlock Name="TxtUpdatesCount" Text="" FontSize="11" Foreground="#FF7700" FontWeight="SemiBold" Margin="0,4,0,0"/>
                             </StackPanel>
 
                             <Border Grid.Row="3" Background="#0A0E17" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10">
@@ -1069,6 +1073,42 @@ $Global:xamlContent = @'
                                     <StackPanel Name="Panel_DevNet" Margin="10,8,0,0">
                                         <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Adapter: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                         <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Link Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Storage -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Storage &amp; Drives" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevDisk" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevDisk" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevDisk" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Physical Disks: " Foreground="#FFFFFF"/><Run Name="TxtDev_Disks" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Drive Volumes: " Foreground="#FFFFFF"/><Run Name="TxtDev_Volumes" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Power / Battery -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Power &amp; System Health" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevPower" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevPower" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevPower" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Power Source: " Foreground="#FFFFFF"/><Run Name="TxtDev_Battery" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Uptime / Boot: " Foreground="#FFFFFF"/><Run Name="TxtDev_BootTime" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>

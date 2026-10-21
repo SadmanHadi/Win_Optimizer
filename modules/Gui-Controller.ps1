@@ -151,12 +151,16 @@ function Start-PumpkiNGui {
 
     # Software Downloader Controls
     $wrapPackages            = $window.FindName("WrapPackages")
+    $btnCheckUpdates         = $window.FindName("BtnCheckUpdates")
+    $btnUpgradeSelected      = $window.FindName("BtnUpgradeSelected")
     $btnInstallSelected      = $window.FindName("BtnInstallSelected")
     $btnUninstallSelected    = $window.FindName("BtnUninstallSelected")
     $btnUpgradeAll           = $window.FindName("BtnUpgradeAll")
     $btnSelectAll            = $window.FindName("BtnSelectAll")
     $btnClearAll             = $window.FindName("BtnClearAll")
     $txtSelectedCount        = $window.FindName("TxtSelectedCount")
+    $txtUpdatesCount         = $window.FindName("TxtUpdatesCount")
+    $chipCatUpdates          = $window.FindName("ChipCatUpdates")
     $btnInstallEquicord      = $window.FindName("BtnInstallEquicord")
     $btnOpenEquicordSite     = $window.FindName("BtnOpenEquicordSite")
 
@@ -248,7 +252,7 @@ function Start-PumpkiNGui {
     if ($navPrivacy)   { $navPrivacy.Add_Checked({ & $script:SwitchPage $pagePrivacy }) }
     if ($navSystem)    { $navSystem.Add_Checked({ & $script:SwitchPage $pageSystem }) }
     if ($navSoftware)  { $navSoftware.Add_Checked({ & $script:SwitchPage $pageSoftware }) }
-    if ($navDevice)    { $navDevice.Add_Checked({ & $script:SwitchPage $pageDevice }) }
+    if ($navDevice)    { $navDevice.Add_Checked({ & $script:SwitchPage $pageDevice; if ($script:UpdateDeviceSpecsView) { & $script:UpdateDeviceSpecsView } }) }
 
     # 5. Master Tweak Definitions Registry (Unified Schema for all 82 Tweaks)
     $script:TweakDefinitions = @(
@@ -970,12 +974,17 @@ function Start-PumpkiNGui {
             if ($wrapPackages) { [void]$wrapPackages.Children.Add($card) }
 
             $script:AllAppCards.Add([PSCustomObject]@{
-                Border   = $card
-                CheckBox = $chk
-                Category = $app.Category
-                Name     = $app.Name
-                Desc     = $app.Description
-                Id       = $app.Id
+                Border        = $card
+                CheckBox      = $chk
+                Category      = $app.Category
+                Name          = $app.Name
+                Desc          = $app.Description
+                Id            = $app.Id
+                HasUpdate     = $false
+                UpdateVersion = ""
+                TxtBadge      = $txtBadge
+                Badge         = $badge
+                TxtDesc       = $txtDesc
             })
         }
     }
@@ -1050,6 +1059,243 @@ function Start-PumpkiNGui {
         })
     }
 
+    $script:HasScannedUpdates = $false
+
+    $script:PerformCheckForUpdates = {
+        & $script:ExpandLogDrawer
+        & $script:LogToGui "[*] Scanning for installed application updates via WinGet..."
+        & $script:SetProgress 20
+
+        $updates = @()
+        try {
+            $updates = Get-WinGetUpgrades -LogCallback { param($m) & $script:LogToGui $m }
+        } catch {
+            & $script:LogToGui "[-] Failed to query WinGet updates: $($_.Exception.Message)" "ERROR"
+        }
+
+        & $script:SetProgress 60
+        $script:HasScannedUpdates = $true
+
+        if (-not $updates -or $updates.Count -eq 0) {
+            & $script:LogToGui "[+] All installed applications are up to date! Zero updates pending."
+            if ($chipCatUpdates) { $chipCatUpdates.Content = "Updates Available (0)" }
+            if ($txtUpdatesCount) { $txtUpdatesCount.Text = "All apps up to date" }
+            & $script:SetProgress 0
+            return
+        }
+
+        & $script:LogToGui "[+] Found $($updates.Count) application update(s) available:"
+        foreach ($u in $updates) {
+            & $script:LogToGui "    [>] $($u.Name) ($($u.Id)): $($u.InstalledVersion) -> $($u.AvailableVersion)"
+        }
+
+        if ($chipCatUpdates) { $chipCatUpdates.Content = "Updates Available ($($updates.Count))" }
+        if ($txtUpdatesCount) { $txtUpdatesCount.Text = "$($updates.Count) update(s) available" }
+
+        $brushOrange   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700")
+        $brushOrangeBg = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#2E1A0E")
+        $brushGreen    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+
+        foreach ($u in $updates) {
+            $targetId = $u.Id.Trim().ToLower()
+            $existing = $null
+            foreach ($c in $script:AllAppCards) {
+                if ($c.Id -and $c.Id.Trim().ToLower() -eq $targetId) {
+                    $existing = $c
+                    break
+                }
+            }
+
+            if ($existing) {
+                $existing.HasUpdate = $true
+                $existing.UpdateVersion = "$($u.InstalledVersion) -> $($u.AvailableVersion)"
+                $existing.Border.BorderBrush = $brushOrange
+                $existing.CheckBox.IsChecked = $true
+                if ($existing.TxtBadge) {
+                    $existing.TxtBadge.Text = "UPDATE: $($u.AvailableVersion)"
+                    $existing.TxtBadge.Foreground = $brushOrange
+                }
+                if ($existing.Badge) {
+                    $existing.Badge.Background = $brushOrangeBg
+                }
+                if ($existing.TxtDesc) {
+                    $existing.TxtDesc.Text = "UPDATE AVAILABLE: Current: $($u.InstalledVersion)  ==>  New: $($u.AvailableVersion)"
+                    $existing.TxtDesc.Foreground = $brushGreen
+                }
+            } else {
+                $newCard = [System.Windows.Controls.Border]::new()
+                $newCard.Width = 275
+                $newCard.Height = 110
+                $newCard.Background = $brushNormalBg
+                $newCard.BorderBrush = $brushOrange
+                $newCard.BorderThickness = $thick1
+                $newCard.CornerRadius = $corn6
+                $newCard.Margin = $thick5
+                $newCard.Padding = $thick10
+                $newCard.Cursor = [System.Windows.Input.Cursors]::Hand
+
+                $cGrid = [System.Windows.Controls.Grid]::new()
+                $c0 = [System.Windows.Controls.ColumnDefinition]::new(); $c0.Width = $autoGrid
+                $c1 = [System.Windows.Controls.ColumnDefinition]::new(); $c1.Width = $starGrid
+                [void]$cGrid.ColumnDefinitions.Add($c0)
+                [void]$cGrid.ColumnDefinitions.Add($c1)
+
+                $chk = [System.Windows.Controls.CheckBox]::new()
+                $chk.Margin = [System.Windows.Thickness]::new(0, 4, 10, 0)
+                $chk.Tag = $u.Id
+                $chk.IsChecked = $true
+                $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
+                [System.Windows.Controls.Grid]::SetColumn($chk, 0)
+                [void]$cGrid.Children.Add($chk)
+
+                $sp = [System.Windows.Controls.StackPanel]::new()
+                [System.Windows.Controls.Grid]::SetColumn($sp, 1)
+
+                $topRow = [System.Windows.Controls.Grid]::new()
+                $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
+                $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
+                [void]$topRow.ColumnDefinitions.Add($trCol0)
+                [void]$topRow.ColumnDefinitions.Add($trCol1)
+
+                $txtTitle = [System.Windows.Controls.TextBlock]::new()
+                $txtTitle.Text = $u.Name
+                $txtTitle.FontWeight = [System.Windows.FontWeights]::Bold
+                $txtTitle.FontSize = 12
+                $txtTitle.Foreground = [System.Windows.Media.Brushes]::White
+                $txtTitle.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+                [System.Windows.Controls.Grid]::SetColumn($txtTitle, 0)
+                [void]$topRow.Children.Add($txtTitle)
+
+                $badge = [System.Windows.Controls.Border]::new()
+                $badge.Background = $brushOrangeBg
+                $badge.CornerRadius = [System.Windows.CornerRadius]::new(3)
+                $badge.Padding = [System.Windows.Thickness]::new(4, 1, 4, 1)
+                $badge.Margin = [System.Windows.Thickness]::new(4, 0, 0, 0)
+                $txtBadge = [System.Windows.Controls.TextBlock]::new()
+                $txtBadge.Text = "UPDATE: $($u.AvailableVersion)"
+                $txtBadge.FontSize = 9
+                $txtBadge.Foreground = $brushOrange
+                $badge.Child = $txtBadge
+                [System.Windows.Controls.Grid]::SetColumn($badge, 1)
+                [void]$topRow.Children.Add($badge)
+
+                [void]$sp.Children.Add($topRow)
+
+                $txtDesc = [System.Windows.Controls.TextBlock]::new()
+                $txtDesc.Text = "UPDATE AVAILABLE: Current: $($u.InstalledVersion)  ==>  New: $($u.AvailableVersion)"
+                $txtDesc.FontSize = 10
+                $txtDesc.Foreground = $brushGreen
+                $txtDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+                $txtDesc.Margin = [System.Windows.Thickness]::new(0, 3, 0, 0)
+                $txtDesc.MaxHeight = 42
+                $txtDesc.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+                [void]$sp.Children.Add($txtDesc)
+
+                [void]$cGrid.Children.Add($sp)
+                $newCard.Child = $cGrid
+
+                $newCard.Add_MouseEnter({
+                    $this.Background = $brushHoverBg
+                })
+                $newCard.Add_MouseLeave({
+                    $this.Background = $brushNormalBg
+                })
+                $newCard.Add_MouseLeftButtonUp({
+                    param($s, $e)
+                    if ($e.OriginalSource -isnot [System.Windows.Controls.CheckBox]) {
+                        $c = $s.Child.Children[0]
+                        $c.IsChecked = -not $c.IsChecked
+                    }
+                    & $script:UpdateSelectedCount
+                })
+                $chk.Add_Checked({ & $script:UpdateSelectedCount })
+                $chk.Add_Unchecked({ & $script:UpdateSelectedCount })
+
+                if ($wrapPackages) { [void]$wrapPackages.Children.Insert(0, $newCard) }
+
+                $script:AllAppCards.Insert(0, [PSCustomObject]@{
+                    Border        = $newCard
+                    CheckBox      = $chk
+                    Category      = "Updates"
+                    Name          = $u.Name
+                    Desc          = $txtDesc.Text
+                    Id            = $u.Id
+                    HasUpdate     = $true
+                    UpdateVersion = "$($u.InstalledVersion) -> $($u.AvailableVersion)"
+                    TxtBadge      = $txtBadge
+                    Badge         = $badge
+                    TxtDesc       = $txtDesc
+                })
+            }
+        }
+
+        # Filter grid to show updates automatically
+        foreach ($appCard in $script:AllAppCards) {
+            if ($appCard.HasUpdate -eq $true -or $appCard.Category -eq "Updates") {
+                $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+            } else {
+                $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
+            }
+        }
+
+        & $script:UpdateSelectedCount
+        & $script:SetProgress 100
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+        & $script:LogToGui "[*] Displaying $($updates.Count) available update(s) in grid. Choose packages to upgrade, then click 'Upgrade Selected'."
+    }
+
+    if ($btnCheckUpdates) {
+        $btnCheckUpdates.Add_Click({
+            & $script:PerformCheckForUpdates
+        })
+    }
+
+    if ($btnUpgradeSelected) {
+        $btnUpgradeSelected.Add_Click({
+            $selected = @($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true })
+            if ($selected.Count -eq 0) {
+                & $script:LogToGui "[-] No applications selected to upgrade. Check packages first." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting selective upgrade batch for $($selected.Count) application(s)..."
+            $idx = 0
+            $brushGreen  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+            $brushBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1F293D")
+
+            foreach ($item in $selected) {
+                $idx++
+                $pct = [int](($idx / $selected.Count) * 100)
+                & $script:SetProgress $pct
+                & $script:LogToGui "[$idx/$($selected.Count)] Upgrading $($item.Name) ($($item.Id))..."
+                $ok = Upgrade-WinGetPackage -PackageId $item.Id -LogCallback { param($m) & $script:LogToGui $m }
+                if ($ok) {
+                    $item.HasUpdate = $false
+                    $item.CheckBox.IsChecked = $false
+                    $item.Border.BorderBrush = $brushBorder
+                    if ($item.TxtBadge) {
+                        $item.TxtBadge.Text = "Up to date"
+                        $item.TxtBadge.Foreground = $brushGreen
+                    }
+                    if ($item.TxtDesc -and $item.Desc) {
+                        $item.TxtDesc.Text = $item.Desc
+                        $item.TxtDesc.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+                    }
+                }
+            }
+            & $script:SetProgress 0
+            & $script:UpdateSelectedCount
+
+            $remaining = @($script:AllAppCards | Where-Object { $_.HasUpdate -eq $true }).Count
+            if ($chipCatUpdates) { $chipCatUpdates.Content = "Updates Available ($remaining)" }
+            if ($txtUpdatesCount) {
+                $txtUpdatesCount.Text = if ($remaining -gt 0) { "$remaining update(s) available" } else { "All apps up to date" }
+            }
+            & $script:LogToGui "[+] WinGet selective upgrade batch complete!"
+        })
+    }
+
     if ($btnUpgradeAll) {
         $btnUpgradeAll.Add_Click({
             & $script:ExpandLogDrawer
@@ -1066,6 +1312,7 @@ function Start-PumpkiNGui {
     # Software Category Filter Chips
     $categoryMap = @{
         "ChipCatAll"      = "All"
+        "ChipCatUpdates"  = "Updates"
         "ChipCatBrowsers" = "Browsers"
         "ChipCatComms"    = "Communication"
         "ChipCatDev"      = "Dev & Tools"
@@ -1085,8 +1332,20 @@ function Start-PumpkiNGui {
             $btnChip.Add_Click({
                 param($s, $e)
                 $selectedCat = $s.Tag
+                if ($selectedCat -eq "Updates" -and $script:HasScannedUpdates -ne $true) {
+                    & $script:PerformCheckForUpdates
+                    return
+                }
                 foreach ($appCard in $script:AllAppCards) {
-                    if ($selectedCat -eq "All" -or $appCard.Category -like "*$selectedCat*") {
+                    if ($selectedCat -eq "All") {
+                        $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+                    } elseif ($selectedCat -eq "Updates") {
+                        if ($appCard.HasUpdate -eq $true -or $appCard.Category -eq "Updates") {
+                            $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+                        } else {
+                            $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
+                        }
+                    } elseif ($appCard.Category -like "*$selectedCat*") {
                         $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
                     } else {
                         $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
@@ -1113,36 +1372,58 @@ function Start-PumpkiNGui {
 
     # 14. Device Hardware Specs Populator
     $script:UpdateDeviceSpecsView = {
+        param([switch]$ForceRefresh)
         try {
-            $hw = Get-HardwareProfile
-            if (-not $hw) { return }
+            $dev = Get-DeviceDetailProfile -ForceRefresh:$ForceRefresh
+            if (-not $dev) { return }
 
-            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $hw.CpuName }
-            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = "$($hw.CpuCores) Cores / $($hw.CpuThreads) Threads" }
-            $t = $window.FindName("TxtDev_CpuClock"); if ($t) { $t.Text = "$($hw.CpuBaseClock) GHz" }
+            if ($txtDev_CompName) { $txtDev_CompName.Text = "$($dev.DeviceName) - SPECIFICATIONS & TELEMETRY" }
+            if ($txtDev_SubTitle) { $txtDev_SubTitle.Text = "$($dev.HeaderSummary)" }
 
-            $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $hw.GpuPrimary }
-            $t = $window.FindName("TxtDev_GpuDriver"); if ($t) { $t.Text = $hw.GpuDriverVersion }
-            $t = $window.FindName("TxtDev_GpuRam"); if ($t) { $t.Text = "$($hw.GpuMemoryGb) GB" }
+            # CPU
+            $t = $window.FindName("TxtDev_CpuName");  if ($t) { $t.Text = $dev.CpuName }
+            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = "$($dev.CpuCores) Cores / $($dev.CpuLogical) Threads ($($dev.CpuArchitecture))" }
+            $t = $window.FindName("TxtDev_CpuClock"); if ($t) { $t.Text = "$($dev.CpuMaxSpeed) (Socket $($dev.CpuSocket))" }
 
-            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = "$($hw.TotalRamGb) GB" }
-            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = "$($hw.RamSpeedMhz) MHz" }
+            # GPU
+            $gpu = $dev.PrimaryGpu
+            $t = $window.FindName("TxtDev_GpuName");   if ($t) { $t.Text = if ($gpu) { $gpu.Name } else { "Unknown GPU" } }
+            $t = $window.FindName("TxtDev_GpuDriver"); if ($t) { $t.Text = if ($gpu) { "$($gpu.DriverVersion) ($($gpu.DriverDate))" } else { "Unknown" } }
+            $t = $window.FindName("TxtDev_GpuRam");    if ($t) { $t.Text = if ($gpu) { "$($gpu.Vram) ($($gpu.Resolution) @ $($gpu.RefreshRate))" } else { "Dynamic / Shared" } }
 
-            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $hw.OsName }
-            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $hw.OsBuild }
+            # RAM
+            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = "$($dev.RamTotal) (Usable: $($dev.RamUsable))" }
+            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = "$($dev.RamSpeed) ($($dev.RamSlots) - $($dev.RamManufacturer))" }
 
-            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $hw.ActiveAdapterName }
-            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $hw.ActiveAdapterSpeed }
-        } catch {}
+            # OS
+            $t = $window.FindName("TxtDev_OsName");  if ($t) { $t.Text = "$($dev.OsName) ($($dev.OsArchitecture))" }
+            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = "Build $($dev.OsBuildNumber) ($($dev.OsVersion)) - Installed $($dev.OsInstallDate)" }
+
+            # Network
+            $t = $window.FindName("TxtDev_NetName");  if ($t) { $t.Text = "$($dev.NetAdapterName) - $($dev.NetDescription)" }
+            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = "$($dev.NetLinkSpeed) [IPv4: $($dev.NetIpAddress)] ($($dev.NetStatus))" }
+
+            # Storage (Disks & Volumes)
+            $t = $window.FindName("TxtDev_Disks");   if ($t) { $t.Text = if ($dev.Disks) { ($dev.Disks -join "  |  ") } else { "No drives detected" } }
+            $t = $window.FindName("TxtDev_Volumes"); if ($t) { $t.Text = if ($dev.Volumes) { ($dev.Volumes -join "  |  ") } else { "No volumes detected" } }
+
+            # Power & System Health
+            $t = $window.FindName("TxtDev_Battery");  if ($t) { $t.Text = "$($dev.BatteryName) - $($dev.BatteryPercent) ($($dev.BatteryStatus))" }
+            $t = $window.FindName("TxtDev_BootTime"); if ($t) { $t.Text = "System Last Boot: $($dev.OsLastBootTime)" }
+        } catch {
+            & $script:LogToGui "[-] Failed to populate device specs: $($_.Exception.Message)" "ERROR"
+        }
     }
 
     # Device spec copy buttons
     $copyBtnMap = @{
-        "BtnCopy_DevCpu" = "TxtDev_CpuName"
-        "BtnCopy_DevGpu" = "TxtDev_GpuName"
-        "BtnCopy_DevRam" = "TxtDev_RamTotal"
-        "BtnCopy_DevOs"  = "TxtDev_OsName"
-        "BtnCopy_DevNet" = "TxtDev_NetName"
+        "BtnCopy_DevCpu"   = "TxtDev_CpuName"
+        "BtnCopy_DevGpu"   = "TxtDev_GpuName"
+        "BtnCopy_DevRam"   = "TxtDev_RamTotal"
+        "BtnCopy_DevOs"    = "TxtDev_OsName"
+        "BtnCopy_DevNet"   = "TxtDev_NetName"
+        "BtnCopy_DevDisk"  = "TxtDev_Disks"
+        "BtnCopy_DevPower" = "TxtDev_Battery"
     }
     foreach ($btnName in $copyBtnMap.Keys) {
         $b = $window.FindName($btnName)
@@ -1166,7 +1447,7 @@ function Start-PumpkiNGui {
     }
 
     # Expand/collapse for device spec cards
-    $devCats = @('Cpu', 'Gpu', 'Ram', 'Os', 'Net')
+    $devCats = @('Cpu', 'Gpu', 'Ram', 'Os', 'Net', 'Disk', 'Power')
     foreach ($cat in $devCats) {
         $btnToggle = $window.FindName("BtnToggle_Dev$cat")
         $panel     = $window.FindName("Panel_Dev$cat")
@@ -1372,23 +1653,65 @@ function Start-PumpkiNGui {
     if ($btnRefreshDeviceSpecs) {
         $btnRefreshDeviceSpecs.Add_Click({
             & $script:LogToGui "[*] Refreshing live device hardware specifications..."
-            & $script:UpdateDeviceSpecsView
+            & $script:UpdateDeviceSpecsView -ForceRefresh
             & $script:LogToGui "[+] Hardware profile refreshed."
         })
     }
     if ($btnCopyAllDeviceSpecs) {
         $btnCopyAllDeviceSpecs.Add_Click({
             try {
-                $hw = Get-HardwareProfile
+                $dev = Get-DeviceDetailProfile
+                $diskLines = if ($dev.Disks) { ($dev.Disks -join "`r`n                  ") } else { "None" }
+                $volLines  = if ($dev.Volumes) { ($dev.Volumes -join "`r`n                  ") } else { "None" }
+                $gpuName   = if ($dev.PrimaryGpu) { $dev.PrimaryGpu.Name } else { "Unknown" }
+                $gpuDriver = if ($dev.PrimaryGpu) { "$($dev.PrimaryGpu.DriverVersion) ($($dev.PrimaryGpu.DriverDate))" } else { "Unknown" }
+                $gpuVram   = if ($dev.PrimaryGpu) { $dev.PrimaryGpu.Vram } else { "N/A" }
+                $gpuDisp   = if ($dev.PrimaryGpu) { "$($dev.PrimaryGpu.Resolution) @ $($dev.PrimaryGpu.RefreshRate)" } else { "N/A" }
+
                 $specsText = @"
-PumpkiN Windows Optimizer - Hardware Specifications Report
+PumpkiN Windows Optimizer - Full Hardware & Device Report
 ----------------------------------------------------------
-Computer Name:  $($env:COMPUTERNAME)
-CPU:            $($hw.CpuName) ($($hw.CpuCores) Cores / $($hw.CpuThreads) Threads @ $($hw.CpuBaseClock) GHz)
-GPU:            $($hw.GpuPrimary) (Driver: $($hw.GpuDriverVersion), VRAM: $($hw.GpuMemoryGb) GB)
-RAM:            $($hw.TotalRamGb) GB ($($hw.RamSpeedMhz) MHz)
-OS:             $($hw.OsName) (Build $($hw.OsBuild))
-Network:        $($hw.ActiveAdapterName) ($($hw.ActiveAdapterSpeed))
+Device Name:      $($dev.DeviceName)
+Summary:          $($dev.HeaderSummary)
+
+Processor (CPU):
+  Model:          $($dev.CpuName)
+  Cores/Threads:  $($dev.CpuCores) Cores / $($dev.CpuLogical) Threads ($($dev.CpuArchitecture))
+  Clock / Socket: $($dev.CpuMaxSpeed) (Socket $($dev.CpuSocket))
+  Manufacturer:   $($dev.CpuManufacturer)
+
+Graphics (GPU):
+  Device:         $gpuName
+  Driver Version: $gpuDriver
+  VRAM:           $gpuVram
+  Display:        $gpuDisp
+
+Memory (RAM):
+  Total Physical: $($dev.RamTotal) (Usable: $($dev.RamUsable))
+  Configured:     $($dev.RamSpeed) ($($dev.RamSlots))
+  Manufacturer:   $($dev.RamManufacturer) ($($dev.RamPartNumber))
+
+Operating System:
+  Edition:        $($dev.OsName) ($($dev.OsArchitecture))
+  Version/Build:  Version $($dev.OsVersion) (Build $($dev.OsBuildNumber))
+  Installed:      $($dev.OsInstallDate)
+  Last Boot Time: $($dev.OsLastBootTime)
+
+Network:
+  Adapter:        $($dev.NetAdapterName) ($($dev.NetDescription))
+  Link Speed:     $($dev.NetLinkSpeed) [$($dev.NetStatus)]
+  IPv4 Address:   $($dev.NetIpAddress)
+  MAC Address:    $($dev.NetMacAddress)
+
+Storage:
+  Drives:         $diskLines
+  Volumes:        $volLines
+
+Power & System Health:
+  Power Source:   $($dev.BatteryName)
+  Status:         $($dev.BatteryPercent) ($($dev.BatteryStatus))
+----------------------------------------------------------
+Generated by PumpkiN Ultimate Windows Optimizer
 "@
                 [System.Windows.Clipboard]::SetText($specsText)
                 & $script:LogToGui "[+] Full system hardware specifications copied to clipboard!"

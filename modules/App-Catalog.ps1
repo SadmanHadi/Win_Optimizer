@@ -308,6 +308,128 @@ function Upgrade-AllWinGetPackages {
     }
 }
 
+function Get-WinGetUpgrades {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return @()
+    }
+
+    $msg = "[*] Scanning for available package updates via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "upgrade"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $raw = ""
+    try {
+        $proc = [System.Diagnostics.Process]::Start($psi)
+        $raw = $proc.StandardOutput.ReadToEnd()
+        $proc.WaitForExit(60000)
+    } catch {
+        $msg = "[-] Failed to execute winget upgrade: $($_.Exception.Message)"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return @()
+    }
+
+    $lines = $raw -split "`r?`n"
+    $headerIndex = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^Name\s+Id\s+Version\s+Available') {
+            $headerIndex = $i
+            break
+        }
+    }
+
+    $results = @()
+    if ($headerIndex -ge 0) {
+        $header = $lines[$headerIndex]
+        $idxId = $header.IndexOf('Id')
+        $idxVer = $header.IndexOf('Version')
+        $idxAvail = $header.IndexOf('Available')
+        $idxSource = $header.IndexOf('Source')
+
+        for ($i = $headerIndex + 2; $i -lt $lines.Count; $i++) {
+            $l = $lines[$i]
+            if ([string]::IsNullOrWhiteSpace($l)) { continue }
+            if ($l -match 'upgrades? available' -or $l -match 'applicable update') { break }
+            if ($l.Length -gt $idxAvail) {
+                $name = $l.Substring(0, [Math]::Min($l.Length, $idxId)).Trim()
+                $id = if ($l.Length -ge $idxVer) { $l.Substring($idxId, $idxVer - $idxId).Trim() } else { '' }
+                $ver = if ($l.Length -ge $idxAvail) { $l.Substring($idxVer, $idxAvail - $idxVer).Trim() } else { '' }
+                $avail = if ($idxSource -gt 0 -and $l.Length -ge $idxSource) { $l.Substring($idxAvail, $idxSource - $idxAvail).Trim() } else { $l.Substring($idxAvail).Trim() }
+                if ($id -and $avail) {
+                    $results += [PSCustomObject]@{
+                        Name             = $name
+                        Id               = $id
+                        InstalledVersion = $ver
+                        AvailableVersion = $avail
+                    }
+                }
+            }
+        }
+    }
+
+    return $results
+}
+
+function Upgrade-WinGetPackage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageId,
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return $false
+    }
+
+    $msg = "[*] Upgrading $PackageId via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "upgrade --id `"$PackageId`" --exact --accept-package-agreements --accept-source-agreements --silent --disable-interactivity"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $proc = [System.Diagnostics.Process]::Start($psi)
+    while (-not $proc.HasExited) {
+        $out = $proc.StandardOutput.ReadLine()
+        if ($out -and $LogCallback) { & $LogCallback "    $out" }
+        Start-Sleep -Milliseconds 50
+    }
+    $rem = $proc.StandardOutput.ReadToEnd()
+    if ($rem -and $LogCallback) { & $LogCallback "    $rem" }
+
+    if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 2316632065) {
+        $msg = "[+] SUCCESS: $PackageId upgraded successfully!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+        return $true
+    } else {
+        $msg = "[-] WARNING: WinGet upgrade exited with code $($proc.ExitCode) for $PackageId"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+        return $false
+    }
+}
+
 function Install-DirectXDirect {
     [CmdletBinding()]
     param(

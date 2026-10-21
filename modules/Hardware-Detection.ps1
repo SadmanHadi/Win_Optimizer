@@ -56,18 +56,28 @@ function Get-HardwareProfile {
     $ram = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue | Measure-Object -Property Capacity -Sum
     $totalRamGb = if ($ram.Sum) { [math]::Round($ram.Sum / 1GB, 1) } else { 0 }
 
+    $firstGpu = if ($gpus -and $gpus.Count -gt 0) { $gpus[0] } else { $null }
+    $gpuVram = if ($firstGpu -and $firstGpu.AdapterRAM) { [math]::Round($firstGpu.AdapterRAM / 1GB, 1) } else { 0 }
+
     $Script:CachedHardwareProfile = [PSCustomObject]@{
-        CpuName     = $cpuName
-        CpuCores    = $cpuCores
-        IsAmdCpu    = ($cpuName -match 'AMD|Ryzen')
-        IsIntelCpu  = ($cpuName -match 'Intel' -and $cpuName -notmatch 'AMD|Ryzen')
-        Gpus        = $gpus
-        HasNvidia   = ($gpus | Where-Object { $_.Name -match 'NVIDIA|GeForce' }) -ne $null
-        HasAmdGpu   = ($gpus | Where-Object { $_.Name -match 'AMD|Radeon' }) -ne $null
-        Adapter     = $adapter
-        IsWifi      = ($adapter -and ($adapter.InterfaceType -eq 71 -or $adapter.InterfaceDescription -match 'Wi-Fi|Wireless|802\.11'))
-        RamGb       = $totalRamGb
-        TotalRamGb  = $totalRamGb
+        CpuName            = $cpuName
+        CpuCores           = $cpuCores
+        CpuThreads         = if ($cpu -and $cpu.NumberOfLogicalProcessors) { [string]$cpu.NumberOfLogicalProcessors } else { "$([System.Environment]::ProcessorCount)" }
+        CpuBaseClock       = if ($cpu -and $cpu.MaxClockSpeed) { "$([math]::Round($cpu.MaxClockSpeed / 1000, 2))" } else { "N/A" }
+        IsAmdCpu           = ($cpuName -match 'AMD|Ryzen')
+        IsIntelCpu         = ($cpuName -match 'Intel' -and $cpuName -notmatch 'AMD|Ryzen')
+        Gpus               = $gpus
+        GpuPrimary         = if ($firstGpu) { $firstGpu.Name } else { "Unknown GPU" }
+        GpuDriverVersion   = if ($firstGpu) { $firstGpu.DriverVersion } else { "Unknown" }
+        GpuMemoryGb        = $gpuVram
+        HasNvidia          = ($gpus | Where-Object { $_.Name -match 'NVIDIA|GeForce' }) -ne $null
+        HasAmdGpu          = ($gpus | Where-Object { $_.Name -match 'AMD|Radeon' }) -ne $null
+        Adapter            = $adapter
+        ActiveAdapterName  = if ($adapter) { $adapter.Name } else { "Unknown Adapter" }
+        ActiveAdapterSpeed = if ($adapter) { $adapter.LinkSpeed } else { "Unknown" }
+        IsWifi             = ($adapter -and ($adapter.InterfaceType -eq 71 -or $adapter.InterfaceDescription -match 'Wi-Fi|Wireless|802\.11'))
+        RamGb              = $totalRamGb
+        TotalRamGb         = $totalRamGb
     }
 
     return $Script:CachedHardwareProfile

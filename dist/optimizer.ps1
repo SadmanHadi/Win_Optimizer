@@ -31,7 +31,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.3"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.7.0"
 
 # ==============================================================================
 # 2. EMBEDDED ENGINE MODULES (ALL-IN-ONE STANDALONE BUNDLE)
@@ -99,18 +99,28 @@ function Get-HardwareProfile {
     $ram = Get-CimInstance Win32_PhysicalMemory -ErrorAction SilentlyContinue | Measure-Object -Property Capacity -Sum
     $totalRamGb = if ($ram.Sum) { [math]::Round($ram.Sum / 1GB, 1) } else { 0 }
 
+    $firstGpu = if ($gpus -and $gpus.Count -gt 0) { $gpus[0] } else { $null }
+    $gpuVram = if ($firstGpu -and $firstGpu.AdapterRAM) { [math]::Round($firstGpu.AdapterRAM / 1GB, 1) } else { 0 }
+
     $Script:CachedHardwareProfile = [PSCustomObject]@{
-        CpuName     = $cpuName
-        CpuCores    = $cpuCores
-        IsAmdCpu    = ($cpuName -match 'AMD|Ryzen')
-        IsIntelCpu  = ($cpuName -match 'Intel' -and $cpuName -notmatch 'AMD|Ryzen')
-        Gpus        = $gpus
-        HasNvidia   = ($gpus | Where-Object { $_.Name -match 'NVIDIA|GeForce' }) -ne $null
-        HasAmdGpu   = ($gpus | Where-Object { $_.Name -match 'AMD|Radeon' }) -ne $null
-        Adapter     = $adapter
-        IsWifi      = ($adapter -and ($adapter.InterfaceType -eq 71 -or $adapter.InterfaceDescription -match 'Wi-Fi|Wireless|802\.11'))
-        RamGb       = $totalRamGb
-        TotalRamGb  = $totalRamGb
+        CpuName            = $cpuName
+        CpuCores           = $cpuCores
+        CpuThreads         = if ($cpu -and $cpu.NumberOfLogicalProcessors) { [string]$cpu.NumberOfLogicalProcessors } else { "$([System.Environment]::ProcessorCount)" }
+        CpuBaseClock       = if ($cpu -and $cpu.MaxClockSpeed) { "$([math]::Round($cpu.MaxClockSpeed / 1000, 2))" } else { "N/A" }
+        IsAmdCpu           = ($cpuName -match 'AMD|Ryzen')
+        IsIntelCpu         = ($cpuName -match 'Intel' -and $cpuName -notmatch 'AMD|Ryzen')
+        Gpus               = $gpus
+        GpuPrimary         = if ($firstGpu) { $firstGpu.Name } else { "Unknown GPU" }
+        GpuDriverVersion   = if ($firstGpu) { $firstGpu.DriverVersion } else { "Unknown" }
+        GpuMemoryGb        = $gpuVram
+        HasNvidia          = ($gpus | Where-Object { $_.Name -match 'NVIDIA|GeForce' }) -ne $null
+        HasAmdGpu          = ($gpus | Where-Object { $_.Name -match 'AMD|Radeon' }) -ne $null
+        Adapter            = $adapter
+        ActiveAdapterName  = if ($adapter) { $adapter.Name } else { "Unknown Adapter" }
+        ActiveAdapterSpeed = if ($adapter) { $adapter.LinkSpeed } else { "Unknown" }
+        IsWifi             = ($adapter -and ($adapter.InterfaceType -eq 71 -or $adapter.InterfaceDescription -match 'Wi-Fi|Wireless|802\.11'))
+        RamGb              = $totalRamGb
+        TotalRamGb         = $totalRamGb
     }
 
     return $Script:CachedHardwareProfile
@@ -734,6 +744,128 @@ function Upgrade-AllWinGetPackages {
     }
 }
 
+function Get-WinGetUpgrades {
+    [CmdletBinding()]
+    param(
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return @()
+    }
+
+    $msg = "[*] Scanning for available package updates via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "upgrade"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $raw = ""
+    try {
+        $proc = [System.Diagnostics.Process]::Start($psi)
+        $raw = $proc.StandardOutput.ReadToEnd()
+        $proc.WaitForExit(60000)
+    } catch {
+        $msg = "[-] Failed to execute winget upgrade: $($_.Exception.Message)"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return @()
+    }
+
+    $lines = $raw -split "`r?`n"
+    $headerIndex = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^Name\s+Id\s+Version\s+Available') {
+            $headerIndex = $i
+            break
+        }
+    }
+
+    $results = @()
+    if ($headerIndex -ge 0) {
+        $header = $lines[$headerIndex]
+        $idxId = $header.IndexOf('Id')
+        $idxVer = $header.IndexOf('Version')
+        $idxAvail = $header.IndexOf('Available')
+        $idxSource = $header.IndexOf('Source')
+
+        for ($i = $headerIndex + 2; $i -lt $lines.Count; $i++) {
+            $l = $lines[$i]
+            if ([string]::IsNullOrWhiteSpace($l)) { continue }
+            if ($l -match 'upgrades? available' -or $l -match 'applicable update') { break }
+            if ($l.Length -gt $idxAvail) {
+                $name = $l.Substring(0, [Math]::Min($l.Length, $idxId)).Trim()
+                $id = if ($l.Length -ge $idxVer) { $l.Substring($idxId, $idxVer - $idxId).Trim() } else { '' }
+                $ver = if ($l.Length -ge $idxAvail) { $l.Substring($idxVer, $idxAvail - $idxVer).Trim() } else { '' }
+                $avail = if ($idxSource -gt 0 -and $l.Length -ge $idxSource) { $l.Substring($idxAvail, $idxSource - $idxAvail).Trim() } else { $l.Substring($idxAvail).Trim() }
+                if ($id -and $avail) {
+                    $results += [PSCustomObject]@{
+                        Name             = $name
+                        Id               = $id
+                        InstalledVersion = $ver
+                        AvailableVersion = $avail
+                    }
+                }
+            }
+        }
+    }
+
+    return $results
+}
+
+function Upgrade-WinGetPackage {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageId,
+        [scriptblock]$LogCallback
+    )
+
+    $winget = Get-WinGetCommand
+    if (-not $winget) {
+        $msg = "[-] ERROR: WinGet is not installed or detected on this system!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Red }
+        return $false
+    }
+
+    $msg = "[*] Upgrading $PackageId via WinGet..."
+    if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Cyan }
+
+    $psi = New-Object System.Diagnostics.ProcessStartInfo
+    $psi.FileName = $winget
+    $psi.Arguments = "upgrade --id `"$PackageId`" --exact --accept-package-agreements --accept-source-agreements --silent --disable-interactivity"
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $proc = [System.Diagnostics.Process]::Start($psi)
+    while (-not $proc.HasExited) {
+        $out = $proc.StandardOutput.ReadLine()
+        if ($out -and $LogCallback) { & $LogCallback "    $out" }
+        Start-Sleep -Milliseconds 50
+    }
+    $rem = $proc.StandardOutput.ReadToEnd()
+    if ($rem -and $LogCallback) { & $LogCallback "    $rem" }
+
+    if ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 2316632065) {
+        $msg = "[+] SUCCESS: $PackageId upgraded successfully!"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Green }
+        return $true
+    } else {
+        $msg = "[-] WARNING: WinGet upgrade exited with code $($proc.ExitCode) for $PackageId"
+        if ($LogCallback) { & $LogCallback $msg } else { Write-Host $msg -ForegroundColor Yellow }
+        return $false
+    }
+}
+
 function Install-DirectXDirect {
     [CmdletBinding()]
     param(
@@ -1166,7 +1298,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.3"
+    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.7.0"
     Height="840" Width="1260"
     MinHeight="700" MinWidth="1040"
     WindowStartupLocation="CenterScreen"
@@ -1590,7 +1722,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="16" FontWeight="Bold" Foreground="#00D2FF"/>
                             <TextBlock Text=" OPTIMIZER" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.6.3" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
+                                <TextBlock Text="v5.7.0" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Windows 11 Fluent Gaming Suite" FontSize="11" Foreground="#64748B"/>
@@ -2022,6 +2154,7 @@ $Global:xamlContent = @'
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                             <StackPanel Name="StackCategoryChips" Orientation="Horizontal">
                                 <Button Name="ChipCatAll" Content="All Apps (115+)" Style="{StaticResource CategoryChip}"/>
+                                <Button Name="ChipCatUpdates" Content="Updates Available (0)" Style="{StaticResource CategoryChip}"/>
                                 <Button Name="ChipCatBrowsers" Content="Browsers" Style="{StaticResource CategoryChip}"/>
                                 <Button Name="ChipCatComms" Content="Communications" Style="{StaticResource CategoryChip}"/>
                                 <Button Name="ChipCatDev" Content="Development" Style="{StaticResource CategoryChip}"/>
@@ -2055,9 +2188,11 @@ $Global:xamlContent = @'
 
                             <StackPanel Grid.Row="0">
                                 <TextBlock Text="ACTIONS" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
-                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource CyanButton}" Margin="0,0,0,8"/>
-                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,8"/>
-                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource OrangeButton}" Margin="0,0,0,12"/>
+                                <Button Name="BtnCheckUpdates" Content="Check for Updates" Style="{StaticResource CyanButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnUpgradeSelected" Content="Upgrade Selected" Style="{StaticResource OrangeButton}" Margin="0,0,0,8"/>
+                                <Button Name="BtnInstallSelected" Content="Install Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnUninstallSelected" Content="Uninstall Selected" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
+                                <Button Name="BtnUpgradeAll" Content="Upgrade All (WinGet)" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,12"/>
                                 
                                 <Border Background="#0D131F" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10" Margin="0,0,0,12">
                                     <StackPanel>
@@ -2082,6 +2217,7 @@ $Global:xamlContent = @'
                                 <Button Name="BtnSelectAll" Content="Select Visible" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,6"/>
                                 <Button Name="BtnClearAll" Content="Clear Selection" Style="{StaticResource DarkOutlineButton}" Margin="0,0,0,10"/>
                                 <TextBlock Name="TxtSelectedCount" Text="0 apps selected" FontSize="12" Foreground="#00D2FF" FontWeight="SemiBold"/>
+                                <TextBlock Name="TxtUpdatesCount" Text="" FontSize="11" Foreground="#FF7700" FontWeight="SemiBold" Margin="0,4,0,0"/>
                             </StackPanel>
 
                             <Border Grid.Row="3" Background="#0A0E17" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Padding="10">
@@ -2226,6 +2362,42 @@ $Global:xamlContent = @'
                                     <StackPanel Name="Panel_DevNet" Margin="10,8,0,0">
                                         <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Adapter: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetName" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                         <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Link Speed: " Foreground="#FFFFFF"/><Run Name="TxtDev_NetSpeed" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Storage -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Storage &amp; Drives" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevDisk" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevDisk" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevDisk" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Physical Disks: " Foreground="#FFFFFF"/><Run Name="TxtDev_Disks" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Drive Volumes: " Foreground="#FFFFFF"/><Run Name="TxtDev_Volumes" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Power / Battery -->
+                            <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="6" Margin="0,0,0,6" Padding="12,8">
+                                <StackPanel>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBlock Text="Power &amp; System Health" FontWeight="Bold" FontSize="13" Foreground="#FFFFFF" VerticalAlignment="Center"/>
+                                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                            <Button Name="BtnCopy_DevPower" Content="Copy" Style="{StaticResource DarkOutlineButton}" Padding="8,2" Margin="0,0,6,0"/>
+                                            <Button Name="BtnToggle_DevPower" Content="v" Background="Transparent" Foreground="#94A3B8" BorderThickness="0" Width="24" Height="24" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <StackPanel Name="Panel_DevPower" Margin="10,8,0,0">
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Power Source: " Foreground="#FFFFFF"/><Run Name="TxtDev_Battery" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
+                                        <TextBlock Margin="0,2" FontSize="11"><Run FontWeight="Bold" Text="Uptime / Boot: " Foreground="#FFFFFF"/><Run Name="TxtDev_BootTime" Text="Loading..." Foreground="#94A3B8"/></TextBlock>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -2438,12 +2610,16 @@ function Start-PumpkiNGui {
 
     # Software Downloader Controls
     $wrapPackages            = $window.FindName("WrapPackages")
+    $btnCheckUpdates         = $window.FindName("BtnCheckUpdates")
+    $btnUpgradeSelected      = $window.FindName("BtnUpgradeSelected")
     $btnInstallSelected      = $window.FindName("BtnInstallSelected")
     $btnUninstallSelected    = $window.FindName("BtnUninstallSelected")
     $btnUpgradeAll           = $window.FindName("BtnUpgradeAll")
     $btnSelectAll            = $window.FindName("BtnSelectAll")
     $btnClearAll             = $window.FindName("BtnClearAll")
     $txtSelectedCount        = $window.FindName("TxtSelectedCount")
+    $txtUpdatesCount         = $window.FindName("TxtUpdatesCount")
+    $chipCatUpdates          = $window.FindName("ChipCatUpdates")
     $btnInstallEquicord      = $window.FindName("BtnInstallEquicord")
     $btnOpenEquicordSite     = $window.FindName("BtnOpenEquicordSite")
 
@@ -2535,7 +2711,7 @@ function Start-PumpkiNGui {
     if ($navPrivacy)   { $navPrivacy.Add_Checked({ & $script:SwitchPage $pagePrivacy }) }
     if ($navSystem)    { $navSystem.Add_Checked({ & $script:SwitchPage $pageSystem }) }
     if ($navSoftware)  { $navSoftware.Add_Checked({ & $script:SwitchPage $pageSoftware }) }
-    if ($navDevice)    { $navDevice.Add_Checked({ & $script:SwitchPage $pageDevice }) }
+    if ($navDevice)    { $navDevice.Add_Checked({ & $script:SwitchPage $pageDevice; if ($script:UpdateDeviceSpecsView) { & $script:UpdateDeviceSpecsView } }) }
 
     # 5. Master Tweak Definitions Registry (Unified Schema for all 82 Tweaks)
     $script:TweakDefinitions = @(
@@ -3257,12 +3433,17 @@ function Start-PumpkiNGui {
             if ($wrapPackages) { [void]$wrapPackages.Children.Add($card) }
 
             $script:AllAppCards.Add([PSCustomObject]@{
-                Border   = $card
-                CheckBox = $chk
-                Category = $app.Category
-                Name     = $app.Name
-                Desc     = $app.Description
-                Id       = $app.Id
+                Border        = $card
+                CheckBox      = $chk
+                Category      = $app.Category
+                Name          = $app.Name
+                Desc          = $app.Description
+                Id            = $app.Id
+                HasUpdate     = $false
+                UpdateVersion = ""
+                TxtBadge      = $txtBadge
+                Badge         = $badge
+                TxtDesc       = $txtDesc
             })
         }
     }
@@ -3337,6 +3518,243 @@ function Start-PumpkiNGui {
         })
     }
 
+    $script:HasScannedUpdates = $false
+
+    $script:PerformCheckForUpdates = {
+        & $script:ExpandLogDrawer
+        & $script:LogToGui "[*] Scanning for installed application updates via WinGet..."
+        & $script:SetProgress 20
+
+        $updates = @()
+        try {
+            $updates = Get-WinGetUpgrades -LogCallback { param($m) & $script:LogToGui $m }
+        } catch {
+            & $script:LogToGui "[-] Failed to query WinGet updates: $($_.Exception.Message)" "ERROR"
+        }
+
+        & $script:SetProgress 60
+        $script:HasScannedUpdates = $true
+
+        if (-not $updates -or $updates.Count -eq 0) {
+            & $script:LogToGui "[+] All installed applications are up to date! Zero updates pending."
+            if ($chipCatUpdates) { $chipCatUpdates.Content = "Updates Available (0)" }
+            if ($txtUpdatesCount) { $txtUpdatesCount.Text = "All apps up to date" }
+            & $script:SetProgress 0
+            return
+        }
+
+        & $script:LogToGui "[+] Found $($updates.Count) application update(s) available:"
+        foreach ($u in $updates) {
+            & $script:LogToGui "    [>] $($u.Name) ($($u.Id)): $($u.InstalledVersion) -> $($u.AvailableVersion)"
+        }
+
+        if ($chipCatUpdates) { $chipCatUpdates.Content = "Updates Available ($($updates.Count))" }
+        if ($txtUpdatesCount) { $txtUpdatesCount.Text = "$($updates.Count) update(s) available" }
+
+        $brushOrange   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700")
+        $brushOrangeBg = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#2E1A0E")
+        $brushGreen    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+
+        foreach ($u in $updates) {
+            $targetId = $u.Id.Trim().ToLower()
+            $existing = $null
+            foreach ($c in $script:AllAppCards) {
+                if ($c.Id -and $c.Id.Trim().ToLower() -eq $targetId) {
+                    $existing = $c
+                    break
+                }
+            }
+
+            if ($existing) {
+                $existing.HasUpdate = $true
+                $existing.UpdateVersion = "$($u.InstalledVersion) -> $($u.AvailableVersion)"
+                $existing.Border.BorderBrush = $brushOrange
+                $existing.CheckBox.IsChecked = $true
+                if ($existing.TxtBadge) {
+                    $existing.TxtBadge.Text = "UPDATE: $($u.AvailableVersion)"
+                    $existing.TxtBadge.Foreground = $brushOrange
+                }
+                if ($existing.Badge) {
+                    $existing.Badge.Background = $brushOrangeBg
+                }
+                if ($existing.TxtDesc) {
+                    $existing.TxtDesc.Text = "UPDATE AVAILABLE: Current: $($u.InstalledVersion)  ==>  New: $($u.AvailableVersion)"
+                    $existing.TxtDesc.Foreground = $brushGreen
+                }
+            } else {
+                $newCard = [System.Windows.Controls.Border]::new()
+                $newCard.Width = 275
+                $newCard.Height = 110
+                $newCard.Background = $brushNormalBg
+                $newCard.BorderBrush = $brushOrange
+                $newCard.BorderThickness = $thick1
+                $newCard.CornerRadius = $corn6
+                $newCard.Margin = $thick5
+                $newCard.Padding = $thick10
+                $newCard.Cursor = [System.Windows.Input.Cursors]::Hand
+
+                $cGrid = [System.Windows.Controls.Grid]::new()
+                $c0 = [System.Windows.Controls.ColumnDefinition]::new(); $c0.Width = $autoGrid
+                $c1 = [System.Windows.Controls.ColumnDefinition]::new(); $c1.Width = $starGrid
+                [void]$cGrid.ColumnDefinitions.Add($c0)
+                [void]$cGrid.ColumnDefinitions.Add($c1)
+
+                $chk = [System.Windows.Controls.CheckBox]::new()
+                $chk.Margin = [System.Windows.Thickness]::new(0, 4, 10, 0)
+                $chk.Tag = $u.Id
+                $chk.IsChecked = $true
+                $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
+                [System.Windows.Controls.Grid]::SetColumn($chk, 0)
+                [void]$cGrid.Children.Add($chk)
+
+                $sp = [System.Windows.Controls.StackPanel]::new()
+                [System.Windows.Controls.Grid]::SetColumn($sp, 1)
+
+                $topRow = [System.Windows.Controls.Grid]::new()
+                $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
+                $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
+                [void]$topRow.ColumnDefinitions.Add($trCol0)
+                [void]$topRow.ColumnDefinitions.Add($trCol1)
+
+                $txtTitle = [System.Windows.Controls.TextBlock]::new()
+                $txtTitle.Text = $u.Name
+                $txtTitle.FontWeight = [System.Windows.FontWeights]::Bold
+                $txtTitle.FontSize = 12
+                $txtTitle.Foreground = [System.Windows.Media.Brushes]::White
+                $txtTitle.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+                [System.Windows.Controls.Grid]::SetColumn($txtTitle, 0)
+                [void]$topRow.Children.Add($txtTitle)
+
+                $badge = [System.Windows.Controls.Border]::new()
+                $badge.Background = $brushOrangeBg
+                $badge.CornerRadius = [System.Windows.CornerRadius]::new(3)
+                $badge.Padding = [System.Windows.Thickness]::new(4, 1, 4, 1)
+                $badge.Margin = [System.Windows.Thickness]::new(4, 0, 0, 0)
+                $txtBadge = [System.Windows.Controls.TextBlock]::new()
+                $txtBadge.Text = "UPDATE: $($u.AvailableVersion)"
+                $txtBadge.FontSize = 9
+                $txtBadge.Foreground = $brushOrange
+                $badge.Child = $txtBadge
+                [System.Windows.Controls.Grid]::SetColumn($badge, 1)
+                [void]$topRow.Children.Add($badge)
+
+                [void]$sp.Children.Add($topRow)
+
+                $txtDesc = [System.Windows.Controls.TextBlock]::new()
+                $txtDesc.Text = "UPDATE AVAILABLE: Current: $($u.InstalledVersion)  ==>  New: $($u.AvailableVersion)"
+                $txtDesc.FontSize = 10
+                $txtDesc.Foreground = $brushGreen
+                $txtDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+                $txtDesc.Margin = [System.Windows.Thickness]::new(0, 3, 0, 0)
+                $txtDesc.MaxHeight = 42
+                $txtDesc.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+                [void]$sp.Children.Add($txtDesc)
+
+                [void]$cGrid.Children.Add($sp)
+                $newCard.Child = $cGrid
+
+                $newCard.Add_MouseEnter({
+                    $this.Background = $brushHoverBg
+                })
+                $newCard.Add_MouseLeave({
+                    $this.Background = $brushNormalBg
+                })
+                $newCard.Add_MouseLeftButtonUp({
+                    param($s, $e)
+                    if ($e.OriginalSource -isnot [System.Windows.Controls.CheckBox]) {
+                        $c = $s.Child.Children[0]
+                        $c.IsChecked = -not $c.IsChecked
+                    }
+                    & $script:UpdateSelectedCount
+                })
+                $chk.Add_Checked({ & $script:UpdateSelectedCount })
+                $chk.Add_Unchecked({ & $script:UpdateSelectedCount })
+
+                if ($wrapPackages) { [void]$wrapPackages.Children.Insert(0, $newCard) }
+
+                $script:AllAppCards.Insert(0, [PSCustomObject]@{
+                    Border        = $newCard
+                    CheckBox      = $chk
+                    Category      = "Updates"
+                    Name          = $u.Name
+                    Desc          = $txtDesc.Text
+                    Id            = $u.Id
+                    HasUpdate     = $true
+                    UpdateVersion = "$($u.InstalledVersion) -> $($u.AvailableVersion)"
+                    TxtBadge      = $txtBadge
+                    Badge         = $badge
+                    TxtDesc       = $txtDesc
+                })
+            }
+        }
+
+        # Filter grid to show updates automatically
+        foreach ($appCard in $script:AllAppCards) {
+            if ($appCard.HasUpdate -eq $true -or $appCard.Category -eq "Updates") {
+                $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+            } else {
+                $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
+            }
+        }
+
+        & $script:UpdateSelectedCount
+        & $script:SetProgress 100
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+        & $script:LogToGui "[*] Displaying $($updates.Count) available update(s) in grid. Choose packages to upgrade, then click 'Upgrade Selected'."
+    }
+
+    if ($btnCheckUpdates) {
+        $btnCheckUpdates.Add_Click({
+            & $script:PerformCheckForUpdates
+        })
+    }
+
+    if ($btnUpgradeSelected) {
+        $btnUpgradeSelected.Add_Click({
+            $selected = @($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true })
+            if ($selected.Count -eq 0) {
+                & $script:LogToGui "[-] No applications selected to upgrade. Check packages first." "WARN"
+                return
+            }
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting selective upgrade batch for $($selected.Count) application(s)..."
+            $idx = 0
+            $brushGreen  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+            $brushBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1F293D")
+
+            foreach ($item in $selected) {
+                $idx++
+                $pct = [int](($idx / $selected.Count) * 100)
+                & $script:SetProgress $pct
+                & $script:LogToGui "[$idx/$($selected.Count)] Upgrading $($item.Name) ($($item.Id))..."
+                $ok = Upgrade-WinGetPackage -PackageId $item.Id -LogCallback { param($m) & $script:LogToGui $m }
+                if ($ok) {
+                    $item.HasUpdate = $false
+                    $item.CheckBox.IsChecked = $false
+                    $item.Border.BorderBrush = $brushBorder
+                    if ($item.TxtBadge) {
+                        $item.TxtBadge.Text = "Up to date"
+                        $item.TxtBadge.Foreground = $brushGreen
+                    }
+                    if ($item.TxtDesc -and $item.Desc) {
+                        $item.TxtDesc.Text = $item.Desc
+                        $item.TxtDesc.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+                    }
+                }
+            }
+            & $script:SetProgress 0
+            & $script:UpdateSelectedCount
+
+            $remaining = @($script:AllAppCards | Where-Object { $_.HasUpdate -eq $true }).Count
+            if ($chipCatUpdates) { $chipCatUpdates.Content = "Updates Available ($remaining)" }
+            if ($txtUpdatesCount) {
+                $txtUpdatesCount.Text = if ($remaining -gt 0) { "$remaining update(s) available" } else { "All apps up to date" }
+            }
+            & $script:LogToGui "[+] WinGet selective upgrade batch complete!"
+        })
+    }
+
     if ($btnUpgradeAll) {
         $btnUpgradeAll.Add_Click({
             & $script:ExpandLogDrawer
@@ -3353,6 +3771,7 @@ function Start-PumpkiNGui {
     # Software Category Filter Chips
     $categoryMap = @{
         "ChipCatAll"      = "All"
+        "ChipCatUpdates"  = "Updates"
         "ChipCatBrowsers" = "Browsers"
         "ChipCatComms"    = "Communication"
         "ChipCatDev"      = "Dev & Tools"
@@ -3372,8 +3791,20 @@ function Start-PumpkiNGui {
             $btnChip.Add_Click({
                 param($s, $e)
                 $selectedCat = $s.Tag
+                if ($selectedCat -eq "Updates" -and $script:HasScannedUpdates -ne $true) {
+                    & $script:PerformCheckForUpdates
+                    return
+                }
                 foreach ($appCard in $script:AllAppCards) {
-                    if ($selectedCat -eq "All" -or $appCard.Category -like "*$selectedCat*") {
+                    if ($selectedCat -eq "All") {
+                        $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+                    } elseif ($selectedCat -eq "Updates") {
+                        if ($appCard.HasUpdate -eq $true -or $appCard.Category -eq "Updates") {
+                            $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+                        } else {
+                            $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
+                        }
+                    } elseif ($appCard.Category -like "*$selectedCat*") {
                         $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
                     } else {
                         $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
@@ -3400,36 +3831,58 @@ function Start-PumpkiNGui {
 
     # 14. Device Hardware Specs Populator
     $script:UpdateDeviceSpecsView = {
+        param([switch]$ForceRefresh)
         try {
-            $hw = Get-HardwareProfile
-            if (-not $hw) { return }
+            $dev = Get-DeviceDetailProfile -ForceRefresh:$ForceRefresh
+            if (-not $dev) { return }
 
-            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $hw.CpuName }
-            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = "$($hw.CpuCores) Cores / $($hw.CpuThreads) Threads" }
-            $t = $window.FindName("TxtDev_CpuClock"); if ($t) { $t.Text = "$($hw.CpuBaseClock) GHz" }
+            if ($txtDev_CompName) { $txtDev_CompName.Text = "$($dev.DeviceName) - SPECIFICATIONS & TELEMETRY" }
+            if ($txtDev_SubTitle) { $txtDev_SubTitle.Text = "$($dev.HeaderSummary)" }
 
-            $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $hw.GpuPrimary }
-            $t = $window.FindName("TxtDev_GpuDriver"); if ($t) { $t.Text = $hw.GpuDriverVersion }
-            $t = $window.FindName("TxtDev_GpuRam"); if ($t) { $t.Text = "$($hw.GpuMemoryGb) GB" }
+            # CPU
+            $t = $window.FindName("TxtDev_CpuName");  if ($t) { $t.Text = $dev.CpuName }
+            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = "$($dev.CpuCores) Cores / $($dev.CpuLogical) Threads ($($dev.CpuArchitecture))" }
+            $t = $window.FindName("TxtDev_CpuClock"); if ($t) { $t.Text = "$($dev.CpuMaxSpeed) (Socket $($dev.CpuSocket))" }
 
-            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = "$($hw.TotalRamGb) GB" }
-            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = "$($hw.RamSpeedMhz) MHz" }
+            # GPU
+            $gpu = $dev.PrimaryGpu
+            $t = $window.FindName("TxtDev_GpuName");   if ($t) { $t.Text = if ($gpu) { $gpu.Name } else { "Unknown GPU" } }
+            $t = $window.FindName("TxtDev_GpuDriver"); if ($t) { $t.Text = if ($gpu) { "$($gpu.DriverVersion) ($($gpu.DriverDate))" } else { "Unknown" } }
+            $t = $window.FindName("TxtDev_GpuRam");    if ($t) { $t.Text = if ($gpu) { "$($gpu.Vram) ($($gpu.Resolution) @ $($gpu.RefreshRate))" } else { "Dynamic / Shared" } }
 
-            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $hw.OsName }
-            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $hw.OsBuild }
+            # RAM
+            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = "$($dev.RamTotal) (Usable: $($dev.RamUsable))" }
+            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = "$($dev.RamSpeed) ($($dev.RamSlots) - $($dev.RamManufacturer))" }
 
-            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $hw.ActiveAdapterName }
-            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $hw.ActiveAdapterSpeed }
-        } catch {}
+            # OS
+            $t = $window.FindName("TxtDev_OsName");  if ($t) { $t.Text = "$($dev.OsName) ($($dev.OsArchitecture))" }
+            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = "Build $($dev.OsBuildNumber) ($($dev.OsVersion)) - Installed $($dev.OsInstallDate)" }
+
+            # Network
+            $t = $window.FindName("TxtDev_NetName");  if ($t) { $t.Text = "$($dev.NetAdapterName) - $($dev.NetDescription)" }
+            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = "$($dev.NetLinkSpeed) [IPv4: $($dev.NetIpAddress)] ($($dev.NetStatus))" }
+
+            # Storage (Disks & Volumes)
+            $t = $window.FindName("TxtDev_Disks");   if ($t) { $t.Text = if ($dev.Disks) { ($dev.Disks -join "  |  ") } else { "No drives detected" } }
+            $t = $window.FindName("TxtDev_Volumes"); if ($t) { $t.Text = if ($dev.Volumes) { ($dev.Volumes -join "  |  ") } else { "No volumes detected" } }
+
+            # Power & System Health
+            $t = $window.FindName("TxtDev_Battery");  if ($t) { $t.Text = "$($dev.BatteryName) - $($dev.BatteryPercent) ($($dev.BatteryStatus))" }
+            $t = $window.FindName("TxtDev_BootTime"); if ($t) { $t.Text = "System Last Boot: $($dev.OsLastBootTime)" }
+        } catch {
+            & $script:LogToGui "[-] Failed to populate device specs: $($_.Exception.Message)" "ERROR"
+        }
     }
 
     # Device spec copy buttons
     $copyBtnMap = @{
-        "BtnCopy_DevCpu" = "TxtDev_CpuName"
-        "BtnCopy_DevGpu" = "TxtDev_GpuName"
-        "BtnCopy_DevRam" = "TxtDev_RamTotal"
-        "BtnCopy_DevOs"  = "TxtDev_OsName"
-        "BtnCopy_DevNet" = "TxtDev_NetName"
+        "BtnCopy_DevCpu"   = "TxtDev_CpuName"
+        "BtnCopy_DevGpu"   = "TxtDev_GpuName"
+        "BtnCopy_DevRam"   = "TxtDev_RamTotal"
+        "BtnCopy_DevOs"    = "TxtDev_OsName"
+        "BtnCopy_DevNet"   = "TxtDev_NetName"
+        "BtnCopy_DevDisk"  = "TxtDev_Disks"
+        "BtnCopy_DevPower" = "TxtDev_Battery"
     }
     foreach ($btnName in $copyBtnMap.Keys) {
         $b = $window.FindName($btnName)
@@ -3453,7 +3906,7 @@ function Start-PumpkiNGui {
     }
 
     # Expand/collapse for device spec cards
-    $devCats = @('Cpu', 'Gpu', 'Ram', 'Os', 'Net')
+    $devCats = @('Cpu', 'Gpu', 'Ram', 'Os', 'Net', 'Disk', 'Power')
     foreach ($cat in $devCats) {
         $btnToggle = $window.FindName("BtnToggle_Dev$cat")
         $panel     = $window.FindName("Panel_Dev$cat")
@@ -3659,23 +4112,65 @@ function Start-PumpkiNGui {
     if ($btnRefreshDeviceSpecs) {
         $btnRefreshDeviceSpecs.Add_Click({
             & $script:LogToGui "[*] Refreshing live device hardware specifications..."
-            & $script:UpdateDeviceSpecsView
+            & $script:UpdateDeviceSpecsView -ForceRefresh
             & $script:LogToGui "[+] Hardware profile refreshed."
         })
     }
     if ($btnCopyAllDeviceSpecs) {
         $btnCopyAllDeviceSpecs.Add_Click({
             try {
-                $hw = Get-HardwareProfile
+                $dev = Get-DeviceDetailProfile
+                $diskLines = if ($dev.Disks) { ($dev.Disks -join "`r`n                  ") } else { "None" }
+                $volLines  = if ($dev.Volumes) { ($dev.Volumes -join "`r`n                  ") } else { "None" }
+                $gpuName   = if ($dev.PrimaryGpu) { $dev.PrimaryGpu.Name } else { "Unknown" }
+                $gpuDriver = if ($dev.PrimaryGpu) { "$($dev.PrimaryGpu.DriverVersion) ($($dev.PrimaryGpu.DriverDate))" } else { "Unknown" }
+                $gpuVram   = if ($dev.PrimaryGpu) { $dev.PrimaryGpu.Vram } else { "N/A" }
+                $gpuDisp   = if ($dev.PrimaryGpu) { "$($dev.PrimaryGpu.Resolution) @ $($dev.PrimaryGpu.RefreshRate)" } else { "N/A" }
+
                 $specsText = @"
-PumpkiN Windows Optimizer - Hardware Specifications Report
+PumpkiN Windows Optimizer - Full Hardware & Device Report
 ----------------------------------------------------------
-Computer Name:  $($env:COMPUTERNAME)
-CPU:            $($hw.CpuName) ($($hw.CpuCores) Cores / $($hw.CpuThreads) Threads @ $($hw.CpuBaseClock) GHz)
-GPU:            $($hw.GpuPrimary) (Driver: $($hw.GpuDriverVersion), VRAM: $($hw.GpuMemoryGb) GB)
-RAM:            $($hw.TotalRamGb) GB ($($hw.RamSpeedMhz) MHz)
-OS:             $($hw.OsName) (Build $($hw.OsBuild))
-Network:        $($hw.ActiveAdapterName) ($($hw.ActiveAdapterSpeed))
+Device Name:      $($dev.DeviceName)
+Summary:          $($dev.HeaderSummary)
+
+Processor (CPU):
+  Model:          $($dev.CpuName)
+  Cores/Threads:  $($dev.CpuCores) Cores / $($dev.CpuLogical) Threads ($($dev.CpuArchitecture))
+  Clock / Socket: $($dev.CpuMaxSpeed) (Socket $($dev.CpuSocket))
+  Manufacturer:   $($dev.CpuManufacturer)
+
+Graphics (GPU):
+  Device:         $gpuName
+  Driver Version: $gpuDriver
+  VRAM:           $gpuVram
+  Display:        $gpuDisp
+
+Memory (RAM):
+  Total Physical: $($dev.RamTotal) (Usable: $($dev.RamUsable))
+  Configured:     $($dev.RamSpeed) ($($dev.RamSlots))
+  Manufacturer:   $($dev.RamManufacturer) ($($dev.RamPartNumber))
+
+Operating System:
+  Edition:        $($dev.OsName) ($($dev.OsArchitecture))
+  Version/Build:  Version $($dev.OsVersion) (Build $($dev.OsBuildNumber))
+  Installed:      $($dev.OsInstallDate)
+  Last Boot Time: $($dev.OsLastBootTime)
+
+Network:
+  Adapter:        $($dev.NetAdapterName) ($($dev.NetDescription))
+  Link Speed:     $($dev.NetLinkSpeed) [$($dev.NetStatus)]
+  IPv4 Address:   $($dev.NetIpAddress)
+  MAC Address:    $($dev.NetMacAddress)
+
+Storage:
+  Drives:         $diskLines
+  Volumes:        $volLines
+
+Power & System Health:
+  Power Source:   $($dev.BatteryName)
+  Status:         $($dev.BatteryPercent) ($($dev.BatteryStatus))
+----------------------------------------------------------
+Generated by PumpkiN Ultimate Windows Optimizer
 "@
                 [System.Windows.Clipboard]::SetText($specsText)
                 & $script:LogToGui "[+] Full system hardware specifications copied to clipboard!"
@@ -9308,7 +9803,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.3"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.7.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -9559,19 +10054,48 @@ function Show-ConsoleMenu {
             }
             "23" {
                 Write-Host "`n=== WINGET SOFTWARE MANAGER ===" -ForegroundColor Cyan
-                Write-Host "  [1] Upgrade All Installed Apps"
-                Write-Host "  [2] Install Recommended Gaming Apps (Steam, Discord, OBS, Afterburner)"
-                Write-Host "  [3] Custom WinGet Install by ID"
-                $wChoice = Read-Host "Select option [1-3]"
+                Write-Host "  [1] Check for Available Updates & Choose Packages to Upgrade"
+                Write-Host "  [2] Upgrade All Installed Apps"
+                Write-Host "  [3] Install Recommended Gaming Apps (Steam, Discord, OBS, Afterburner)"
+                Write-Host "  [4] Custom WinGet Install by ID"
+                $wChoice = Read-Host "Select option [1-4]"
                 switch ($wChoice) {
-                    "1" { Upgrade-AllWinGetPackages }
-                    "2" {
+                    "1" {
+                        $upgrades = Get-WinGetUpgrades
+                        if (-not $upgrades -or $upgrades.Count -eq 0) {
+                            Write-Host "[OK] All installed packages are up to date! Zero updates pending." -ForegroundColor Green
+                        } else {
+                            Write-Host "`nFound $($upgrades.Count) package update(s) available:" -ForegroundColor Yellow
+                            for ($i = 0; $i -lt $upgrades.Count; $i++) {
+                                $u = $upgrades[$i]
+                                Write-Host "  [$($i+1)] $($u.Name) ($($u.Id)): $($u.InstalledVersion) -> $($u.AvailableVersion)" -ForegroundColor Cyan
+                            }
+                            Write-Host "  [A] Upgrade All Listed Updates"
+                            Write-Host "  [Q] Return to Menu"
+                            $sel = Read-Host "`nEnter package numbers to upgrade (e.g. 1, 3) or 'A' for all"
+                            if ($sel -and $sel.Trim().ToUpper() -eq "A") {
+                                foreach ($u in $upgrades) {
+                                    Upgrade-WinGetPackage -PackageId $u.Id
+                                }
+                            } elseif ($sel -and $sel.Trim().ToUpper() -ne "Q") {
+                                $indices = $sel -split "[, ]" | Where-Object { $_ -match '^\d+$' } | ForEach-Object { [int]$_ - 1 }
+                                foreach ($idx in $indices) {
+                                    if ($idx -ge 0 -and $idx -lt $upgrades.Count) {
+                                        $u = $upgrades[$idx]
+                                        Upgrade-WinGetPackage -PackageId $u.Id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    "2" { Upgrade-AllWinGetPackages }
+                    "3" {
                         Install-WinGetPackage -PackageId "Valve.Steam"
                         Install-WinGetPackage -PackageId "Discord.Discord"
                         Install-WinGetPackage -PackageId "OBSProject.OBSStudio"
                         Install-WinGetPackage -PackageId "Guru3D.Afterburner"
                     }
-                    "3" {
+                    "4" {
                         $pId = Read-Host "Enter WinGet Package ID (e.g. Brave.Brave)"
                         if ($pId) { Install-WinGetPackage -PackageId $pId }
                     }

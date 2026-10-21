@@ -1,14 +1,14 @@
 <div align="center">
 
 # 🎃 PumpkiN's Ultimate Windows Optimizer & Software Suite
-### *v5.6.3 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
+### *v5.7.0 — The Definitive Gaming Engine, Privacy Hardener & App Manager for Windows 10 & 11*
 
 <p align="center" style="font-size: 1.15rem; color: #00FFCC; font-weight: bold;">
   <strong>Streamline • Optimize • Dominate</strong><br>
   <span style="font-size: 0.95rem; color: #8892B0; font-weight: normal;">Hardware-Probed Performance • 100% Symmetrical Rollback Guarantee • Zero Bloatware • 115+ App Catalog • 23 Custom Gaming Cursors</span>
 </p>
 
-[![Release](https://img.shields.io/badge/Release-v5.6.3-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
+[![Release](https://img.shields.io/badge/Release-v5.7.0-00FFCC?style=for-the-badge&logo=github&logoColor=0A0C10)](https://github.com/SadmanHadi/Win_Optimizer/releases)
 [![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207+-5391FE?style=for-the-badge&logo=powershell&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
 [![Reversibility](https://img.shields.io/badge/Reversibility-100%25%20Symmetrical-FF0055?style=for-the-badge&logo=shield&logoColor=white)](https://github.com/SadmanHadi/Win_Optimizer)
@@ -91,7 +91,7 @@ PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dar
 
 ## 📊 Feature Comparison Matrix
 
-| Feature | Default Windows | Generic Debloaters | PumpkiN Optimizer v5.4.0 |
+| Feature | Default Windows | Generic Debloaters | PumpkiN Optimizer v5.7.0 |
 | :--- | :---: | :---: | :---: |
 | **100% Symmetrical Rollback** | ❌ None | ⚠️ Partial / Broken | ✅ **Every Single Tweak** |
 | **Live Optimization Score Gauge** | ❌ None | ❌ None | ✅ **0–100% Live Score Card** |
@@ -102,7 +102,7 @@ PumpkiN's Ultimate Optimizer features a responsive, hardware-accelerated WPF dar
 | **Esports Match Booster (RAM + Wi-Fi)** | ❌ None | ❌ None | ✅ **Standby Purge + 0ms Ping Shield** |
 | **Windows 11 Exclusives Suite** | ❌ None | ⚠️ Basic | ✅ **VBS, Taskbar, Menus, Snap, Ads** |
 | **3rd Party App Telemetry Killer** | ❌ None | ❌ None | ✅ **Edge, Chrome, Firefox, VS, Nvidia** |
-| **WinGet 100+ App Manager** | ❌ None | ⚠️ External | ✅ **10 Categories Built-in** |
+| **WinGet 100+ App Manager & Updates** | ❌ None | ⚠️ External | ✅ **10 Categories, Update Checker & Selective Upgrades** |
 | **Open Source & Native PowerShell** | ❌ N/A | ⚠️ Often Closed EXE | ✅ **100% Transparent Code** |
 
 ---
@@ -201,7 +201,7 @@ Win_Optimizer/
 ├── dist/                                    # Pre-compiled standalone release bundles
 │   └── optimizer.ps1                        # Standalone all-in-one distribution bundle
 │
-└── modules/                                 # 17 Modular standalone optimization engines
+└── modules/                                 # 18 Modular standalone optimization engines
     ├── App-Catalog.ps1                      # WinGet 100+ package catalog & async runners
     ├── Gui-Markup.ps1                       # Cyberpunk Dark WPF (XAML) UI Markup
     ├── Gui-Controller.ps1                   # Event controller, audit scoring & async runner
@@ -229,7 +229,7 @@ When running with `-CLI` or in a terminal session, the complete interactive menu
 
 ```text
 ================================================================================
-           ULTIMATE GAMING & NETWORK OPTIMIZER v5.4.0
+           ULTIMATE GAMING & NETWORK OPTIMIZER v5.7.0
           Created by PumpkiN | Max FPS - Ultra Low Latency
 ================================================================================
   [CPU] AMD Ryzen 7 5800X3D (8C / 16T)

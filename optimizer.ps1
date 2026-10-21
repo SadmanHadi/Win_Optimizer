@@ -31,7 +31,7 @@ if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     exit
 }
 
-$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.6.3"
+$Host.UI.RawUI.WindowTitle = "PumpkiN's Ultimate Gaming and Network Optimizer v5.7.0"
 
 # ==============================================================================
 # 2. MODULAR LOADER ENGINE (LOCAL + REMOTE GITHUB FALLBACK)
@@ -110,7 +110,7 @@ function Show-PumpkiNBanner {
     Write-Host "  |  __/| |_| | | | | | | |_) |   <| | | | | |\  |"
     Write-Host "  |_|    \__,_|_| |_| |_| .__/|_|\_\_|_| |_|_| \_|"
     Write-Host "                        |_|                       "
-    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.6.3"
+    Write-Host "           ULTIMATE GAMING & NETWORK OPTIMIZER v5.7.0"
     Write-Host "          Created by PumpkiN | Max FPS - Ultra Low Latency"
     Write-Host "================================================================================"
     $Host.UI.RawUI.ForegroundColor = 'Gray'
@@ -361,19 +361,48 @@ function Show-ConsoleMenu {
             }
             "23" {
                 Write-Host "`n=== WINGET SOFTWARE MANAGER ===" -ForegroundColor Cyan
-                Write-Host "  [1] Upgrade All Installed Apps"
-                Write-Host "  [2] Install Recommended Gaming Apps (Steam, Discord, OBS, Afterburner)"
-                Write-Host "  [3] Custom WinGet Install by ID"
-                $wChoice = Read-Host "Select option [1-3]"
+                Write-Host "  [1] Check for Available Updates & Choose Packages to Upgrade"
+                Write-Host "  [2] Upgrade All Installed Apps"
+                Write-Host "  [3] Install Recommended Gaming Apps (Steam, Discord, OBS, Afterburner)"
+                Write-Host "  [4] Custom WinGet Install by ID"
+                $wChoice = Read-Host "Select option [1-4]"
                 switch ($wChoice) {
-                    "1" { Upgrade-AllWinGetPackages }
-                    "2" {
+                    "1" {
+                        $upgrades = Get-WinGetUpgrades
+                        if (-not $upgrades -or $upgrades.Count -eq 0) {
+                            Write-Host "[OK] All installed packages are up to date! Zero updates pending." -ForegroundColor Green
+                        } else {
+                            Write-Host "`nFound $($upgrades.Count) package update(s) available:" -ForegroundColor Yellow
+                            for ($i = 0; $i -lt $upgrades.Count; $i++) {
+                                $u = $upgrades[$i]
+                                Write-Host "  [$($i+1)] $($u.Name) ($($u.Id)): $($u.InstalledVersion) -> $($u.AvailableVersion)" -ForegroundColor Cyan
+                            }
+                            Write-Host "  [A] Upgrade All Listed Updates"
+                            Write-Host "  [Q] Return to Menu"
+                            $sel = Read-Host "`nEnter package numbers to upgrade (e.g. 1, 3) or 'A' for all"
+                            if ($sel -and $sel.Trim().ToUpper() -eq "A") {
+                                foreach ($u in $upgrades) {
+                                    Upgrade-WinGetPackage -PackageId $u.Id
+                                }
+                            } elseif ($sel -and $sel.Trim().ToUpper() -ne "Q") {
+                                $indices = $sel -split "[, ]" | Where-Object { $_ -match '^\d+$' } | ForEach-Object { [int]$_ - 1 }
+                                foreach ($idx in $indices) {
+                                    if ($idx -ge 0 -and $idx -lt $upgrades.Count) {
+                                        $u = $upgrades[$idx]
+                                        Upgrade-WinGetPackage -PackageId $u.Id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    "2" { Upgrade-AllWinGetPackages }
+                    "3" {
                         Install-WinGetPackage -PackageId "Valve.Steam"
                         Install-WinGetPackage -PackageId "Discord.Discord"
                         Install-WinGetPackage -PackageId "OBSProject.OBSStudio"
                         Install-WinGetPackage -PackageId "Guru3D.Afterburner"
                     }
-                    "3" {
+                    "4" {
                         $pId = Read-Host "Enter WinGet Package ID (e.g. Brave.Brave)"
                         if ($pId) { Install-WinGetPackage -PackageId $pId }
                     }
