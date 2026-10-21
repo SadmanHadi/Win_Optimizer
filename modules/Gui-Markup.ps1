@@ -9,7 +9,7 @@ $Global:xamlContent = @'
 <Window
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.2"
+    Title="PumpkiN Ultimate Windows Optimizer &amp; Software Suite v5.6.3"
     Height="840" Width="1260"
     MinHeight="700" MinWidth="1040"
     WindowStartupLocation="CenterScreen"
@@ -433,7 +433,7 @@ $Global:xamlContent = @'
                             <TextBlock Text="PUMPKIN" FontSize="16" FontWeight="Bold" Foreground="#00D2FF"/>
                             <TextBlock Text=" OPTIMIZER" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF"/>
                             <Border Background="#FF7700" CornerRadius="3" Padding="5,1" Margin="8,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="v5.6.2" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
+                                <TextBlock Text="v5.6.3" FontSize="10" FontWeight="Bold" Foreground="#0A0E17"/>
                             </Border>
                         </StackPanel>
                         <TextBlock Text="Windows 11 Fluent Gaming Suite" FontSize="11" Foreground="#64748B"/>
@@ -961,30 +961,21 @@ $Global:xamlContent = @'
                                 </Grid>
                             </Border>
 
-                            <!-- Tools Banner: Cursors and TrafficMonitor -->
+                            <!-- Tools Banner: TrafficMonitor Taskbar HUD -->
                             <Border Background="#121824" BorderBrush="#1F293D" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <!-- Custom Gaming Cursors -->
-                                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                        <TextBlock Text="CUSTOM GAMING CURSOR SCHEMES" FontSize="12" FontWeight="Bold" Foreground="#00D2FF" Margin="0,0,0,4"/>
-                                        <TextBlock Text="23 handpicked esports cursor packs. Instantly applies without restart." FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Name="BtnRestoreDefaultCursors" Content="Default Cursors" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <!-- TrafficMonitor Telemetry -->
-                                    <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                    <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="TRAFFICMONITOR TASKBAR HUD" FontSize="12" FontWeight="Bold" Foreground="#00FF88" Margin="0,0,0,4"/>
-                                        <TextBlock Text="Lightweight live taskbar CPU, RAM and Net metrics." FontSize="11" Foreground="#94A3B8" Margin="0,0,0,8"/>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Name="BtnInstallTrafficMonitor" Content="Install Tool" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
-                                            <Button Name="BtnInstallMiSansFonts" Content="Install Fonts" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
-                                            <Button Name="BtnLaunchTrafficMonitor" Content="Launch HUD" Style="{StaticResource CyanButton}"/>
-                                        </StackPanel>
+                                        <TextBlock Text="Lightweight live taskbar CPU, RAM and network throughput monitor with MiSans fonts." FontSize="11" Foreground="#94A3B8"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Name="BtnInstallTrafficMonitor" Content="Install Tool" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                        <Button Name="BtnInstallMiSansFonts" Content="Install Fonts" Style="{StaticResource DarkOutlineButton}" Margin="0,0,6,0"/>
+                                        <Button Name="BtnLaunchTrafficMonitor" Content="Launch HUD" Style="{StaticResource CyanButton}"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>

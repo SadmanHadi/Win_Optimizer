@@ -350,42 +350,41 @@ function Stop-SmartGameBoosterDaemon {
     [CmdletBinding()]
     param()
 
-    Write-Host "`n[*] Stopping Smart Game Booster Daemon..." -ForegroundColor Yellow
-
-    if ($Script:DaemonSync -and $Script:DaemonSync.IsRunning) {
-        $Script:DaemonSync.StopRequested = $true
-        $waitCount = 0
-        while ($Script:DaemonSync.IsRunning -and $waitCount -lt 20) {
-            Start-Sleep -Milliseconds 100
-            $waitCount++
-        }
-
-        try {
-            if ($Script:DaemonPowerShell -and $Script:DaemonAsyncResult) {
-                $null = $Script:DaemonPowerShell.EndInvoke($Script:DaemonAsyncResult)
-                $Script:DaemonPowerShell.Dispose()
-                $Script:DaemonPowerShell = $null
-            }
-            if ($Script:DaemonRunspace) {
-                $Script:DaemonRunspace.Dispose()
-                $Script:DaemonRunspace = $null
-            }
-        } catch {}
-
-        # Ensure Wi-Fi autoconfig is enabled
-        try {
-            $wifiAdapters = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and ($_.InterfaceType -eq 71 -or $_.InterfaceDescription -match 'Wi-Fi|Wireless') }
-            foreach ($wa in $wifiAdapters) {
-                netsh wlan set autoconfig enabled=yes interface="`"$($wa.Name)`"" 2>$null
-            }
-        } catch {}
-
-        Write-Host "      [+] Smart Game Booster Daemon stopped successfully." -ForegroundColor Green
-        return $true
-    } else {
-        Write-Host "      [+] Smart Game Booster Daemon is not currently running." -ForegroundColor Gray
+    if (-not ($Script:DaemonSync -and $Script:DaemonSync.IsRunning)) {
         return $true
     }
+
+    Write-Host "`n[*] Stopping Smart Game Booster Daemon..." -ForegroundColor Yellow
+
+    $Script:DaemonSync.StopRequested = $true
+    $waitCount = 0
+    while ($Script:DaemonSync.IsRunning -and $waitCount -lt 20) {
+        Start-Sleep -Milliseconds 100
+        $waitCount++
+    }
+
+    try {
+        if ($Script:DaemonPowerShell -and $Script:DaemonAsyncResult) {
+            $null = $Script:DaemonPowerShell.EndInvoke($Script:DaemonAsyncResult)
+            $Script:DaemonPowerShell.Dispose()
+            $Script:DaemonPowerShell = $null
+        }
+        if ($Script:DaemonRunspace) {
+            $Script:DaemonRunspace.Dispose()
+            $Script:DaemonRunspace = $null
+        }
+    } catch {}
+
+    # Ensure Wi-Fi autoconfig is enabled
+    try {
+        $wifiAdapters = Get-NetAdapter -ErrorAction SilentlyContinue | Where-Object { $_.Status -eq 'Up' -and ($_.InterfaceType -eq 71 -or $_.InterfaceDescription -match 'Wi-Fi|Wireless') }
+        foreach ($wa in $wifiAdapters) {
+            netsh wlan set autoconfig enabled=yes interface="`"$($wa.Name)`"" 2>$null
+        }
+    } catch {}
+
+    Write-Host "      [+] Smart Game Booster Daemon stopped successfully." -ForegroundColor Green
+    return $true
 }
 
 # If run directly as standalone script (not dot-sourced)

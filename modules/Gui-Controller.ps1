@@ -1233,21 +1233,6 @@ function Start-PumpkiNGui {
         })
     }
 
-    $btnRestoreDefaultCursors = $window.FindName("BtnRestoreDefaultCursors")
-    if ($btnRestoreDefaultCursors) {
-        $btnRestoreDefaultCursors.Add_Click({
-            & $script:ExpandLogDrawer
-            & $script:LogToGui "[*] Restoring default Windows cursor schemes..."
-            try {
-                Restore-DefaultCursors
-                if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = "Windows Default" }
-                & $script:LogToGui "[+] Default Windows cursors restored successfully!"
-            } catch {
-                & $script:LogToGui "[-] Cursor restore failed: $($_.Exception.Message)" "ERROR"
-            }
-        })
-    }
-
     # Gaming DNS Benchmark & Fast Switcher
     if ($btnBenchmarkDns) {
         $btnBenchmarkDns.Add_Click({
@@ -1474,7 +1459,7 @@ Network:        $($hw.ActiveAdapterName) ($($hw.ActiveAdapterSpeed))
     }
 
     if ($btnExitTop) { $btnExitTop.Add_Click({ & $script:ExitOptimizer }) }
-    $window.Add_Closing({ try { if ($telemetryTimer) { $telemetryTimer.Stop() }; Stop-SmartGameBoosterDaemon } catch {} })
+    $window.Add_Closing({ try { if ($telemetryTimer) { $telemetryTimer.Stop() } } catch {} })
     $window.Add_Closed({ & $script:ExitOptimizer })
 
     # Launch GUI Window
