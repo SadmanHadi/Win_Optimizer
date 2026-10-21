@@ -943,6 +943,9 @@ function Restore-Defaults {
     if (Get-Command Restore-ShortcutArrow -ErrorAction SilentlyContinue) {
         Restore-ShortcutArrow
     }
+    if (Get-Command Restore-DefaultCursors -ErrorAction SilentlyContinue) {
+        Restore-DefaultCursors
+    }
 
     # Symmetrical Reversals for Windows 11 & Shell Usability
     if (Get-Command Restore-VbsSecurity -ErrorAction SilentlyContinue) { Restore-VbsSecurity }

@@ -1474,6 +1474,10 @@ function Start-PumpkiNGui {
             $cmbCursorSchemes.ItemsSource = $schemes
             $cmbCursorSchemes.DisplayMemberPath = "Name"
             if ($schemes -and $schemes.Count -gt 0) { $cmbCursorSchemes.SelectedIndex = 0 }
+            if ($txtActiveCursorScheme) {
+                $curActive = Get-ActiveCursorSchemeName
+                if ($curActive) { $txtActiveCursorScheme.Text = $curActive }
+            }
         } catch {}
     }
 
@@ -1485,14 +1489,15 @@ function Start-PumpkiNGui {
                 return
             }
             & $script:ExpandLogDrawer
-            & $script:LogToGui "[*] Installing custom cursor scheme: $($selected.Name)..."
+            $schemeName = if ($selected.Name) { $selected.Name } else { [string]$selected }
+            & $script:LogToGui "[*] Installing custom cursor scheme: $schemeName..."
             try {
-                $ok = Install-CursorScheme -SchemeName $selected.Name
+                $ok = Install-CursorScheme -SchemeName $schemeName
                 if ($ok) {
-                    if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = $selected.Name }
-                    & $script:LogToGui "[+] Cursor scheme '$($selected.Name)' installed and live-reloaded successfully!"
+                    if ($txtActiveCursorScheme) { $txtActiveCursorScheme.Text = $schemeName }
+                    & $script:LogToGui "[+] Cursor scheme '$schemeName' installed and live-reloaded successfully!"
                 } else {
-                    & $script:LogToGui "[-] Failed to apply cursor scheme: $($selected.Name)" "ERROR"
+                    & $script:LogToGui "[-] Failed to apply cursor scheme: $schemeName" "ERROR"
                 }
             } catch {
                 & $script:LogToGui "[-] Cursor install error: $($_.Exception.Message)" "ERROR"

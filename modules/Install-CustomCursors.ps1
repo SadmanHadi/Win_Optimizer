@@ -23,7 +23,7 @@ function Get-CursorBaseFolder {
     $candidates += (Join-Path (Get-Location) "Cursors")
 
     foreach ($c in $candidates) {
-        if ($c -and (Test-Path $c)) {
+        if ($c -and (Test-Path -LiteralPath $c)) {
             return $c
         }
     }
@@ -36,19 +36,19 @@ function Get-AvailableCursorSchemes {
         Scans the Cursors directory and returns metadata for all available cursor packs.
     #>
     $baseFolder = Get-CursorBaseFolder
-    if (-not $baseFolder -or -not (Test-Path $baseFolder)) {
+    if (-not $baseFolder -or -not (Test-Path -LiteralPath $baseFolder)) {
         return @()
     }
 
-    $dirs = Get-ChildItem -Path $baseFolder -Directory | Sort-Object Name
+    $dirs = Get-ChildItem -LiteralPath $baseFolder -Directory | Sort-Object Name
     $schemes = [System.Collections.Generic.List[PSCustomObject]]::new()
 
     foreach ($d in $dirs) {
-        $infFile = Get-ChildItem -Path $d.FullName -Filter "*.inf" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-        $crsFile = Get-ChildItem -Path $d.FullName -Filter "*.crs" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-        $preview = Get-ChildItem -Path $d.FullName -Filter "*Preview*.jpg" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+        $infFile = Get-ChildItem -LiteralPath $d.FullName -Filter "*.inf" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+        $crsFile = Get-ChildItem -LiteralPath $d.FullName -Filter "*.crs" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+        $preview = Get-ChildItem -LiteralPath $d.FullName -Filter "*Preview*.jpg" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
         if (-not $preview) {
-            $preview = Get-ChildItem -Path $d.FullName -Filter "*preview*.png" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            $preview = Get-ChildItem -LiteralPath $d.FullName -Filter "*preview*.png" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
         }
 
         $schemes.Add([PSCustomObject]@{
@@ -85,6 +85,18 @@ function Update-WindowsCursorBroadcast {
         Notifies Windows Shell to immediately reload cursors across all windows without reboot.
     #>
     try {
+        if (-not ([System.Management.Automation.PSTypeName]'WinApiCursor').Type) {
+            Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class WinApiCursor {
+    [DllImport("user32.dll", EntryPoint = "SystemParametersInfo")]
+    public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, string pvParam, uint fWinIni);
+}
+"@ -ErrorAction SilentlyContinue
+        }
+        # SPI_SETCURSORS = 0x0057, SPIF_UPDATEINIFILE = 0x01, SPIF_SENDCHANGE = 0x02
+        [WinApiCursor]::SystemParametersInfo(0x0057, 0, $null, 0x03) | Out-Null
         & rundll32.exe user32.dll,UpdatePerUserSystemParameters 1, True
     } catch {}
 }
@@ -111,19 +123,20 @@ function Install-CursorScheme {
     }
 
     $sourceDir = Join-Path $baseFolder $SchemeName
-    if (-not (Test-Path $sourceDir)) {
+    if (-not (Test-Path -LiteralPath $sourceDir)) {
         Write-Host "      [!] Error: Cursor folder not found at: $sourceDir" -ForegroundColor Red
         return $false
     }
 
     $destDir = Join-Path "$env:SystemRoot\Cursors" $SchemeName
     try {
-        if (-not (Test-Path $destDir)) {
+        if (-not (Test-Path -LiteralPath $destDir)) {
             New-Item -ItemType Directory -Path $destDir -Force | Out-Null
         }
-        # Copy all cursor files (.cur, .ani) to %SystemRoot%\Cursors\<SchemeName>
-        Get-ChildItem -Path $sourceDir -Include "*.cur", "*.ani", "*.inf", "*.crs" -Recurse -File | ForEach-Object {
-            Copy-Item -Path $_.FullName -Destination (Join-Path $destDir $_.Name) -Force -ErrorAction SilentlyContinue
+        # Copy all cursor assets (.cur, .ani, .inf, .crs) to %SystemRoot%\Cursors\<SchemeName>
+        $assetsToCopy = Get-ChildItem -LiteralPath $sourceDir -Include "*.cur", "*.ani", "*.inf", "*.crs" -Recurse -File -ErrorAction SilentlyContinue
+        foreach ($f in $assetsToCopy) {
+            Copy-Item -LiteralPath $f.FullName -Destination (Join-Path $destDir $f.Name) -Force -ErrorAction SilentlyContinue
         }
         Write-Host "      [+] Cursor assets deployed to $destDir" -ForegroundColor Green
     } catch {
@@ -131,51 +144,87 @@ function Install-CursorScheme {
         $destDir = $sourceDir
     }
 
-    # Search for installer INF file
-    $infFile = Get-ChildItem -Path $sourceDir -Filter "*.inf" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-
-    if ($infFile) {
-        try {
-            Write-Host "      [+] Executing native SetupAPI INF Section: $($infFile.Name)..." -ForegroundColor Yellow
-            $infProc = Start-Process -FilePath "rundll32.exe" -ArgumentList "setupapi.dll,InstallHinfSection DefaultInstall 128 `"$($infFile.FullName)`"" -Wait -PassThru -WindowStyle Hidden
-            Start-Sleep -Milliseconds 300
-        } catch {
-            Write-Host "      [!] INF install warning: $($_.Exception.Message)" -ForegroundColor DarkYellow
-        }
+    # Locate INF or CRS file
+    $infFile = Get-ChildItem -LiteralPath $destDir -Filter "*.inf" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $infFile) {
+        $infFile = Get-ChildItem -LiteralPath $sourceDir -Filter "*.inf" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    }
+    $crsFile = Get-ChildItem -LiteralPath $destDir -Filter "*.crs" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $crsFile) {
+        $crsFile = Get-ChildItem -LiteralPath $sourceDir -Filter "*.crs" -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 1
     }
 
-    # Directly map registry values for instant activation
-    $cursorKey = 'HKCU:\Control Panel\Cursors'
-    if (-not (Test-Path $cursorKey)) { New-Item -Path $cursorKey -Force | Out-Null }
+    $allFiles = Get-ChildItem -LiteralPath $destDir -Include "*.cur", "*.ani" -Recurse -File -ErrorAction SilentlyContinue
+    if (-not $allFiles -or $allFiles.Count -eq 0) {
+        $allFiles = Get-ChildItem -LiteralPath $sourceDir -Include "*.cur", "*.ani" -Recurse -File -ErrorAction SilentlyContinue
+    }
 
-    # Parse .crs if present or find matching files in destDir
-    $crsFile = Get-ChildItem -Path $sourceDir -Filter "*.crs" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+    $orderedRoles = @('Arrow', 'Help', 'AppStarting', 'Wait', 'Crosshair', 'IBeam', 'NWPen', 'No', 'SizeNS', 'SizeWE', 'SizeNWSE', 'SizeNESW', 'SizeAll', 'UpArrow', 'Hand', 'Pin', 'Person')
     $fileMap = @{}
 
-    if ($crsFile) {
-        $lines = Get-Content -Path $crsFile.FullName -ErrorAction SilentlyContinue
-        $currentSection = ""
-        foreach ($line in $lines) {
-            $trimmed = $line.Trim()
-            if ($trimmed -match '^\[(.*)\]$') {
-                $currentSection = $matches[1]
-            } elseif ($trimmed -match '^Path=(.+)$' -and $currentSection) {
-                $curFileName = $matches[1].Trim()
-                $targetFile = Join-Path $destDir $curFileName
-                if (Test-Path $targetFile) {
-                    $fileMap[$currentSection] = $targetFile
+    # 1. Parse INF [Strings] and [Scheme.Reg] directly
+    if ($infFile) {
+        try {
+            $infContent = Get-Content -LiteralPath $infFile.FullName -ErrorAction SilentlyContinue
+            $strings = @{}
+            $inStrings = $false
+            foreach ($line in $infContent) {
+                $t = $line.Trim()
+                if ($t -eq '[Strings]') { $inStrings = $true; continue }
+                if ($t -match '^\[.*\]$') { $inStrings = $false; continue }
+                if ($inStrings -and $t -match '^([a-zA-Z0-9_\-\.]+)\s*=\s*\"?(.*?)\"?$') {
+                    $strings[$matches[1].ToLower()] = $matches[2].Trim('"')
                 }
             }
+            foreach ($line in $infContent) {
+                if ($line -match 'HKCU,\s*\"?Control Panel\\Cursors\\Schemes\"?') {
+                    $idx = $line.IndexOf(',,')
+                    if ($idx -gt 0) {
+                        $valStr = $line.Substring($idx + 2).Trim().Trim('"')
+                        foreach ($k in $strings.Keys) {
+                            $valStr = $valStr -replace ('%' + [regex]::Escape($k) + '%'), $strings[$k]
+                        }
+                        $tokens = $valStr -split ','
+                        for ($i = 0; $i -lt [Math]::Min($tokens.Count, $orderedRoles.Count); $i++) {
+                            $tok = $tokens[$i].Trim().Trim('"')
+                            $fName = Split-Path $tok -Leaf
+                            if ($fName) {
+                                $found = $allFiles | Where-Object { $_.Name -ieq $fName } | Select-Object -First 1
+                                if ($found) { $fileMap[$orderedRoles[$i]] = $found.FullName }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch {
+            Write-Host "      [!] INF parse warning: $($_.Exception.Message)" -ForegroundColor DarkYellow
+        }
+    } elseif ($crsFile) {
+        # 2. Parse .crs if present
+        try {
+            $lines = Get-Content -LiteralPath $crsFile.FullName -ErrorAction SilentlyContinue
+            $currentSection = ""
+            foreach ($line in $lines) {
+                $trimmed = $line.Trim()
+                if ($trimmed -match '^\[(.*)\]$') {
+                    $currentSection = $matches[1]
+                } elseif ($trimmed -match '^Path=(.+)$' -and $currentSection) {
+                    $curFileName = $matches[1].Trim()
+                    $found = $allFiles | Where-Object { $_.Name -ieq $curFileName } | Select-Object -First 1
+                    if ($found) { $fileMap[$currentSection] = $found.FullName }
+                }
+            }
+        } catch {
+            Write-Host "      [!] CRS parse warning: $($_.Exception.Message)" -ForegroundColor DarkYellow
         }
     }
 
-    # Fallback to intelligent filename heuristic mapping if not fully mapped via .crs
-    $allFiles = Get-ChildItem -Path $destDir -Include "*.cur", "*.ani" -Recurse -File -ErrorAction SilentlyContinue
+    # 3. Fallback Heuristic Mapping for any unmapped standard roles
     $roles = @{
         'Arrow'       = @('Normal', 'Arrow', 'Pointer', 'default')
         'Help'        = @('Help')
         'AppStarting' = @('Working', 'AppStarting', 'Flash', 'WaitBackground')
-        'Wait'        = @('Busy', 'Wait')
+        'Wait'        = @('Busy', 'Wait', 'Spinner')
         'Crosshair'   = @('Precision', 'Crosshair', 'Cross')
         'IBeam'       = @('Text', 'IBeam', 'Beam')
         'NWPen'       = @('Handwriting', 'Pen', 'Write')
@@ -192,7 +241,7 @@ function Install-CursorScheme {
     }
 
     foreach ($role in $roles.Keys) {
-        if (-not $fileMap.ContainsKey($role)) {
+        if (-not $fileMap.ContainsKey($role) -or -not $fileMap[$role]) {
             $patterns = $roles[$role]
             foreach ($pat in $patterns) {
                 $matched = $allFiles | Where-Object { $_.BaseName -like "*$pat*" } | Select-Object -First 1
@@ -204,7 +253,9 @@ function Install-CursorScheme {
         }
     }
 
-    # Write mapped cursor files to HKCU:\Control Panel\Cursors
+    # 4. Write mapped cursor files to HKCU:\Control Panel\Cursors
+    $cursorKey = 'HKCU:\Control Panel\Cursors'
+    if (-not (Test-Path $cursorKey)) { New-Item -Path $cursorKey -Force | Out-Null }
     Set-ItemProperty -Path $cursorKey -Name '(default)' -Value $SchemeName -ErrorAction SilentlyContinue
     Set-ItemProperty -Path $cursorKey -Name 'Scheme Source' -Value 1 -Type DWord -ErrorAction SilentlyContinue
 
@@ -214,11 +265,10 @@ function Install-CursorScheme {
         }
     }
 
-    # Write to HKCU:\Control Panel\Cursors\Schemes
+    # 5. Write to HKCU:\Control Panel\Cursors\Schemes
     $schemesKey = 'HKCU:\Control Panel\Cursors\Schemes'
     if (-not (Test-Path $schemesKey)) { New-Item -Path $schemesKey -Force | Out-Null }
 
-    $orderedRoles = @('Arrow', 'Help', 'AppStarting', 'Wait', 'Crosshair', 'IBeam', 'NWPen', 'No', 'SizeNS', 'SizeWE', 'SizeNWSE', 'SizeNESW', 'SizeAll', 'UpArrow', 'Hand', 'Pin', 'Person')
     $schemeStringList = @()
     foreach ($r in $orderedRoles) {
         if ($fileMap.ContainsKey($r) -and $fileMap[$r]) {
@@ -230,7 +280,7 @@ function Install-CursorScheme {
     $schemeVal = $schemeStringList -join ','
     Set-ItemProperty -Path $schemesKey -Name $SchemeName -Value $schemeVal -Type String -ErrorAction SilentlyContinue
 
-    # Broadcast live cursor update to Windows Shell
+    # 6. Broadcast live cursor update to Windows Shell (no reboot needed)
     Update-WindowsCursorBroadcast
 
     Write-Host "      [OK] Custom cursor scheme '$SchemeName' applied successfully and live!" -ForegroundColor Green
