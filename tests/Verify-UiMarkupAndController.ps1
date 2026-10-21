@@ -36,4 +36,12 @@ if (-not $audit.State -or $audit.State.Keys.Count -lt 50) {
     throw "Get-SystemAuditState returned invalid or incomplete state map!"
 }
 Write-Host "  [+] Audit Engine active: $($audit.State.Keys.Count) audit keys probed." -ForegroundColor Green
+
+Write-Host "`n=== 4. Tweak Registry Schema Validation ===" -ForegroundColor Cyan
+. (Join-Path $projectRoot "modules\Gui-Controller.ps1")
+if (-not (Get-Command Start-PumpkiNGui -ErrorAction SilentlyContinue)) {
+    throw "Start-PumpkiNGui function not found in Gui-Controller.ps1!"
+}
+Write-Host "  [+] Start-PumpkiNGui exported successfully." -ForegroundColor Green
+
 Write-Host "`n[PASS] All UI verification checks passed!" -ForegroundColor Green

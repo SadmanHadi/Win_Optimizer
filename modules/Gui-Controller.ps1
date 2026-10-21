@@ -1,6 +1,7 @@
 <#
 ================================================================================
   PumpkiN's Modular Suite: Desktop WPF GUI Event Controller & Async Engine
+  Version 5.6.0 - Windows 11 Fluent + Cyberpunk Architecture
 ================================================================================
 #>
 
@@ -17,7 +18,7 @@ function Start-PumpkiNGui {
     $xmlReader = [System.Xml.XmlReader]::Create($stringReader)
     $window = [System.Windows.Markup.XamlReader]::Load($xmlReader)
 
-    # Load 3D Pumpkin Brand Logo & Window Icon (.ico / .png)
+    # 1. Load Application Brand Logo (.ico / .png)
     $imgLogo = $window.FindName("ImgAppLogo")
     $projectRoot = $null
     if ($Global:OptimizerProjectRoot -and (Test-Path $Global:OptimizerProjectRoot)) {
@@ -35,24 +36,6 @@ function Start-PumpkiNGui {
     $logoCandidates.Add("E:\Projects\Win_Optimizer\LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico")
     $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.ico"))
     $logoCandidates.Add((Join-Path $projectRoot "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
-    $logoCandidates.Add((Join-Path (Get-Location) "LOGO\7a0eb4c4-5e6f-4be3-9554-29661ef7f4ff.png"))
-
-    $logoDirs = @((Join-Path $projectRoot "LOGO"), "E:\Projects\Win_Optimizer\LOGO", (Join-Path (Get-Location) "LOGO"))
-    foreach ($ld in $logoDirs) {
-        if ($ld -and (Test-Path $ld)) {
-            $discovered = Get-ChildItem -Path $ld -Filter "*.ico" -ErrorAction SilentlyContinue
-            if (-not $discovered) {
-                $discovered = Get-ChildItem -Path $ld -Filter "*.png" -ErrorAction SilentlyContinue
-            }
-            if ($discovered) {
-                foreach ($df in $discovered) {
-                    if (-not $logoCandidates.Contains($df.FullName)) {
-                        $logoCandidates.Add($df.FullName)
-                    }
-                }
-            }
-        }
-    }
 
     $logoLoaded = $false
     foreach ($cand in $logoCandidates) {
@@ -68,143 +51,95 @@ function Start-PumpkiNGui {
                 $logoLoaded = $true
                 break
             } catch {}
-
-            if (-not $logoLoaded) {
-                try {
-                    $stream = [System.IO.File]::OpenRead($cand)
-                    $decoder = New-Object System.Windows.Media.Imaging.IconBitmapDecoder($stream, [System.Windows.Media.Imaging.BitmapCreateOptions]::PreservePixelFormat, [System.Windows.Media.Imaging.BitmapCacheOption]::OnLoad)
-                    $frame = $decoder.Frames[0]
-                    $stream.Close()
-                    if ($imgLogo) { $imgLogo.Source = $frame }
-                    $window.Icon = $frame
-                    $logoLoaded = $true
-                    break
-                } catch {}
-            }
-
-            if (-not $logoLoaded) {
-                try {
-                    Add-Type -AssemblyName System.Drawing
-                    $drawingIcon = New-Object System.Drawing.Icon($cand)
-                    $bmpSource = [System.Windows.Interop.Imaging]::CreateBitmapSourceFromHIcon(
-                        $drawingIcon.Handle,
-                        [System.Windows.Int32Rect]::Empty,
-                        [System.Windows.Media.Imaging.BitmapSizeOptions]::FromEmptyOptions()
-                    )
-                    if ($imgLogo) { $imgLogo.Source = $bmpSource }
-                    $window.Icon = $bmpSource
-                    $logoLoaded = $true
-                    break
-                } catch {}
-            }
         }
     }
 
-    # Core Controls
-    $wrapPackages       = $window.FindName("WrapPackages")
-    $txtSearch          = $window.FindName("TxtSearch")
-    $btnClearSearch     = $window.FindName("BtnClearSearch")
-    $btnInstallSelected = $window.FindName("BtnInstallSelected")
-    $btnUninstallSelected = $window.FindName("BtnUninstallSelected")
-    $btnUpgradeAll      = $window.FindName("BtnUpgradeAll")
-    $btnSelectAll       = $window.FindName("BtnSelectAll")
-    $btnClearAll        = $window.FindName("BtnClearAll")
-    $txtSelectedCount   = $window.FindName("TxtSelectedCount")
+    # 2. Controls Resolution
+    # Top Bar
+    $txtSearch           = $window.FindName("TxtSearch")
+    $btnClearSearch      = $window.FindName("BtnClearSearch")
+    $btnBeastMode        = $window.FindName("BtnBeastMode")
+    $btnRestorePointTop  = $window.FindName("BtnRestorePointTop")
+    $btnMasActivateTop   = $window.FindName("BtnMasActivateTop")
+    $btnExitTop          = $window.FindName("BtnExitTop")
 
-    $btnRunAllTweaks    = $window.FindName("BtnRunAllTweaks")
-    $btnRevertDefaults  = $window.FindName("BtnRevertDefaults")
-    $btnClearDeepCacheBar = $window.FindName("BtnClearDeepCacheBar")
-    $btnClearUpdateCache = $window.FindName("BtnClearUpdateCache")
-    $btnInstallDirectXDirect = $window.FindName("BtnInstallDirectXDirect")
-    $btnInstallVcRedistAio = $window.FindName("BtnInstallVcRedistAio")
-    $btnBeastMode       = $window.FindName("BtnBeastMode")
+    # Navigation Rail
+    $navDashboard        = $window.FindName("NavDashboard")
+    $navGaming           = $window.FindName("NavGaming")
+    $navPrivacy          = $window.FindName("NavPrivacy")
+    $navSystem           = $window.FindName("NavSystem")
+    $navSoftware         = $window.FindName("NavSoftware")
+    $navDevice           = $window.FindName("NavDevice")
 
-    $btnPurgeStandby         = $window.FindName("BtnPurgeStandby")
-    $cmbStandbyInterval      = $window.FindName("CmbStandbyInterval")
-    $btnSetStandbySchedule   = $window.FindName("BtnSetStandbySchedule")
-    $btnRemoveStandbySchedule = $window.FindName("BtnRemoveStandbySchedule")
-    $txtStandbyTaskStatus    = $window.FindName("TxtStandbyTaskStatus")
-    $btnToggleWifiScan       = $window.FindName("BtnToggleWifiScan")
-        $btnApplyGameHooks       = $window.FindName("BtnApplyGameHooks")
-    $txtLiveCpu              = $window.FindName("TxtLiveCpu")
-    $txtLiveRam              = $window.FindName("TxtLiveRam")
-    $txtLivePing             = $window.FindName("TxtLivePing")
-    $txtLiveBooster          = $window.FindName("TxtLiveBooster")
-    $txtDaemonStatus         = $window.FindName("TxtDaemonStatus")
-    $btnStartGameBooster     = $window.FindName("BtnStartGameBooster")
-    $btnStopGameBooster      = $window.FindName("BtnStopGameBooster")
+    # Page Containers
+    $pageDashboard       = $window.FindName("PageDashboard")
+    $pageGaming          = $window.FindName("PageGaming")
+    $pagePrivacy         = $window.FindName("PagePrivacy")
+    $pageSystem          = $window.FindName("PageSystem")
+    $pageSoftware        = $window.FindName("PageSoftware")
+    $pageDevice          = $window.FindName("PageDevice")
 
-    $btnMasActivate     = $window.FindName("BtnMasActivate")
-    $btnMasActivateTop  = $window.FindName("BtnMasActivateTop")
-    $btnRestorePoint    = $window.FindName("BtnRestorePoint")
-    $btnRestorePointTop = $window.FindName("BtnRestorePointTop")
-    $btnApplyHardening  = $window.FindName("BtnApplyHardening")
-    $btnRunDiagnostics  = $window.FindName("BtnRunDiagnostics")
-    $btnExitTop         = $window.FindName("BtnExitTop")
+    # Tweak Scrollable Panels
+    $panelGamingTweaks   = $window.FindName("PanelGamingTweaks")
+    $panelPrivacyTweaks  = $window.FindName("PanelPrivacyTweaks")
+    $panelSystemTweaks   = $window.FindName("PanelSystemTweaks")
 
-    $btnInstallTrafficMonitor       = $window.FindName("BtnInstallTrafficMonitor")
-    $btnInstallMiSansFonts          = $window.FindName("BtnInstallMiSansFonts")
-    $btnApplyTrafficMonitorConfig   = $window.FindName("BtnApplyTrafficMonitorConfig")
-    $btnLaunchTrafficMonitor        = $window.FindName("BtnLaunchTrafficMonitor")
-
-    $txtConsole         = $window.FindName("TxtConsole")
-    $txtStatus          = $window.FindName("TxtStatus")
-    $progressBar        = $window.FindName("MainProgressBar")
-    $btnClearConsole    = $window.FindName("BtnClearConsole")
-
-    # Optimization Score & Audit Dashboard Controls
+    # Dashboard Controls
+    $borderScoreGauge         = $window.FindName("BorderScoreGauge")
     $txtScorePercent          = $window.FindName("TxtScorePercent")
     $txtScoreGrade            = $window.FindName("TxtScoreGrade")
     $txtActiveTweakRatio      = $window.FindName("TxtActiveTweakRatio")
-    $txtScorePercentTab4      = $window.FindName("TxtScorePercentTab4")
-    $txtScoreGradeTab4        = $window.FindName("TxtScoreGradeTab4")
-    $txtActiveTweakRatioTab4  = $window.FindName("TxtActiveTweakRatioTab4")
+    $txtScoreSubtitle         = $window.FindName("TxtScoreSubtitle")
     $btnScanSystemStateBanner = $window.FindName("BtnScanSystemStateBanner")
-    $btnScanSystemStateTab4Banner = $window.FindName("BtnScanSystemStateTab4Banner")
-    $btnScanSystemStateTab4   = $window.FindName("BtnScanSystemStateTab4")
-    $btnApplyUnappliedBanner  = $window.FindName("BtnApplyUnappliedBanner")
-    $btnApplyUnappliedTab2    = $window.FindName("BtnApplyUnappliedTab2")
-    $btnApplyUnappliedHardening = $window.FindName("BtnApplyUnappliedHardening")
-    $btnApplyUnappliedHardeningBanner = $window.FindName("BtnApplyUnappliedHardeningBanner")
-    $btnRevertDefaultsBanner  = $window.FindName("BtnRevertDefaultsBanner")
-    $btnRevertDefaultsTab4    = $window.FindName("BtnRevertDefaultsTab4")
+    $btnRevertDefaults        = $window.FindName("BtnRevertDefaults")
+    $txtLiveCpu               = $window.FindName("TxtLiveCpu")
+    $txtLiveRam               = $window.FindName("TxtLiveRam")
+    $txtLivePing              = $window.FindName("TxtLivePing")
+    $txtLiveBooster           = $window.FindName("TxtLiveBooster")
+    $btnStartGameBooster      = $window.FindName("BtnStartGameBooster")
+    $btnPurgeStandby          = $window.FindName("BtnPurgeStandby")
+    $btnApplyProfileEsports   = $window.FindName("BtnApplyProfileEsports")
+    $btnApplyProfileRecommended = $window.FindName("BtnApplyProfileRecommended")
+    $btnApplyProfilePrivacy   = $window.FindName("BtnApplyProfilePrivacy")
 
-    # Tab 2 Checkboxes
-    $chkGpuAuto         = $window.FindName("ChkGpuAuto")
-    $chkHardwareMsi     = $window.FindName("ChkHardwareMsi")
-    $chkDisablePowerSaving = $window.FindName("ChkDisablePowerSaving")
-    $chkMpo             = $window.FindName("ChkMpo")
-    $chkMouseCurve      = $window.FindName("ChkMouseCurve")
-    $chkInputLatency    = $window.FindName("ChkInputLatency")
-    $chkCsrssPriority   = $window.FindName("ChkCsrssPriority")
-    $chkCpuSystem       = $window.FindName("ChkCpuSystem")
-    $chkSvcHost         = $window.FindName("ChkSvcHost")
-    $chkNetwork         = $window.FindName("ChkNetwork")
-    $chkWifiScan        = $window.FindName("ChkWifiScan")
-    $chkUltimatePower   = $window.FindName("ChkUltimatePower")
-    $chkStripVisual     = $window.FindName("ChkStripVisual")
-    $chkEndTask         = $window.FindName("ChkEndTask")
-    $chkStickyKeys      = $window.FindName("ChkStickyKeys")
-    $chkDebloatServices = $window.FindName("ChkDebloatServices")
-    $chkDiskIo          = $window.FindName("ChkDiskIo")
-    $chkCompactOs       = $window.FindName("ChkCompactOs")
-    $chkTakeOwnership   = $window.FindName("ChkTakeOwnership")
-    $chkJunkTasks       = $window.FindName("ChkJunkTasks")
-    $chkPrivacy         = $window.FindName("ChkPrivacy")
+    # Gaming Page Master Controls
+    $chipGamingAll           = $window.FindName("ChipGamingAll")
+    $chipGamingRecommended   = $window.FindName("ChipGamingRecommended")
+    $chipGamingEsports       = $window.FindName("ChipGamingEsports")
+    $chipGamingActive        = $window.FindName("ChipGamingActive")
+    $btnGamingApplyAll       = $window.FindName("BtnGamingApplyAll")
+    $btnGamingRollbackAll    = $window.FindName("BtnGamingRollbackAll")
 
-    # Tab 4 Checkboxes
-    $chkBlockWpbt       = $window.FindName("ChkBlockWpbt")
-    $chkBlockPeripheral = $window.FindName("ChkBlockPeripheral")
-    $chkRemoveAi        = $window.FindName("ChkRemoveAi")
-    $chkSecurityUpdatesOnly = $window.FindName("ChkSecurityUpdatesOnly")
-    $chkClassicContext  = $window.FindName("ChkClassicContext")
-    $chkDisableBing     = $window.FindName("ChkDisableBing")
-    $chkDisableAutoDiscovery = $window.FindName("ChkDisableAutoDiscovery")
-    $chkShowExtensions  = $window.FindName("ChkShowExtensions")
-    $chkEnableLongPaths = $window.FindName("ChkEnableLongPaths")
-    $chkDisableLockScreen = $window.FindName("ChkDisableLockScreen")
-    $chkBsodVerbose     = $window.FindName("ChkBsodVerbose")
-    $chkDisableReservedStorage = $window.FindName("ChkDisableReservedStorage")
+    # Privacy Page Master Controls
+    $chipPrivacyAll          = $window.FindName("ChipPrivacyAll")
+    $chipPrivacyActive       = $window.FindName("ChipPrivacyActive")
+    $btnPrivacyApplyAll      = $window.FindName("BtnPrivacyApplyAll")
+    $btnPrivacyRollbackAll   = $window.FindName("BtnPrivacyRollbackAll")
+
+    # System Page Master Controls
+    $chipSystemAll           = $window.FindName("ChipSystemAll")
+    $chipSystemActive        = $window.FindName("ChipSystemActive")
+    $btnSystemApplyAll       = $window.FindName("BtnSystemApplyAll")
+    $btnSystemRollbackAll    = $window.FindName("BtnSystemRollbackAll")
+
+    # Software Downloader Controls
+    $wrapPackages            = $window.FindName("WrapPackages")
+    $btnInstallSelected      = $window.FindName("BtnInstallSelected")
+    $btnUninstallSelected    = $window.FindName("BtnUninstallSelected")
+    $btnUpgradeAll           = $window.FindName("BtnUpgradeAll")
+    $btnSelectAll            = $window.FindName("BtnSelectAll")
+    $btnClearAll             = $window.FindName("BtnClearAll")
+    $txtSelectedCount        = $window.FindName("TxtSelectedCount")
+    $btnInstallEquicord      = $window.FindName("BtnInstallEquicord")
+    $btnOpenEquicordSite     = $window.FindName("BtnOpenEquicordSite")
+
+    # Bottom Activity / Drawer Controls
+    $btnToggleLogDrawer      = $window.FindName("BtnToggleLogDrawer")
+    $panelLogDrawer          = $window.FindName("PanelLogDrawer")
+    $txtConsole              = $window.FindName("TxtConsole")
+    $txtStatus               = $window.FindName("TxtStatus")
+    $progressBar             = $window.FindName("MainProgressBar")
+    $btnClearConsole         = $window.FindName("BtnClearConsole")
 
     # Thread-Safe UI Pumping and Logging
     $script:DoEvents = {
@@ -222,9 +157,13 @@ function Start-PumpkiNGui {
         $timestamp = (Get-Date).ToString("HH:mm:ss")
         $line = "[$timestamp] $Message`r`n"
         $window.Dispatcher.Invoke([Action]{
-            $txtConsole.AppendText($line)
-            $txtConsole.ScrollToEnd()
-            $txtStatus.Text = $Message
+            if ($txtConsole) {
+                $txtConsole.AppendText($line)
+                $txtConsole.ScrollToEnd()
+            }
+            if ($txtStatus) {
+                $txtStatus.Text = $Message
+            }
         })
         & $script:DoEvents
     }
@@ -232,1004 +171,542 @@ function Start-PumpkiNGui {
     $script:SetProgress = {
         param([int]$Percent)
         $window.Dispatcher.Invoke([Action]{
-            $progressBar.Value = $Percent
+            if ($progressBar) {
+                $progressBar.Value = $Percent
+            }
         })
         & $script:DoEvents
     }
 
-    $btnClearConsole.Add_Click({
-        $txtConsole.Clear()
-        $txtStatus.Text = "Log cleared"
-    })
+    if ($btnClearConsole) {
+        $btnClearConsole.Add_Click({
+            if ($txtConsole) { $txtConsole.Clear() }
+            if ($txtStatus) { $txtStatus.Text = "Log cleared" }
+        })
+    }
 
-    # Build Application Cards Dynamically with Fast [Type]::new() Constructors
-    $script:AllAppCards = [System.Collections.Generic.List[PSCustomObject]]::new()
-    $brushNormalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#161E2B")
-    $brushHoverBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1E293B")
-    $brushNormalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#26354A")
-    $brushHoverBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-    $brushCyan         = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-    $brushTextDim      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-    $brushTextSub      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#64748B")
-    $badgeBg           = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
-    $whiteBrush        = [System.Windows.Media.Brushes]::White
-    $handCursor        = [System.Windows.Input.Cursors]::Hand
+    # 3. Collapsible Log Drawer Toggle Handler
+    $script:ExpandLogDrawer = {
+        if ($panelLogDrawer -and $panelLogDrawer.Visibility -ne [System.Windows.Visibility]::Visible) {
+            $panelLogDrawer.Visibility = [System.Windows.Visibility]::Visible
+            if ($btnToggleLogDrawer) { $btnToggleLogDrawer.Content = "v Hide Console" }
+        }
+    }
 
-    # Reusable layout metrics to eliminate redundant object allocations
-    $thick1      = [System.Windows.Thickness]::new(1)
-    $thick4      = [System.Windows.Thickness]::new(4, 1, 4, 1)
-    $thick5      = [System.Windows.Thickness]::new(5)
-    $thick10     = [System.Windows.Thickness]::new(10)
-    $thickChk    = [System.Windows.Thickness]::new(0, 4, 10, 0)
-    $thickDesc   = [System.Windows.Thickness]::new(0, 3, 0, 0)
-    $thickBadge  = [System.Windows.Thickness]::new(4, 0, 0, 0)
-    $corn6       = [System.Windows.CornerRadius]::new(6)
-    $corn3       = [System.Windows.CornerRadius]::new(3)
-    $starGrid    = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
-    $autoGrid    = [System.Windows.GridLength]::Auto
+    if ($btnToggleLogDrawer) {
+        $btnToggleLogDrawer.Add_Click({
+            if ($panelLogDrawer.Visibility -eq [System.Windows.Visibility]::Visible) {
+                $panelLogDrawer.Visibility = [System.Windows.Visibility]::Collapsed
+                $btnToggleLogDrawer.Content = "^ Show Console"
+            } else {
+                $panelLogDrawer.Visibility = [System.Windows.Visibility]::Visible
+                $btnToggleLogDrawer.Content = "v Hide Console"
+            }
+        })
+    }
 
-    foreach ($app in $Global:AppCatalog) {
+    # 4. Master Navigation Switching
+    $pages = @($pageDashboard, $pageGaming, $pagePrivacy, $pageSystem, $pageSoftware, $pageDevice)
+    $script:SwitchPage = {
+        param([System.Windows.Controls.Grid]$TargetPage)
+        foreach ($p in $pages) {
+            if ($p) {
+                $p.Visibility = if ($p -eq $TargetPage) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+            }
+        }
+    }
+
+    if ($navDashboard) { $navDashboard.Add_Checked({ & $script:SwitchPage $pageDashboard }) }
+    if ($navGaming)    { $navGaming.Add_Checked({ & $script:SwitchPage $pageGaming }) }
+    if ($navPrivacy)   { $navPrivacy.Add_Checked({ & $script:SwitchPage $pagePrivacy }) }
+    if ($navSystem)    { $navSystem.Add_Checked({ & $script:SwitchPage $pageSystem }) }
+    if ($navSoftware)  { $navSoftware.Add_Checked({ & $script:SwitchPage $pageSoftware }) }
+    if ($navDevice)    { $navDevice.Add_Checked({ & $script:SwitchPage $pageDevice }) }
+
+    # 5. Master Tweak Definitions Registry (Unified Schema for all 82 Tweaks)
+    $script:TweakDefinitions = @(
+        # --- GAMING & HARDWARE PERFORMANCE ---
+        @{ Key="GpuAuto"; Title="GPU Driver Auto-Tuning"; Category="Gaming"; Tier="Recommended"; Description="Auto-optimizes NVIDIA and AMD display driver registry settings for maximum sustained frame rates."; Apply={ Optimize-GpuAuto }; Rollback={ Restore-GpuAuto } },
+        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Tier="Recommended"; Description="Switches GPU, USB, and network adapters to Message Signaled Interrupts (MSI) for lowest DPC latency."; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-HardwareMsiMode } },
+        @{ Key="DisablePowerSaving"; Title="Disable USB Power Savings"; Category="Gaming"; Tier="Safe"; Description="Prevents Windows from suspending USB root hubs and network controllers during competitive gaming."; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-DevicePowerSaving } },
+        @{ Key="Mpo"; Title="Disable Multiplane Overlay (MPO)"; Category="Gaming"; Tier="Recommended"; Description="Disables Desktop Window Manager MPO to permanently eliminate micro-stuttering and black screens."; Apply={ Disable-MultiplaneOverlay }; Rollback={ Restore-MultiplaneOverlay } },
+        @{ Key="MouseCurve"; Title="1:1 Raw Mouse Linear Curve"; Category="Gaming"; Tier="Recommended"; Description="Enforces perfectly linear 1:1 hardware mouse sensitivity with zero angle snapping or smoothing."; Apply={ Set-MouseLinearCurve }; Rollback={ Restore-MouseLinearCurve } },
+        @{ Key="InputLatency"; Title="8000Hz USB Keyboard Response"; Category="Gaming"; Tier="Esports"; Description="Optimizes USB polling buffers and keyboard response rate to lowest possible physical latency."; Apply={ Optimize-LatencyAndInput }; Rollback={ Restore-AudioDpcAndUsbLatency } },
+        @{ Key="CsrssPriority"; Title="CSRSS Realtime I/O Priority"; Category="Gaming"; Tier="Esports"; Description="Elevates Client Server Runtime Subsystem to High/Realtime priority for instant input processing."; Apply={ Optimize-CsrssPriority }; Rollback={ Restore-CsrssPriority } },
+        @{ Key="CpuSystem"; Title="Win32PrioritySeparation Quantum (0x26)"; Category="Gaming"; Tier="Recommended"; Description="Sets kernel scheduler quantum to 0x26, granting active foreground games priority CPU slices."; Apply={ Optimize-CpuAndSystem }; Rollback={ Restore-CpuAndSystem } },
+        @{ Key="SvcHost"; Title="SvcHost RAM Thread Splitting"; Category="Gaming"; Tier="Recommended"; Description="Isolates background service hosts to prevent shared memory contention and micro-stutter."; Apply={ Optimize-SvcHostSplitting }; Rollback={ Restore-SvcHostSplitting } },
+        @{ Key="Network"; Title="TCP/IP Low-Latency Anti-Lag Stack"; Category="Gaming"; Tier="Recommended"; Description="Optimizes TCP autotuning, non-best-effort QoS limits, and disables Nagle latency batching."; Apply={ Optimize-Network }; Rollback={ Restore-Network } },
+        @{ Key="WifiScan"; Title="Wi-Fi 0ms Roaming Ping Shield"; Category="Gaming"; Tier="Esports"; Description="Freezes Windows background 60s Wi-Fi network roaming scans to eliminate ping spikes."; Apply={ Toggle-WifiAutoconfig }; Rollback={ Toggle-WifiAutoconfig } },
+        @{ Key="StartupDns"; Title="Gaming DNS & Fast Startup Tuning"; Category="Gaming"; Tier="Safe"; Description="Prioritizes local DNS resolver threads and optimizes network startup negotiation."; Apply={ Optimize-StartupAndDns }; Rollback={ Reset-DnsToAutomatic } },
+        @{ Key="GameHooks"; Title="Esports Process Priority Hooks"; Category="Gaming"; Tier="Esports"; Description="Configures High CPU Priority and MMIO execution for CS2, Valorant, Apex, and Fortnite."; Apply={ Apply-GameHooks }; Rollback={ Restore-GameHooks } },
+        @{ Key="UltimatePower"; Title="PumpkiN Ultimate Power Plan"; Category="Gaming"; Tier="Recommended"; Description="Unlocks and activates the Ultimate Performance energy scheme with zero CPU clock throttling."; Apply={ Invoke-PumpkiNEsportsPowerPlan }; Rollback={ Restore-BalancedPowerPlan } },
+        @{ Key="CoreUnpark"; Title="100% CPU Core Unparking"; Category="Gaming"; Tier="Recommended"; Description="Unparks all physical and logical CPU cores so all threads respond immediately to game loads."; Apply={ Invoke-CpuCoreUnparking }; Rollback={ Restore-CpuCoreParking } },
+        @{ Key="StripVisual"; Title="Strip Desktop Visual Animations"; Category="Gaming"; Tier="Safe"; Description="Disables unnecessary window drop shadows, fade animations, and cursor effects for peak responsiveness."; Apply={ Strip-VisualEffects }; Rollback={ Restore-VisualEffects } },
+        @{ Key="EndTask"; Title="Taskbar 'End Task' Right-Click"; Category="Gaming"; Tier="Recommended"; Description="Enables instant process termination directly from the Windows taskbar context menu."; Apply={ Enable-EndTaskRightClick }; Rollback={ Restore-EndTaskRightClick } },
+        @{ Key="StickyKeys"; Title="Disable Sticky Keys Prompt"; Category="Gaming"; Tier="Safe"; Description="Suppresses the Windows accessibility dialog when pressing Shift 5 times in rapid succession."; Apply={ Disable-StickyKeysPrompt }; Rollback={ Restore-StickyKeysPrompt } },
+        @{ Key="CompactMetrics"; Title="Compact Window Metrics"; Category="Gaming"; Tier="Safe"; Description="Narrows desktop window padding and title bars for a modern, sleek desktop aesthetic."; Apply={ Set-CompactWindowMetrics }; Rollback={ Restore-CompactWindowMetrics } },
+        @{ Key="DebloatServices"; Title="Debloat Background Services"; Category="Gaming"; Tier="Recommended"; Description="Gracefully disables non-essential background services (Diagnostics, Fax, Maps, Retail Demo)."; Apply={ Debloat-BackgroundServices }; Rollback={ Restore-BackgroundServices } },
+        @{ Key="DiskIo"; Title="Optimize Disk I/O & NTFS"; Category="Gaming"; Tier="Recommended"; Description="Disables 8.3 short filename generation and last-access timestamps for faster disk read/write."; Apply={ Optimize-DiskIO }; Rollback={ Restore-DiskIO } },
+        @{ Key="CompactOs"; Title="CompactOS System Compression"; Category="Gaming"; Tier="Safe"; Description="Compresses core OS binaries via native XPRESS/LZX to free up 10-25 GB of NVMe/SSD space."; Apply={ Enable-CompactOS }; Rollback={ Disable-CompactOS } },
+        @{ Key="TakeOwnership"; Title="'Take Ownership' Context Menu"; Category="Gaming"; Tier="Safe"; Description="Adds a 1-click Take Ownership menu item to easily manage restricted system files."; Apply={ Enable-TakeOwnershipMenu }; Rollback={ Disable-TakeOwnershipMenu } },
+        @{ Key="JunkTasks"; Title="Disable Scheduled Junk Tasks"; Category="Gaming"; Tier="Recommended"; Description="Disables Customer Experience Improvement, CEIP, and background telemetry collection tasks."; Apply={ Disable-ScheduledJunkTasks }; Rollback={ Restore-ScheduledJunkTasks } },
+        @{ Key="Privacy"; Title="Harden Core Windows Telemetry"; Category="Gaming"; Tier="Recommended"; Description="Sets AllowTelemetry policy to 0 (Security) and suppresses diagnostic data reporting."; Apply={ Harden-PrivacyTelemetry }; Rollback={ Restore-PrivacyTelemetry } },
+        @{ Key="AudioDpc"; Title="Audio DPC & Anti-Popping"; Category="Gaming"; Tier="Recommended"; Description="Elevates Multimedia Class Scheduler (MMCSS) audio thread priority to prevent popping."; Apply={ Optimize-AudioDpcLatency }; Rollback={ Restore-AudioDpcAndUsbLatency } },
+        @{ Key="UsbxHci"; Title="USB xHCI Realtime Thread Priority"; Category="Gaming"; Tier="Esports"; Description="Configures USB host controller thread priority to Realtime (31) for zero mouse click latency."; Apply={ Optimize-UsbLatencyAndBuffers }; Rollback={ Restore-AudioDpcAndUsbLatency } },
+        @{ Key="DeviceManager"; Title="Device Manager Latency Tuning"; Category="Gaming"; Tier="Recommended"; Description="Disables high-latency legacy devices (HPET, SMBus, System Speaker, Timers) safely."; Apply={ Optimize-DeviceManager }; Rollback={ Restore-DeviceManager } },
+
+        # --- SYSTEM, SHELL & HARDENING ---
+        @{ Key="BlockWpbt"; Title="Block UEFI WPBT Execution"; Category="System"; Tier="Safe"; Description="Blocks manufacturer-injected rootkit bloatware from executing out of motherboard ACPI tables."; Apply={ Block-WpbtExecution }; Rollback={ Restore-WpbtExecution } },
+        @{ Key="BlockPeripheral"; Title="Block Peripheral Software Bloat"; Category="System"; Tier="Safe"; Description="Prevents Windows from automatically downloading OEM bloatware apps when connecting hardware."; Apply={ Block-PeripheralBloat }; Rollback={ Restore-PeripheralBloat } },
+        @{ Key="RemoveAi"; Title="Purge Windows AI & Recall"; Category="System"; Tier="Recommended"; Description="Removes Copilot, Recall snapshots, and background AI telemetry processors."; Apply={ Remove-WindowsAI }; Rollback={ Restore-WindowsAI } },
+        @{ Key="SecurityUpdatesOnly"; Title="Security-Only Update Policy"; Category="System"; Tier="Safe"; Description="Configures Windows Update to only deliver essential security patches without unwanted feature rollouts."; Apply={ Set-SecurityUpdatesOnly }; Rollback={ Restore-SecurityUpdatesOnly } },
+        @{ Key="ClassicContext"; Title="Classic Windows 10 Context Menu"; Category="System"; Tier="Recommended"; Description="Restores the fast full-featured right-click context menu on Windows 11 without 'Show more options'."; Apply={ Enable-ClassicContextMenu }; Rollback={ Restore-ClassicContextMenu } },
+        @{ Key="DisableBing"; Title="Disable Start Menu Web Search"; Category="System"; Tier="Recommended"; Description="Prevents Start Menu searches from querying Bing and displaying web advertisements."; Apply={ Disable-StartMenuBing }; Rollback={ Restore-StartMenuBing } },
+        @{ Key="DisableAutoDiscovery"; Title="Disable Network Auto-Discovery"; Category="System"; Tier="Safe"; Description="Stops Explorer from constantly scanning local network subnets for devices, speeding up folder loads."; Apply={ Disable-ExplorerAutoDiscovery }; Rollback={ Restore-ExplorerAutoDiscovery } },
+        @{ Key="ShowExtensions"; Title="Show File Extensions & Hidden Files"; Category="System"; Tier="Recommended"; Description="Configures File Explorer to always show file extensions and hidden items for security."; Apply={ Set-ShowFileExtensionsAndHidden }; Rollback={ Restore-ShowFileExtensionsAndHidden } },
+        @{ Key="DisableAds"; Title="Disable Windows Desktop Ads"; Category="System"; Tier="Recommended"; Description="Removes suggested apps, tip notifications, and promotional banners across the shell."; Apply={ Disable-WindowsAds }; Rollback={ Enable-WindowsAds } },
+        @{ Key="NoShortcutArrows"; Title="Remove Shortcut Arrow Overlays"; Category="System"; Tier="Safe"; Description="Removes the default arrow icon overlay from desktop application shortcuts."; Apply={ Disable-ShortcutArrow }; Rollback={ Restore-ShortcutArrow } },
+        @{ Key="EnableLongPaths"; Title="Enable Win32 Long Paths (MAX_PATH)"; Category="System"; Tier="Recommended"; Description="Removes the 260-character path limit for file paths, preventing filesystem errors."; Apply={ Enable-LongPaths }; Rollback={ Restore-LongPaths } },
+        @{ Key="DisableLockScreen"; Title="Disable Windows Lock Screen"; Category="System"; Tier="Safe"; Description="Bypasses the swipe-up lock screen image and displays the password prompt immediately."; Apply={ Disable-LockScreen }; Rollback={ Restore-LockScreen } },
+        @{ Key="BsodVerbose"; Title="Verbose Crash Screen (BSOD)"; Category="System"; Tier="Safe"; Description="Configures Windows to display detailed stop codes and faulting driver names on crash."; Apply={ Enable-BsodVerbose }; Rollback={ Restore-BsodVerbose } },
+        @{ Key="DisableReservedStorage"; Title="Reclaim 7GB Reserved Storage"; Category="System"; Tier="Recommended"; Description="Disables Windows Reserved Storage partition, instantly freeing 7 GB on the C: drive."; Apply={ Disable-ReservedStorage }; Rollback={ Restore-ReservedStorage } },
+        @{ Key="BitLocker"; Title="Turn Off BitLocker Encryption"; Category="System"; Tier="Esports"; Description="Permanently disables BitLocker drive encryption for maximum NVMe disk I/O throughput."; Apply={ Disable-BitLockerPermanently }; Rollback={ Restore-BitLockerDefaults } },
+        @{ Key="VbsSecurity"; Title="Disable VBS / HVCI Security"; Category="System"; Tier="Esports"; Description="Disables Virtualization-Based Security (VBS) and Memory Integrity for 5-15% higher gaming FPS."; Apply={ Disable-VbsSecurity }; Rollback={ Restore-VbsSecurity } },
+        @{ Key="TaskbarLeft"; Title="Align Taskbar to Left"; Category="System"; Tier="Safe"; Description="Aligns the Windows 11 taskbar icons to the bottom-left corner like classic Windows."; Apply={ Set-TaskbarLeftAlign }; Rollback={ Restore-TaskbarAlignmentCenter } },
+        @{ Key="RecommendedStart"; Title="Hide Start Menu 'Recommended'"; Category="System"; Tier="Recommended"; Description="Hides the recommended files section from the Windows 11 Start menu for a cleaner layout."; Apply={ Disable-RecommendedStartSection }; Rollback={ Restore-StartMenuRecommended } },
+        @{ Key="TaskbarChat"; Title="Disable Taskbar Chat / Teams"; Category="System"; Tier="Recommended"; Description="Removes the Microsoft Teams Chat widget from the Windows 11 taskbar."; Apply={ Disable-TaskbarChat }; Rollback={ Restore-TaskbarChat } },
+        @{ Key="FilesCompact"; Title="File Explorer Compact Mode"; Category="System"; Tier="Safe"; Description="Reduces row padding in File Explorer to show more files per folder view."; Apply={ Enable-FilesCompactMode }; Rollback={ Restore-FilesCompactMode } },
+        @{ Key="SnapAssist"; Title="Disable Snap Assist Suggestion"; Category="System"; Tier="Safe"; Description="Suppresses auto-suggested candidate windows when snapping an application to the screen edge."; Apply={ Disable-SnapAssist }; Rollback={ Restore-SnapAssist } },
+        @{ Key="WindowsStickers"; Title="Disable Desktop Stickers"; Category="System"; Tier="Safe"; Description="Disables the Windows 11 desktop sticker drawing integration."; Apply={ Disable-DesktopStickers }; Rollback={ Restore-WindowsStickers } },
+        @{ Key="EdgeDiscover"; Title="Disable Edge Discover Bing Bar"; Category="System"; Tier="Recommended"; Description="Removes the Bing Discover sidebar button from Microsoft Edge."; Apply={ Disable-EdgeDiscoverBar }; Rollback={ Restore-EdgeDiscoverBar } },
+        @{ Key="CopyMoveMenu"; Title="Add 'Copy To' & 'Move To' to Menu"; Category="System"; Tier="Safe"; Description="Adds convenient Copy To Folder and Move To Folder options to Explorer right-click."; Apply={ Enable-CopyMoveToContextMenu }; Rollback={ Restore-CopyMoveContextMenu } },
+        @{ Key="WindowShake"; Title="Disable Aero Shake Window Minimizing"; Category="System"; Tier="Safe"; Description="Prevents shaking a window title bar from minimizing all other open background windows."; Apply={ Disable-WindowShake }; Rollback={ Restore-WindowShake } },
+        @{ Key="SystemDarkMode"; Title="System-Wide Dark Mode"; Category="System"; Tier="Recommended"; Description="Enforces sleek dark mode across Windows shell, system dialogs, and applications."; Apply={ Enable-SystemDarkMode }; Rollback={ Restore-WindowsLightMode } },
+        @{ Key="VerboseLogon"; Title="Enable Verbose Startup Messages"; Category="System"; Tier="Safe"; Description="Displays step-by-step diagnostic messages (Applying policies, Loading services) during boot."; Apply={ Enable-VerboseLogon }; Rollback={ Restore-VerboseLogon } },
+        @{ Key="QuickAccessHistory"; Title="Disable Quick Access Recent Files"; Category="System"; Tier="Safe"; Description="Stops File Explorer from recording and displaying recently opened files and frequent folders."; Apply={ Disable-QuickAccessHistory }; Rollback={ Restore-QuickAccessHistory } },
+        @{ Key="MyPeople"; Title="Disable My People Taskbar Band"; Category="System"; Tier="Safe"; Description="Removes the legacy My People contacts integration from the Windows taskbar."; Apply={ Disable-MyPeople }; Rollback={ Restore-MyPeople } },
+        @{ Key="WindowsInk"; Title="Disable Windows Ink Workspace"; Category="System"; Tier="Safe"; Description="Disables stylus and pen workspace overlays to conserve background system memory."; Apply={ Disable-WindowsInk }; Rollback={ Restore-WindowsInk } },
+        @{ Key="CastToDevice"; Title="Disable 'Cast to Device' Menu"; Category="System"; Tier="Safe"; Description="Removes Cast to Device from the right-click menu of media files."; Apply={ Disable-CastToDevice }; Rollback={ Restore-CastToDevice } },
+
+        # --- PRIVACY & TELEMETRY ---
+        @{ Key="AppTelemetry"; Title="Disable 3rd-Party App Telemetry"; Category="Privacy"; Tier="Recommended"; Description="Suppresses telemetry daemons for Chrome, Firefox, Edge, Visual Studio, and NVIDIA drivers."; Apply={ Disable-ThirdPartyAppTelemetry }; Rollback={ Restore-AppTelemetry } },
+        @{ Key="BluetoothAdvertising"; Title="Disable Bluetooth Advertising"; Category="Privacy"; Tier="Recommended"; Description="Blocks Windows from broadcasting Bluetooth discovery beacons to nearby receivers."; Apply={ Disable-BluetoothAdvertising }; Rollback={ Restore-BluetoothAdvertising } },
+        @{ Key="CloudContent"; Title="Disable Cloud Optimized Content"; Category="Privacy"; Tier="Recommended"; Description="Prevents Windows from fetching dynamic cloud content and recommendations from Microsoft."; Apply={ Disable-CloudOptimizedContent }; Rollback={ Restore-CloudOptimizedContent } },
+        @{ Key="CdpServices"; Title="Disable CDP Connected Devices Service"; Category="Privacy"; Tier="Recommended"; Description="Disables Connected Devices Platform User Service to prevent cross-device activity syncing."; Apply={ Disable-CdpUserServices }; Rollback={ Restore-CdpServices } },
+        @{ Key="DiagnosticsToasts"; Title="Disable Feedback & Survey Toasts"; Category="Privacy"; Tier="Recommended"; Description="Stops Windows from displaying feedback surveys and diagnostic pop-up prompts."; Apply={ Disable-DiagnosticsToasts }; Rollback={ Restore-DiagnosticsToasts } },
+        @{ Key="OnlineSpeech"; Title="Disable Online Speech Recognition"; Category="Privacy"; Tier="Recommended"; Description="Prevents voice recordings from being transmitted to Microsoft cloud servers for analysis."; Apply={ Disable-OnlineSpeechPrivacy }; Rollback={ Restore-OnlineSpeechPrivacy } },
+        @{ Key="Arso"; Title="Disable Auto-Restart Apps on Reboot"; Category="Privacy"; Tier="Safe"; Description="Prevents open desktop applications from automatically launching and logging in after reboot."; Apply={ Disable-RestartAppsAfterReboot }; Rollback={ Restore-AutomaticRestartSignOn } },
+        @{ Key="TextInputCollection"; Title="Disable Inking & Typing Collection"; Category="Privacy"; Tier="Recommended"; Description="Prevents Windows from recording keystrokes and handwriting to build a dictionary profile."; Apply={ Disable-HandwritingTypingCollection }; Rollback={ Restore-TextInputCollection } },
+        @{ Key="ClipboardSync"; Title="Disable Clipboard Cloud Sync"; Category="Privacy"; Tier="Safe"; Description="Prevents copied text, tokens, and passwords from synchronizing across devices via cloud."; Apply={ Disable-ClipboardCloudSync }; Rollback={ Restore-ClipboardSync } },
+        @{ Key="SettingsMessageSync"; Title="Disable Settings & Message Sync"; Category="Privacy"; Tier="Safe"; Description="Suppresses automatic synchronization of Windows preferences and account metadata."; Apply={ Disable-SettingsAndMessageSync }; Rollback={ Restore-SettingsAndMessageSync } },
+        @{ Key="FindMyDevice"; Title="Disable 'Find My Device' Tracking"; Category="Privacy"; Tier="Safe"; Description="Disables periodic background GPS location beacons sent to Microsoft account servers."; Apply={ Disable-FindMyDevice }; Rollback={ Restore-FindMyDevice } },
+        @{ Key="SafeSearch"; Title="Disable SafeSearch Filtering Telemetry"; Category="Privacy"; Tier="Safe"; Description="Disables Windows search query telemetry filtering through Microsoft servers."; Apply={ Disable-SafeSearchFiltering }; Rollback={ Restore-SafeSearchMode } },
+        @{ Key="RemoteAssistanceRegistry"; Title="Disable Remote Assistance & Registry"; Category="Privacy"; Tier="Recommended"; Description="Blocks unsolicited incoming Remote Assistance connections and Remote Registry service."; Apply={ Disable-RemoteAssistanceAndRegistry }; Rollback={ Restore-RemoteAssistanceAndRegistry } },
+        @{ Key="DriverUpdatesExcluded"; Title="Exclude Drivers in Windows Update"; Category="Privacy"; Tier="Safe"; Description="Prevents Windows Update from overwriting custom or tuned GPU and audio drivers."; Apply={ Exclude-DriverUpdatesInWindowsUpdate }; Rollback={ Restore-DriverUpdatesFromWindowsUpdate } },
+        @{ Key="StoreAutoUpdates"; Title="Disable Store App Auto-Updates"; Category="Privacy"; Tier="Safe"; Description="Stops Microsoft Store apps from downloading bandwidth-heavy background updates during games."; Apply={ Disable-WindowsStoreAutoUpdates }; Rollback={ Restore-StoreAutoUpdates } },
+        @{ Key="SmartScreen"; Title="Disable SmartScreen Telemetry Filter"; Category="Privacy"; Tier="Safe"; Description="Prevents hash reporting of downloaded executables back to Microsoft verification servers."; Apply={ Disable-SmartScreenProtection }; Rollback={ Restore-SmartScreenFilter } },
+        @{ Key="CrashDumps"; Title="Disable System Crash Dumps"; Category="Privacy"; Tier="Safe"; Description="Suppresses generation of large memory crash dump files on disk after system errors."; Apply={ Disable-SystemCrashDumps }; Rollback={ Restore-CrashDumps } },
+        @{ Key="SystemTimeouts"; Title="Optimize Service Shutdown Timeouts"; Category="Privacy"; Tier="Recommended"; Description="Reduces WaitToKillServiceTimeout from 5000ms to 2000ms for near-instant system shutdown."; Apply={ Optimize-SystemTimeouts }; Rollback={ Restore-SystemTimeouts } }
+    )
+
+    # 6. Dynamic Card Factory & Fast Object Builders
+    $toggleStyle = $window.FindResource("FluentToggleSwitch")
+    $brushCardBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#121824")
+    $brushCardBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1F293D")
+    $brushWhite      = [System.Windows.Media.Brushes]::White
+    $brushTextDim    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
+    $brushBadgeBg    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#182233")
+    $brushBadgeBdr   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#2C3B52")
+    $brushTierRec    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
+    $brushTierEsp    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700")
+    $brushTierSafe   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+
+    function New-TweakCardElement {
+        param(
+            [hashtable]$Tweak,
+            [hashtable]$AuditState
+        )
+
         $card = [System.Windows.Controls.Border]::new()
-        $card.Width = 275
-        $card.Height = 110
-        $card.Background = $brushNormalBg
-        $card.BorderBrush = $brushNormalBorder
-        $card.BorderThickness = $thick1
-        $card.CornerRadius = $corn6
-        $card.Margin = $thick5
-        $card.Padding = $thick10
-        $card.Cursor = $handCursor
+        $card.Background = $brushCardBg
+        $card.BorderBrush = $brushCardBorder
+        $card.BorderThickness = [System.Windows.Thickness]::new(1)
+        $card.CornerRadius = [System.Windows.CornerRadius]::new(6)
+        $card.Padding = [System.Windows.Thickness]::new(14, 10, 14, 10)
+        $card.Margin = [System.Windows.Thickness]::new(0, 0, 0, 6)
+        $card.Tag = $Tweak
 
         $grid = [System.Windows.Controls.Grid]::new()
-        $col0 = [System.Windows.Controls.ColumnDefinition]::new(); $col0.Width = $autoGrid
-        $col1 = [System.Windows.Controls.ColumnDefinition]::new(); $col1.Width = $starGrid
+        $col0 = [System.Windows.Controls.ColumnDefinition]::new()
+        $col0.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+        $col1 = [System.Windows.Controls.ColumnDefinition]::new()
+        $col1.Width = [System.Windows.GridLength]::Auto
         [void]$grid.ColumnDefinitions.Add($col0)
         [void]$grid.ColumnDefinitions.Add($col1)
 
-        $chk = [System.Windows.Controls.CheckBox]::new()
-        $chk.Margin = $thickChk
-        $chk.Tag = $app.WingetId
-        $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
-        [System.Windows.Controls.Grid]::SetColumn($chk, 0)
-        [void]$grid.Children.Add($chk)
-
+        # Left Details Column
         $sp = [System.Windows.Controls.StackPanel]::new()
-        [System.Windows.Controls.Grid]::SetColumn($sp, 1)
+        $sp.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $sp.Margin = [System.Windows.Thickness]::new(0, 0, 14, 0)
 
-        $topRow = [System.Windows.Controls.Grid]::new()
-        $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
-        $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
-        [void]$topRow.ColumnDefinitions.Add($trCol0)
-        [void]$topRow.ColumnDefinitions.Add($trCol1)
+        $headerSp = [System.Windows.Controls.StackPanel]::new()
+        $headerSp.Orientation = [System.Windows.Controls.Orientation]::Horizontal
 
-        $titleBlock = [System.Windows.Controls.TextBlock]::new()
-        $titleBlock.Text = $app.Name
-        $titleBlock.FontWeight = [System.Windows.FontWeights]::SemiBold
-        $titleBlock.FontSize = 12
-        $titleBlock.Foreground = $whiteBrush
-        $titleBlock.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
-        [System.Windows.Controls.Grid]::SetColumn($titleBlock, 0)
-        [void]$topRow.Children.Add($titleBlock)
+        $txtTitle = [System.Windows.Controls.TextBlock]::new()
+        $txtTitle.Text = $Tweak.Title
+        $txtTitle.FontSize = 12
+        $txtTitle.FontWeight = [System.Windows.FontWeights]::SemiBold
+        $txtTitle.Foreground = $brushWhite
+        [void]$headerSp.Children.Add($txtTitle)
 
-        $catBadge = [System.Windows.Controls.Border]::new()
-        $catBadge.Background = $badgeBg
-        $catBadge.BorderBrush = $brushCyan
-        $catBadge.BorderThickness = $thick1
-        $catBadge.CornerRadius = $corn3
-        $catBadge.Padding = $thick4
-        $catBadge.Margin = $thickBadge
-        $catText = [System.Windows.Controls.TextBlock]::new()
-        $catText.Text = $app.Category
-        $catText.FontSize = 9
-        $catText.Foreground = $brushCyan
-        $catBadge.Child = $catText
-        [System.Windows.Controls.Grid]::SetColumn($catBadge, 1)
-        [void]$topRow.Children.Add($catBadge)
+        # Tier Pill Badge
+        $tier = if ($Tweak.Tier) { $Tweak.Tier } else { "Safe" }
+        $badgeBorder = [System.Windows.Controls.Border]::new()
+        $badgeBorder.Background = $brushBadgeBg
+        $badgeBorder.BorderBrush = $brushBadgeBdr
+        $badgeBorder.BorderThickness = [System.Windows.Thickness]::new(1)
+        $badgeBorder.CornerRadius = [System.Windows.CornerRadius]::new(3)
+        $badgeBorder.Padding = [System.Windows.Thickness]::new(6, 1, 6, 1)
+        $badgeBorder.Margin = [System.Windows.Thickness]::new(8, 0, 0, 0)
+        $badgeBorder.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
 
-        [void]$sp.Children.Add($topRow)
+        $txtTier = [System.Windows.Controls.TextBlock]::new()
+        $txtTier.Text = $tier
+        $txtTier.FontSize = 9
+        $txtTier.FontWeight = [System.Windows.FontWeights]::Bold
+        $txtTier.Foreground = if ($tier -eq "Esports") { $brushTierEsp } elseif ($tier -eq "Recommended") { $brushTierRec } else { $brushTierSafe }
+        $badgeBorder.Child = $txtTier
+        [void]$headerSp.Children.Add($badgeBorder)
+        [void]$sp.Children.Add($headerSp)
 
-        $descBlock = [System.Windows.Controls.TextBlock]::new()
-        $descBlock.Text = $app.Description
-        $descBlock.Foreground = $brushTextDim
-        $descBlock.FontSize = 10
-        $descBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
-        $descBlock.MaxHeight = 32
-        $descBlock.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
-        $descBlock.Margin = $thickDesc
-        [void]$sp.Children.Add($descBlock)
+        $txtDesc = [System.Windows.Controls.TextBlock]::new()
+        $txtDesc.Text = if ($Tweak.Description) { $Tweak.Description } else { "Optimizes Windows system parameters." }
+        $txtDesc.FontSize = 11
+        $txtDesc.Foreground = $brushTextDim
+        $txtDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+        $txtDesc.Margin = [System.Windows.Thickness]::new(0, 3, 0, 0)
+        [void]$sp.Children.Add($txtDesc)
 
-        $idBlock = [System.Windows.Controls.TextBlock]::new()
-        $idBlock.Text = $app.WingetId
-        $idBlock.Foreground = $brushTextSub
-        $idBlock.FontSize = 9
-        $idBlock.Margin = $thickDesc
-        [void]$sp.Children.Add($idBlock)
-
+        [System.Windows.Controls.Grid]::SetColumn($sp, 0)
         [void]$grid.Children.Add($sp)
+
+        # Right Column: Fluent Toggle Switch
+        $toggle = [System.Windows.Controls.Primitives.ToggleButton]::new()
+        if ($toggleStyle) { $toggle.Style = $toggleStyle }
+        $toggle.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $toggle.Tag = $Tweak
+        $isApplied = ($AuditState.State[$Tweak.Key] -eq $true)
+        $toggle.IsChecked = $isApplied
+
+        $Tweak.Toggle = $toggle
+        $Tweak.Card   = $card
+
+        # Wire Single-Tweak Toggle Event Handler
+        $toggle.Add_Click({
+            $tw = $this.Tag
+            $shouldApply = ($this.IsChecked -eq $true)
+            if ($shouldApply) {
+                & $script:LogToGui "[*] Activating $($tw.Title)..."
+                try {
+                    & $tw.Apply
+                    & $script:LogToGui "[+] $($tw.Title) activated successfully."
+                } catch {
+                    $this.IsChecked = $false
+                    & $script:LogToGui "[-] Failed to activate $($tw.Title): $($_.Exception.Message)" "ERROR"
+                }
+            } else {
+                & $script:LogToGui "[*] Restoring $($tw.Title) to Windows defaults..."
+                try {
+                    & $tw.Rollback
+                    & $script:LogToGui "[+] $($tw.Title) restored to Windows defaults."
+                } catch {
+                    $this.IsChecked = $true
+                    & $script:LogToGui "[-] Failed to restore $($tw.Title): $($_.Exception.Message)" "ERROR"
+                }
+            }
+            if ($script:UpdateGuiAuditStatus) {
+                & $script:UpdateGuiAuditStatus
+            }
+        })
+
+        [System.Windows.Controls.Grid]::SetColumn($toggle, 1)
+        [void]$grid.Children.Add($toggle)
+
         $card.Child = $grid
-
-        # Card Interaction
-        $card.Add_MouseEnter({ $this.BorderBrush = $brushHoverBorder; $this.Background = $brushHoverBg })
-        $card.Add_MouseLeave({ $this.BorderBrush = $brushNormalBorder; $this.Background = $brushNormalBg })
-        $card.Add_MouseLeftButtonUp({
-            $targetChk = $this.Child.Children[0]
-            $targetChk.IsChecked = (-not $targetChk.IsChecked)
-            & $script:UpdateSelectionCount
-        })
-        $chk.Add_Click({ & $script:UpdateSelectionCount })
-
-        [void]$wrapPackages.Children.Add($card)
-        [void]$script:AllAppCards.Add([PSCustomObject]@{
-            App = $app
-            Border = $card
-            CheckBox = $chk
-        })
+        return $card
     }
 
-    $script:CurrentCategory = "All Apps (100+)"
+    # Initial Live Audit Probe
+    $auditInitial = Get-SystemAuditState
 
-    $script:UpdateSelectionCount = {
-        $count = ($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }).Count
-        $txtSelectedCount.Text = "$count apps selected"
-    }
-
-    $script:FilterCards = {
-        $query = $txtSearch.Text.Trim().ToLower()
-        $curCat = $script:CurrentCategory
-        foreach ($item in $script:AllAppCards) {
-            $matchQ = ($query -eq "") -or ($item.App.Name.ToLower().Contains($query)) -or ($item.App.Description.ToLower().Contains($query)) -or ($item.App.WingetId.ToLower().Contains($query))
-            $matchC = ($curCat -eq "All Apps (100+)") -or ($item.App.Category -eq $curCat)
-            if ($matchQ -and $matchC) {
-                $item.Border.Visibility = [System.Windows.Visibility]::Visible
-            } else {
-                $item.Border.Visibility = [System.Windows.Visibility]::Collapsed
-            }
+    # Build and Inject Cards Dynamically into Categories
+    foreach ($tw in $script:TweakDefinitions) {
+        $card = New-TweakCardElement -Tweak $tw -AuditState $auditInitial
+        if ($tw.Category -eq "Gaming" -and $panelGamingTweaks) {
+            [void]$panelGamingTweaks.Children.Add($card)
+        } elseif ($tw.Category -eq "Privacy" -and $panelPrivacyTweaks) {
+            [void]$panelPrivacyTweaks.Children.Add($card)
+        } elseif ($tw.Category -eq "System" -and $panelSystemTweaks) {
+            [void]$panelSystemTweaks.Children.Add($card)
         }
     }
 
-    $txtSearch.Add_TextChanged({ & $script:FilterCards })
-    $btnClearSearch.Add_Click({ $txtSearch.Clear(); & $script:FilterCards })
-
-    # Category Chips Map
-    $chipsMap = @{
-        "ChipCatAll"      = "All Apps (100+)"
-        "ChipCatBrowsers" = "Browsers"
-        "ChipCatComms"    = "Communications"
-        "ChipCatDev"      = "Development"
-        "ChipCatDoc"      = "Document"
-        "ChipCatGames"    = "Games"
-        "ChipCatMs"       = "Microsoft Tools"
-        "ChipCatMedia"    = "Multimedia Tools"
-        "ChipCatPro"      = "Pro Tools"
-        "ChipCatSelf"     = "Selfhosted Tools"
-        "ChipCatUtil"     = "Utilities"
-    }
-    foreach ($entry in $chipsMap.GetEnumerator()) {
-        $cBtn = $window.FindName($entry.Key)
-        if ($cBtn) {
-            $targetCategory = $entry.Value
-            $cBtn.Add_Click({
-                $script:CurrentCategory = $targetCategory
-                & $script:FilterCards
-                & $script:LogToGui "Displaying category: $targetCategory"
-            }.GetNewClosure())
-        }
-    }
-
-    $btnSelectAll.Add_Click({
-        foreach ($item in $script:AllAppCards) {
-            if ($item.Border.Visibility -eq [System.Windows.Visibility]::Visible) {
-                $item.CheckBox.IsChecked = $true
-            }
-        }
-        & $script:UpdateSelectionCount
-    })
-
-    $btnClearAll.Add_Click({
-        foreach ($item in $script:AllAppCards) {
-            $item.CheckBox.IsChecked = $false
-        }
-        & $script:UpdateSelectionCount
-    })
-
-    # WinGet Install / Uninstall / Upgrade Handlers
-    $btnInstallSelected.Add_Click({
-        $selected = $script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }
-        if ($selected.Count -eq 0) {
-            & $script:LogToGui "[-] No applications selected to install. Check desired app cards first!" "WARN"
-            return
-        }
-
-        & $script:LogToGui "[*] Preparing to install $($selected.Count) selected application(s)..."
-        $idx = 0
-        foreach ($item in $selected) {
-            $idx++
-            $pct = [int](($idx / $selected.Count) * 100)
-            & $script:SetProgress $pct
-            & $script:LogToGui "[$idx/$($selected.Count)] Processing: $($item.App.Name) ($($item.App.WingetId))"
-            Install-WinGetPackage -PackageId $item.App.WingetId -LogCallback { param($m) & $script:LogToGui $m }
-        }
-        & $script:SetProgress 0
-        & $script:LogToGui "[+] Installation batch complete!"
-    })
-
-    $btnUninstallSelected.Add_Click({
-        $selected = $script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }
-        if ($selected.Count -eq 0) {
-            & $script:LogToGui "[-] No applications selected to uninstall." "WARN"
-            return
-        }
-
-        & $script:LogToGui "[*] Uninstalling $($selected.Count) selected application(s)..."
-        $idx = 0
-        foreach ($item in $selected) {
-            $idx++
-            $pct = [int](($idx / $selected.Count) * 100)
-            & $script:SetProgress $pct
-            Uninstall-WinGetPackage -PackageId $item.App.WingetId -LogCallback { param($m) & $script:LogToGui $m }
-        }
-        & $script:SetProgress 0
-        & $script:LogToGui "[+] Uninstall batch complete!"
-    })
-
-    $btnUpgradeAll.Add_Click({
-        & $script:LogToGui "[*] Starting WinGet system-wide upgrade..."
-        & $script:SetProgress 50
-        Upgrade-AllWinGetPackages -LogCallback { param($m) & $script:LogToGui $m }
-        & $script:SetProgress 0
-        & $script:LogToGui "[+] WinGet upgrade complete!"
-    })
-
-    # Tab 2: Tweaks Handlers
-    $btnRunAllTweaks.Add_Click({
-        & $script:LogToGui "=== APPLYING ALL 23 GAMING OPTIMIZATIONS ==="
-        & $script:SetProgress 10
-        Optimize-Network
-        & $script:SetProgress 20
-        Optimize-GpuAuto
-        & $script:SetProgress 35
-        Optimize-HardwareMsiMode
-        Disable-DevicePowerSaving
-        Disable-MultiplaneOverlay
-        Set-MouseLinearCurve
-        & $script:SetProgress 50
-        Optimize-LatencyAndInput
-        Optimize-CsrssPriority
-        Optimize-CpuAndSystem
-        Optimize-DeviceManager
-        Optimize-SvcHostSplitting
-        & $script:SetProgress 65
-        Optimize-StartupAndDns
-        Apply-GameHooks
-        & $script:SetProgress 80
-        Enable-UltimatePerformancePlan
-        Strip-VisualEffects
-        Enable-EndTaskRightClick
-        Disable-StickyKeysPrompt
-        & $script:SetProgress 90
-        Debloat-BackgroundServices
-        Optimize-DiskIO
-        Enable-CompactOS
-        Enable-TakeOwnershipMenu
-        Disable-ScheduledJunkTasks
-        Harden-PrivacyTelemetry
-        & $script:SetProgress 100
-        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-        & $script:LogToGui "[+] ALL 23 GAMING OPTIMIZATIONS APPLIED SUCCESSFULLY!"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
-
-    $btnRevertDefaults.Add_Click({
-        & $script:LogToGui "[*] Reverting all settings to Windows defaults..."
-        & $script:SetProgress 50
-        Restore-Defaults
-        & $script:SetProgress 100
-        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-        & $script:LogToGui "[+] Windows default settings restored successfully!"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
-
-    if ($btnClearDeepCacheBar) {
-        $btnClearDeepCacheBar.Add_Click({
-            & $script:LogToGui "[*] Starting Deep Cache, Prefetch & Windows Event Log Cleaner..."
-            & $script:SetProgress 40
-            Invoke-DeepCacheCleaner
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Deep Cache & Event Cleaner completed successfully!"
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnClearUpdateCache) {
-        $btnClearUpdateCache.Add_Click({
-            & $script:LogToGui "[*] Purging Windows Update & Delivery Optimization cache..."
-            & $script:SetProgress 40
-            Clear-WindowsUpdateCache
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnInstallDirectXDirect) {
-        $btnInstallDirectXDirect.Add_Click({
-            & $script:LogToGui "[*] Starting direct download and installation of DirectX Runtimes..."
-            & $script:SetProgress 20
-            Install-DirectXDirect -LogCallback $script:LogToGui
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnInstallVcRedistAio) {
-        $btnInstallVcRedistAio.Add_Click({
-            & $script:LogToGui "[*] Starting direct download and installation of Visual C++ Redistributables..."
-            & $script:SetProgress 20
-            Install-VcRedistAioDirect -LogCallback $script:LogToGui
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnBeastMode) {
-        $btnBeastMode.Add_Click({
-            & $script:LogToGui "[*] ENGAGING FULL BEAST MODE SUITE..."
-            & $script:SetProgress 15
-            Optimize-Network
-            & $script:SetProgress 30
-            Optimize-GpuAuto
-            & $script:SetProgress 45
-            Optimize-CpuAndSystem
-            & $script:SetProgress 60
-            Optimize-LatencyAndInput
-            & $script:SetProgress 75
-            Apply-GameHooks
-            & $script:SetProgress 85
-            Debloat-BackgroundServices
-            Enable-UltimatePerformancePlan
-            Harden-PrivacyTelemetry
-            Optimize-DiskIO
-            Disable-ScheduledJunkTasks
-            Optimize-StartupAndDns
-            Disable-MultiplaneOverlay
-            Set-MouseLinearCurve
-            Optimize-SvcHostSplitting
-            Enable-EndTaskRightClick
-            Disable-StickyKeysPrompt
-            & $script:SetProgress 100
-            if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-            & $script:LogToGui "================================================================================"
-            & $script:LogToGui "[OK] FULL BEAST MODE ENGAGED  --  ALL COMPETITIVE TWEAKS ACTIVE!"
-            & $script:LogToGui "================================================================================"
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    # Tab 3: Match Booster Handlers
-    $updateStandbyStatus = {
-        if ($txtStandbyTaskStatus) {
-            $st = Get-StandbyListScheduledTaskStatus
-            $txtStandbyTaskStatus.Text = "Status: $($st.DisplayText)"
-            if ($st.IsActive) {
-                $txtStandbyTaskStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-            } else {
-                $txtStandbyTaskStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-            }
-        }
-    }
-
-    $btnPurgeStandby.Add_Click({
-        & $script:LogToGui "[*] Running One-Time Purge of Windows Standby List Cache..."
-        Invoke-EmptyStandbyListOneTime
-        & $script:LogToGui "[+] Standby memory purged successfully! Memory returned to free pool."
-    })
-
-    if ($btnSetStandbySchedule) {
-        $btnSetStandbySchedule.Add_Click({
-            $mins = 5
-            if ($cmbStandbyInterval -and $cmbStandbyInterval.SelectedItem -and $cmbStandbyInterval.SelectedItem.Tag) {
-                $mins = [int]$cmbStandbyInterval.SelectedItem.Tag
-            }
-            & $script:LogToGui "[*] Setting Background Auto-Cleaner schedule (Every $mins minutes)..."
-            $ok = Set-StandbyListScheduledTask -IntervalMinutes $mins
-            & $updateStandbyStatus
-            if ($ok) {
-                & $script:LogToGui "[+] PumpkiN_AutoEmptyStandbyList scheduled to run every $mins minutes!"
-            } else {
-                & $script:LogToGui "[!] Failed to configure scheduled task. Ensure running as Administrator."
-            }
-        })
-    }
-
-    if ($btnRemoveStandbySchedule) {
-        $btnRemoveStandbySchedule.Add_Click({
-            & $script:LogToGui "[*] Disabling Background Auto-Cleaner schedule..."
-            Remove-StandbyListScheduledTask
-            & $updateStandbyStatus
-            & $script:LogToGui "[+] Background Auto-Cleaner schedule removed/disabled."
-        })
-    }
-
-    $btnToggleWifiScan.Add_Click({
-        Toggle-WifiAutoconfig
-        & $script:LogToGui "[+] Wi-Fi AutoConfig state toggled."
-    })
-
-    $btnApplyGameHooks.Add_Click({
-        & $script:LogToGui "[*] Installing IFEO High-Priority Hooks for esports titles..."
-        Apply-GameHooks
-        & $script:LogToGui "[+] Esports Priority Hooks installed for CS2, Valorant, Apex, PUBG, Fortnite, COD!"
-    })
-
-    # Smart Game Booster Daemon Handlers
-    $updateDaemonStatusUI = {
-        if ($txtDaemonStatus) {
-            $dStat = Get-SmartGameBoosterStatus
-            $txtDaemonStatus.Text = "Status: $($dStat.DisplayText)"
-            if ($dStat.IsActive) {
-                $txtDaemonStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-            } else {
-                $txtDaemonStatus.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-            }
-        }
-    }
-
-    if ($btnStartGameBooster) {
-        $btnStartGameBooster.Add_Click({
-            & $script:LogToGui "[*] Starting Smart Game Booster Daemon (Auto-Detection Engine)..."
-            $ok = Start-SmartGameBoosterDaemon
-            & $updateDaemonStatusUI
-            if ($ok) {
-                & $script:LogToGui "[+] Smart Game Booster Daemon is ACTIVE: Monitoring 20+ competitive games!"
-            }
-        })
-    }
-
-    if ($btnStopGameBooster) {
-        $btnStopGameBooster.Add_Click({
-            & $script:LogToGui "[*] Stopping Smart Game Booster Daemon..."
-            $ok = Stop-SmartGameBoosterDaemon
-            & $updateDaemonStatusUI
-            & $script:LogToGui "[+] Smart Game Booster Daemon stopped. Normal settings restored."
-        })
-    }
-
-    # Tab 4: System & Hardening Handlers
-    $btnApplyHardening.Add_Click({
-        & $script:LogToGui "=== APPLYING ALL SYSTEM & HARDENING TWEAKS ==="
-        & $script:SetProgress 20
-        Block-WpbtExecution
-        Block-PeripheralBloat
-        Remove-WindowsAI
-        Set-SecurityUpdatesOnly
-        & $script:SetProgress 50
-        Enable-ClassicContextMenu
-        Disable-StartMenuBing
-        Disable-ExplorerAutoDiscovery
-        Set-ShowFileExtensionsAndHidden
-        & $script:SetProgress 75
-        Enable-LongPaths
-        Disable-LockScreen
-        Enable-BsodVerbose
-        Disable-ReservedStorage
-        & $script:SetProgress 100
-        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
-        & $script:LogToGui "[+] All hardening tweaks applied successfully!"
-        Start-Sleep -Milliseconds 300
-        & $script:SetProgress 0
-    })
-
-    # Master Brushes for Audit Status Badges
-    $brushOptimalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#002D1E")
-    $brushOptimalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-    $brushOptimalText   = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-    $brushNeededBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#0F141C")
-    $brushNeededBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#26354A")
-    $brushNeededText    = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
-
-    # Master Tweak Registry: Schema maps Audit Keys to Apply, Rollback, Badges and Buttons
-    $script:TweakDefinitions = @(
-        # 1. Gaming & Hardware Performance
-        @{ Key="GpuAuto"; Title="GPU Auto-Tuning"; Category="Gaming"; Apply={ Optimize-GpuAuto }; Rollback={ Restore-GpuAuto }; ApplyBtn="BtnApply_GpuAuto"; RollbackBtn="BtnRollback_GpuAuto"; Badge="Badge_GpuAuto"; TxtBadge="TxtBadge_GpuAuto" },
-        @{ Key="HardwareMsi"; Title="Hardware MSI Mode"; Category="Gaming"; Apply={ Optimize-HardwareMsiMode }; Rollback={ Restore-HardwareMsiMode }; ApplyBtn="BtnApply_HardwareMsi"; RollbackBtn="BtnRollback_HardwareMsi"; Badge="Badge_HardwareMsi"; TxtBadge="TxtBadge_HardwareMsi" },
-        @{ Key="DisablePowerSaving"; Title="Disable USB Sleep"; Category="Gaming"; Apply={ Disable-DevicePowerSaving }; Rollback={ Restore-DevicePowerSaving }; ApplyBtn="BtnApply_DisablePowerSaving"; RollbackBtn="BtnRollback_DisablePowerSaving"; Badge="Badge_DisablePowerSaving"; TxtBadge="TxtBadge_DisablePowerSaving" },
-        @{ Key="Mpo"; Title="Disable MPO"; Category="Gaming"; Apply={ Disable-MultiplaneOverlay }; Rollback={ Restore-MultiplaneOverlay }; ApplyBtn="BtnApply_Mpo"; RollbackBtn="BtnRollback_Mpo"; Badge="Badge_Mpo"; TxtBadge="TxtBadge_Mpo" },
-        @{ Key="MouseCurve"; Title="Raw Mouse Input"; Category="Gaming"; Apply={ Set-MouseLinearCurve }; Rollback={ Restore-MouseLinearCurve }; ApplyBtn="BtnApply_MouseCurve"; RollbackBtn="BtnRollback_MouseCurve"; Badge="Badge_MouseCurve"; TxtBadge="TxtBadge_MouseCurve" },
-        @{ Key="InputLatency"; Title="8000Hz Input Tuning"; Category="Gaming"; Apply={ Optimize-LatencyAndInput }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_InputLatency"; RollbackBtn="BtnRollback_InputLatency"; Badge="Badge_InputLatency"; TxtBadge="TxtBadge_InputLatency" },
-        @{ Key="CsrssPriority"; Title="CSRSS Realtime I/O"; Category="Gaming"; Apply={ Optimize-CsrssPriority }; Rollback={ Restore-CsrssPriority }; ApplyBtn="BtnApply_CsrssPriority"; RollbackBtn="BtnRollback_CsrssPriority"; Badge="Badge_CsrssPriority"; TxtBadge="TxtBadge_CsrssPriority" },
-        @{ Key="CpuSystem"; Title="CPU Gaming Quantum"; Category="Gaming"; Apply={ Optimize-CpuAndSystem }; Rollback={ Restore-CpuAndSystem }; ApplyBtn="BtnApply_CpuSystem"; RollbackBtn="BtnRollback_CpuSystem"; Badge="Badge_CpuSystem"; TxtBadge="TxtBadge_CpuSystem" },
-        @{ Key="SvcHost"; Title="SvcHost RAM Splitting"; Category="Gaming"; Apply={ Optimize-SvcHostSplitting }; Rollback={ Restore-SvcHostSplitting }; ApplyBtn="BtnApply_SvcHost"; RollbackBtn="BtnRollback_SvcHost"; Badge="Badge_SvcHost"; TxtBadge="TxtBadge_SvcHost" },
-        @{ Key="Network"; Title="TCP/IP Gaming Stack"; Category="Gaming"; Apply={ Optimize-Network }; Rollback={ Restore-Network }; ApplyBtn="BtnApply_Network"; RollbackBtn="BtnRollback_Network"; Badge="Badge_Network"; TxtBadge="TxtBadge_Network" },
-        @{ Key="WifiScan"; Title="Wi-Fi Ping Shield"; Category="Gaming"; Apply={ Toggle-WifiAutoconfig }; Rollback={ Toggle-WifiAutoconfig }; ApplyBtn="BtnApply_WifiScan"; RollbackBtn="BtnRollback_WifiScan"; Badge="Badge_WifiScan"; TxtBadge="TxtBadge_WifiScan" },
-        @{ Key="StartupDns"; Title="Gaming DNS & Startup Tuning"; Category="Gaming"; Apply={ Optimize-StartupAndDns }; Rollback={ Reset-DnsToAutomatic }; ApplyBtn="BtnApply_StartupDns"; RollbackBtn="BtnRollback_StartupDns"; Badge="Badge_StartupDns"; TxtBadge="TxtBadge_StartupDns" },
-        @{ Key="GameHooks"; Title="Esports Game Priority Hooks"; Category="Gaming"; Apply={ Apply-GameHooks }; Rollback={ Restore-GameHooks }; ApplyBtn="BtnApply_GameHooks"; RollbackBtn="BtnRollback_GameHooks"; Badge="Badge_GameHooks"; TxtBadge="TxtBadge_GameHooks" },
-        @{ Key="UltimatePower"; Title="PumpkiN Esports Power Plan"; Category="Gaming"; Apply={ Invoke-PumpkiNEsportsPowerPlan }; Rollback={ Restore-BalancedPowerPlan }; ApplyBtn="BtnApply_UltimatePower"; RollbackBtn="BtnRollback_UltimatePower"; Badge="Badge_UltimatePower"; TxtBadge="TxtBadge_UltimatePower" },
-        @{ Key="CoreUnpark"; Title="100% CPU Core Unparking"; Category="Gaming"; Apply={ Invoke-CpuCoreUnparking }; Rollback={ Restore-CpuCoreParking }; ApplyBtn="BtnApply_CoreUnpark"; RollbackBtn="BtnRollback_CoreUnpark"; Badge="Badge_CoreUnpark"; TxtBadge="TxtBadge_CoreUnpark" },
-        @{ Key="StripVisual"; Title="Strip Visual Animations"; Category="Gaming"; Apply={ Strip-VisualEffects }; Rollback={ Restore-VisualEffects }; ApplyBtn="BtnApply_StripVisual"; RollbackBtn="BtnRollback_StripVisual"; Badge="Badge_StripVisual"; TxtBadge="TxtBadge_StripVisual" },
-        @{ Key="EndTask"; Title="Taskbar End Task"; Category="Gaming"; Apply={ Enable-EndTaskRightClick }; Rollback={ Restore-EndTaskRightClick }; ApplyBtn="BtnApply_EndTask"; RollbackBtn="BtnRollback_EndTask"; Badge="Badge_EndTask"; TxtBadge="TxtBadge_EndTask" },
-        @{ Key="StickyKeys"; Title="Disable Sticky Keys"; Category="Gaming"; Apply={ Disable-StickyKeysPrompt }; Rollback={ Restore-StickyKeysPrompt }; ApplyBtn="BtnApply_StickyKeys"; RollbackBtn="BtnRollback_StickyKeys"; Badge="Badge_StickyKeys"; TxtBadge="TxtBadge_StickyKeys" },
-        @{ Key="CompactMetrics"; Title="Compact Window Metrics"; Category="Gaming"; Apply={ Set-CompactWindowMetrics }; Rollback={ Restore-CompactWindowMetrics }; ApplyBtn="BtnApply_CompactMetrics"; RollbackBtn="BtnReset_CompactMetrics"; Badge="Badge_CompactMetrics"; TxtBadge="TxtBadge_CompactMetrics" },
-        @{ Key="DebloatServices"; Title="Debloat Services"; Category="Gaming"; Apply={ Debloat-BackgroundServices }; Rollback={ Restore-BackgroundServices }; ApplyBtn="BtnApply_DebloatServices"; RollbackBtn="BtnRollback_DebloatServices"; Badge="Badge_DebloatServices"; TxtBadge="TxtBadge_DebloatServices" },
-        @{ Key="DiskIo"; Title="Optimize Disk I/O"; Category="Gaming"; Apply={ Optimize-DiskIO }; Rollback={ Restore-DiskIO }; ApplyBtn="BtnApply_DiskIo"; RollbackBtn="BtnRollback_DiskIo"; Badge="Badge_DiskIo"; TxtBadge="TxtBadge_DiskIo" },
-        @{ Key="CompactOs"; Title="CompactOS Compression"; Category="Gaming"; Apply={ Enable-CompactOS }; Rollback={ Disable-CompactOS }; ApplyBtn="BtnApply_CompactOs"; RollbackBtn="BtnRollback_CompactOs"; Badge="Badge_CompactOs"; TxtBadge="TxtBadge_CompactOs" },
-        @{ Key="TakeOwnership"; Title="Take Ownership Menu"; Category="Gaming"; Apply={ Enable-TakeOwnershipMenu }; Rollback={ Disable-TakeOwnershipMenu }; ApplyBtn="BtnApply_TakeOwnership"; RollbackBtn="BtnRollback_TakeOwnership"; Badge="Badge_TakeOwnership"; TxtBadge="TxtBadge_TakeOwnership" },
-        @{ Key="JunkTasks"; Title="Disable Junk Tasks"; Category="Gaming"; Apply={ Disable-ScheduledJunkTasks }; Rollback={ Restore-ScheduledJunkTasks }; ApplyBtn="BtnApply_JunkTasks"; RollbackBtn="BtnRollback_JunkTasks"; Badge="Badge_JunkTasks"; TxtBadge="TxtBadge_JunkTasks" },
-        @{ Key="Privacy"; Title="Disable Telemetry"; Category="Gaming"; Apply={ Harden-PrivacyTelemetry }; Rollback={ Restore-PrivacyTelemetry }; ApplyBtn="BtnApply_Privacy"; RollbackBtn="BtnRollback_Privacy"; Badge="Badge_Privacy"; TxtBadge="TxtBadge_Privacy" },
-        @{ Key="AudioDpc"; Title="Audio DPC & Anti-Popping"; Category="Gaming"; Apply={ Optimize-AudioDpcLatency }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_AudioDpc"; RollbackBtn="BtnRollback_AudioDpc"; Badge="Badge_AudioDpc"; TxtBadge="TxtBadge_AudioDpc" },
-        @{ Key="UsbxHci"; Title="USB xHCI Realtime Thread"; Category="Gaming"; Apply={ Optimize-UsbLatencyAndBuffers }; Rollback={ Restore-AudioDpcAndUsbLatency }; ApplyBtn="BtnApply_UsbxHci"; RollbackBtn="BtnRollback_UsbxHci"; Badge="Badge_UsbxHci"; TxtBadge="TxtBadge_UsbxHci" },
-        @{ Key="DeviceManager"; Title="Device Manager Tuning"; Category="Gaming"; Apply={ Optimize-DeviceManager }; Rollback={ Restore-DeviceManager }; ApplyBtn="BtnApply_DeviceManager"; RollbackBtn="BtnRollback_DeviceManager"; Badge="Badge_DeviceManager"; TxtBadge="TxtBadge_DeviceManager" },
-
-        # 2. Hardening & Security Tweaks
-        @{ Key="BlockWpbt"; Title="Block WPBT Bloat"; Category="Hardening"; Apply={ Block-WpbtExecution }; Rollback={ Restore-WpbtExecution }; ApplyBtn="BtnApply_BlockWpbt"; RollbackBtn="BtnRollback_BlockWpbt"; Badge="Badge_BlockWpbt"; TxtBadge="TxtBadge_BlockWpbt" },
-        @{ Key="BlockPeripheral"; Title="Block Peripheral Bloat"; Category="Hardening"; Apply={ Block-PeripheralBloat }; Rollback={ Restore-PeripheralBloat }; ApplyBtn="BtnApply_BlockPeripheral"; RollbackBtn="BtnRollback_BlockPeripheral"; Badge="Badge_BlockPeripheral"; TxtBadge="TxtBadge_BlockPeripheral" },
-        @{ Key="RemoveAi"; Title="Purge Windows AI"; Category="Hardening"; Apply={ Remove-WindowsAI }; Rollback={ Restore-WindowsAI }; ApplyBtn="BtnApply_RemoveAi"; RollbackBtn="BtnRollback_RemoveAi"; Badge="Badge_RemoveAi"; TxtBadge="TxtBadge_RemoveAi" },
-        @{ Key="SecurityUpdatesOnly"; Title="Security-Only Updates"; Category="Hardening"; Apply={ Set-SecurityUpdatesOnly }; Rollback={ Restore-SecurityUpdatesOnly }; ApplyBtn="BtnApply_SecurityUpdatesOnly"; RollbackBtn="BtnRollback_SecurityUpdatesOnly"; Badge="Badge_SecurityUpdatesOnly"; TxtBadge="TxtBadge_SecurityUpdatesOnly" },
-        @{ Key="ClassicContext"; Title="Classic Right-Click"; Category="Hardening"; Apply={ Enable-ClassicContextMenu }; Rollback={ Restore-ClassicContextMenu }; ApplyBtn="BtnApply_ClassicContext"; RollbackBtn="BtnRollback_ClassicContext"; Badge="Badge_ClassicContext"; TxtBadge="TxtBadge_ClassicContext" },
-        @{ Key="DisableBing"; Title="Disable Web Search"; Category="Hardening"; Apply={ Disable-StartMenuBing }; Rollback={ Restore-StartMenuBing }; ApplyBtn="BtnApply_DisableBing"; RollbackBtn="BtnRollback_DisableBing"; Badge="Badge_DisableBing"; TxtBadge="TxtBadge_DisableBing" },
-        @{ Key="DisableAutoDiscovery"; Title="Disable Auto-Discovery"; Category="Hardening"; Apply={ Disable-ExplorerAutoDiscovery }; Rollback={ Restore-ExplorerAutoDiscovery }; ApplyBtn="BtnApply_DisableAutoDiscovery"; RollbackBtn="BtnRollback_DisableAutoDiscovery"; Badge="Badge_DisableAutoDiscovery"; TxtBadge="TxtBadge_DisableAutoDiscovery" },
-        @{ Key="ShowExtensions"; Title="Show File Extensions"; Category="Hardening"; Apply={ Set-ShowFileExtensionsAndHidden }; Rollback={ Restore-ShowFileExtensionsAndHidden }; ApplyBtn="BtnApply_ShowExtensions"; RollbackBtn="BtnRollback_ShowExtensions"; Badge="Badge_ShowExtensions"; TxtBadge="TxtBadge_ShowExtensions" },
-        @{ Key="DisableAds"; Title="Disable Windows Ads"; Category="Hardening"; Apply={ Disable-WindowsAds }; Rollback={ Enable-WindowsAds }; ApplyBtn="BtnApply_DisableAds"; RollbackBtn="BtnReset_DisableAds"; Badge="Badge_DisableAds"; TxtBadge="TxtBadge_DisableAds" },
-        @{ Key="NoShortcutArrows"; Title="Remove Shortcut Arrows"; Category="Hardening"; Apply={ Disable-ShortcutArrow }; Rollback={ Restore-ShortcutArrow }; ApplyBtn="BtnApply_NoShortcutArrows"; RollbackBtn="BtnReset_ShortcutArrows"; Badge="Badge_NoShortcutArrows"; TxtBadge="TxtBadge_NoShortcutArrows" },
-        @{ Key="EnableLongPaths"; Title="Enable Long Paths"; Category="Hardening"; Apply={ Enable-LongPaths }; Rollback={ Restore-LongPaths }; ApplyBtn="BtnApply_EnableLongPaths"; RollbackBtn="BtnRollback_EnableLongPaths"; Badge="Badge_EnableLongPaths"; TxtBadge="TxtBadge_EnableLongPaths" },
-        @{ Key="DisableLockScreen"; Title="Disable Lock Screen"; Category="Hardening"; Apply={ Disable-LockScreen }; Rollback={ Restore-LockScreen }; ApplyBtn="BtnApply_DisableLockScreen"; RollbackBtn="BtnRollback_DisableLockScreen"; Badge="Badge_DisableLockScreen"; TxtBadge="TxtBadge_DisableLockScreen" },
-        @{ Key="BsodVerbose"; Title="Verbose BSOD"; Category="Hardening"; Apply={ Enable-BsodVerbose }; Rollback={ Restore-BsodVerbose }; ApplyBtn="BtnApply_BsodVerbose"; RollbackBtn="BtnRollback_BsodVerbose"; Badge="Badge_BsodVerbose"; TxtBadge="TxtBadge_BsodVerbose" },
-        @{ Key="DisableReservedStorage"; Title="Reclaim Reserved Storage"; Category="Hardening"; Apply={ Disable-ReservedStorage }; Rollback={ Restore-ReservedStorage }; ApplyBtn="BtnApply_DisableReservedStorage"; RollbackBtn="BtnRollback_DisableReservedStorage"; Badge="Badge_DisableReservedStorage"; TxtBadge="TxtBadge_DisableReservedStorage" },
-        @{ Key="BitLocker"; Title="Turn Off BitLocker"; Category="Hardening"; Apply={ Disable-BitLockerPermanently }; Rollback={ Restore-BitLockerDefaults }; ApplyBtn="BtnApply_BitLocker"; RollbackBtn="BtnRollback_BitLocker"; Badge="Badge_BitLocker"; TxtBadge="TxtBadge_BitLocker" },
-
-        # 3. Windows 11 Exclusives & Shell Usability
-        @{ Key="VbsSecurity"; Title="Disable VBS Security"; Category="Shell"; Apply={ Disable-VbsSecurity }; Rollback={ Restore-VbsSecurity }; ApplyBtn="BtnApply_VbsSecurity"; RollbackBtn="BtnRollback_VbsSecurity"; Badge="Badge_VbsSecurity"; TxtBadge="TxtBadge_VbsSecurity" },
-        @{ Key="TaskbarLeft"; Title="Align Taskbar to Left"; Category="Shell"; Apply={ Set-TaskbarLeftAlign }; Rollback={ Restore-TaskbarAlignmentCenter }; ApplyBtn="BtnApply_TaskbarLeft"; RollbackBtn="BtnRollback_TaskbarLeft"; Badge="Badge_TaskbarLeft"; TxtBadge="TxtBadge_TaskbarLeft" },
-        @{ Key="RecommendedStart"; Title="Hide Start Recommended"; Category="Shell"; Apply={ Disable-RecommendedStartSection }; Rollback={ Restore-StartMenuRecommended }; ApplyBtn="BtnApply_RecommendedStart"; RollbackBtn="BtnRollback_RecommendedStart"; Badge="Badge_RecommendedStart"; TxtBadge="TxtBadge_RecommendedStart" },
-        @{ Key="TaskbarChat"; Title="Disable Taskbar Chat"; Category="Shell"; Apply={ Disable-TaskbarChat }; Rollback={ Restore-TaskbarChat }; ApplyBtn="BtnApply_TaskbarChat"; RollbackBtn="BtnRollback_TaskbarChat"; Badge="Badge_TaskbarChat"; TxtBadge="TxtBadge_TaskbarChat" },
-        @{ Key="FilesCompact"; Title="Files Compact View"; Category="Shell"; Apply={ Enable-FilesCompactMode }; Rollback={ Restore-FilesCompactMode }; ApplyBtn="BtnApply_FilesCompact"; RollbackBtn="BtnRollback_FilesCompact"; Badge="Badge_FilesCompact"; TxtBadge="TxtBadge_FilesCompact" },
-        @{ Key="SnapAssist"; Title="Disable Snap Assist"; Category="Shell"; Apply={ Disable-SnapAssist }; Rollback={ Restore-SnapAssist }; ApplyBtn="BtnApply_SnapAssist"; RollbackBtn="BtnRollback_SnapAssist"; Badge="Badge_SnapAssist"; TxtBadge="TxtBadge_SnapAssist" },
-        @{ Key="WindowsStickers"; Title="Disable Desktop Stickers"; Category="Shell"; Apply={ Disable-DesktopStickers }; Rollback={ Restore-WindowsStickers }; ApplyBtn="BtnApply_WindowsStickers"; RollbackBtn="BtnRollback_WindowsStickers"; Badge="Badge_WindowsStickers"; TxtBadge="TxtBadge_WindowsStickers" },
-        @{ Key="EdgeDiscover"; Title="Disable Edge Discover Bar"; Category="Shell"; Apply={ Disable-EdgeDiscoverBar }; Rollback={ Restore-EdgeDiscoverBar }; ApplyBtn="BtnApply_EdgeDiscover"; RollbackBtn="BtnRollback_EdgeDiscover"; Badge="Badge_EdgeDiscover"; TxtBadge="TxtBadge_EdgeDiscover" },
-        @{ Key="CopyMoveMenu"; Title="Add Copy/Move to Menu"; Category="Shell"; Apply={ Enable-CopyMoveToContextMenu }; Rollback={ Restore-CopyMoveContextMenu }; ApplyBtn="BtnApply_CopyMoveMenu"; RollbackBtn="BtnRollback_CopyMoveMenu"; Badge="Badge_CopyMoveMenu"; TxtBadge="TxtBadge_CopyMoveMenu" },
-        @{ Key="WindowShake"; Title="Disable Window Shake"; Category="Shell"; Apply={ Disable-WindowShake }; Rollback={ Restore-WindowShake }; ApplyBtn="BtnApply_WindowShake"; RollbackBtn="BtnRollback_WindowShake"; Badge="Badge_WindowShake"; TxtBadge="TxtBadge_WindowShake" },
-        @{ Key="SystemDarkMode"; Title="System Dark Mode"; Category="Shell"; Apply={ Enable-SystemDarkMode }; Rollback={ Restore-WindowsLightMode }; ApplyBtn="BtnApply_SystemDarkMode"; RollbackBtn="BtnRollback_SystemDarkMode"; Badge="Badge_SystemDarkMode"; TxtBadge="TxtBadge_SystemDarkMode" },
-        @{ Key="VerboseLogon"; Title="Enable Verbose Logon"; Category="Shell"; Apply={ Enable-VerboseLogon }; Rollback={ Restore-VerboseLogon }; ApplyBtn="BtnApply_VerboseLogon"; RollbackBtn="BtnRollback_VerboseLogon"; Badge="Badge_VerboseLogon"; TxtBadge="TxtBadge_VerboseLogon" },
-        @{ Key="QuickAccessHistory"; Title="Disable Quick Access History"; Category="Shell"; Apply={ Disable-QuickAccessHistory }; Rollback={ Restore-QuickAccessHistory }; ApplyBtn="BtnApply_QuickAccessHistory"; RollbackBtn="BtnRollback_QuickAccessHistory"; Badge="Badge_QuickAccessHistory"; TxtBadge="TxtBadge_QuickAccessHistory" },
-        @{ Key="MyPeople"; Title="Disable My People Band"; Category="Shell"; Apply={ Disable-MyPeople }; Rollback={ Restore-MyPeople }; ApplyBtn="BtnApply_MyPeople"; RollbackBtn="BtnRollback_MyPeople"; Badge="Badge_MyPeople"; TxtBadge="TxtBadge_MyPeople" },
-        @{ Key="WindowsInk"; Title="Disable Windows Ink"; Category="Shell"; Apply={ Disable-WindowsInk }; Rollback={ Restore-WindowsInk }; ApplyBtn="BtnApply_WindowsInk"; RollbackBtn="BtnRollback_WindowsInk"; Badge="Badge_WindowsInk"; TxtBadge="TxtBadge_WindowsInk" },
-        @{ Key="CastToDevice"; Title="Disable Cast to Device"; Category="Shell"; Apply={ Disable-CastToDevice }; Rollback={ Restore-CastToDevice }; ApplyBtn="BtnApply_CastToDevice"; RollbackBtn="BtnRollback_CastToDevice"; Badge="Badge_CastToDevice"; TxtBadge="TxtBadge_CastToDevice" },
-
-        # 4. Privacy & App Telemetry
-        @{ Key="AppTelemetry"; Title="Disable App Telemetry"; Category="Privacy"; Apply={ Disable-ThirdPartyAppTelemetry }; Rollback={ Restore-AppTelemetry }; ApplyBtn="BtnApply_AppTelemetry"; RollbackBtn="BtnRollback_AppTelemetry"; Badge="Badge_AppTelemetry"; TxtBadge="TxtBadge_AppTelemetry" },
-        @{ Key="BluetoothAdvertising"; Title="Disable Bluetooth Advertising"; Category="Privacy"; Apply={ Disable-BluetoothAdvertising }; Rollback={ Restore-BluetoothAdvertising }; ApplyBtn="BtnApply_BluetoothAdvertising"; RollbackBtn="BtnRollback_BluetoothAdvertising"; Badge="Badge_BluetoothAdvertising"; TxtBadge="TxtBadge_BluetoothAdvertising" },
-        @{ Key="CloudContent"; Title="Disable Cloud Content"; Category="Privacy"; Apply={ Disable-CloudOptimizedContent }; Rollback={ Restore-CloudOptimizedContent }; ApplyBtn="BtnApply_CloudContent"; RollbackBtn="BtnRollback_CloudContent"; Badge="Badge_CloudContent"; TxtBadge="TxtBadge_CloudContent" },
-        @{ Key="CdpServices"; Title="Disable CDP Services"; Category="Privacy"; Apply={ Disable-CdpUserServices }; Rollback={ Restore-CdpServices }; ApplyBtn="BtnApply_CdpServices"; RollbackBtn="BtnRollback_CdpServices"; Badge="Badge_CdpServices"; TxtBadge="TxtBadge_CdpServices" },
-        @{ Key="DiagnosticsToasts"; Title="Disable Diagnostics Toasts"; Category="Privacy"; Apply={ Disable-DiagnosticsToasts }; Rollback={ Restore-DiagnosticsToasts }; ApplyBtn="BtnApply_DiagnosticsToasts"; RollbackBtn="BtnRollback_DiagnosticsToasts"; Badge="Badge_DiagnosticsToasts"; TxtBadge="TxtBadge_DiagnosticsToasts" },
-        @{ Key="OnlineSpeech"; Title="Disable Online Speech Privacy"; Category="Privacy"; Apply={ Disable-OnlineSpeechPrivacy }; Rollback={ Restore-OnlineSpeechPrivacy }; ApplyBtn="BtnApply_OnlineSpeech"; RollbackBtn="BtnRollback_OnlineSpeech"; Badge="Badge_OnlineSpeech"; TxtBadge="TxtBadge_OnlineSpeech" },
-        @{ Key="Arso"; Title="Disable Restart Apps On Reboot"; Category="Privacy"; Apply={ Disable-RestartAppsAfterReboot }; Rollback={ Restore-AutomaticRestartSignOn }; ApplyBtn="BtnApply_Arso"; RollbackBtn="BtnRollback_Arso"; Badge="Badge_Arso"; TxtBadge="TxtBadge_Arso" },
-        @{ Key="TextInputCollection"; Title="Disable Inking & Typing Collection"; Category="Privacy"; Apply={ Disable-HandwritingTypingCollection }; Rollback={ Restore-TextInputCollection }; ApplyBtn="BtnApply_TextInputCollection"; RollbackBtn="BtnRollback_TextInputCollection"; Badge="Badge_TextInputCollection"; TxtBadge="TxtBadge_TextInputCollection" },
-        @{ Key="ClipboardSync"; Title="Disable Clipboard Cloud Sync"; Category="Privacy"; Apply={ Disable-ClipboardCloudSync }; Rollback={ Restore-ClipboardSync }; ApplyBtn="BtnApply_ClipboardSync"; RollbackBtn="BtnRollback_ClipboardSync"; Badge="Badge_ClipboardSync"; TxtBadge="TxtBadge_ClipboardSync" },
-        @{ Key="SettingsMessageSync"; Title="Disable Settings & Message Sync"; Category="Privacy"; Apply={ Disable-SettingsAndMessageSync }; Rollback={ Restore-SettingsAndMessageSync }; ApplyBtn="BtnApply_SettingsMessageSync"; RollbackBtn="BtnRollback_SettingsMessageSync"; Badge="Badge_SettingsMessageSync"; TxtBadge="TxtBadge_SettingsMessageSync" },
-        @{ Key="FindMyDevice"; Title="Disable Find My Device"; Category="Privacy"; Apply={ Disable-FindMyDevice }; Rollback={ Restore-FindMyDevice }; ApplyBtn="BtnApply_FindMyDevice"; RollbackBtn="BtnRollback_FindMyDevice"; Badge="Badge_FindMyDevice"; TxtBadge="TxtBadge_FindMyDevice" },
-        @{ Key="SafeSearch"; Title="Disable SafeSearch"; Category="Privacy"; Apply={ Disable-SafeSearchFiltering }; Rollback={ Restore-SafeSearchMode }; ApplyBtn="BtnApply_SafeSearch"; RollbackBtn="BtnRollback_SafeSearch"; Badge="Badge_SafeSearch"; TxtBadge="TxtBadge_SafeSearch" },
-        @{ Key="RemoteAssistanceRegistry"; Title="Disable Remote Assistance & Reg"; Category="Privacy"; Apply={ Disable-RemoteAssistanceAndRegistry }; Rollback={ Restore-RemoteAssistanceAndRegistry }; ApplyBtn="BtnApply_RemoteAssistanceRegistry"; RollbackBtn="BtnRollback_RemoteAssistanceRegistry"; Badge="Badge_RemoteAssistanceRegistry"; TxtBadge="TxtBadge_RemoteAssistanceRegistry" },
-        @{ Key="DriverUpdatesExcluded"; Title="Exclude Drivers in Windows Update"; Category="Privacy"; Apply={ Exclude-DriverUpdatesInWindowsUpdate }; Rollback={ Restore-DriverUpdatesFromWindowsUpdate }; ApplyBtn="BtnApply_DriverUpdatesExcluded"; RollbackBtn="BtnRollback_DriverUpdatesExcluded"; Badge="Badge_DriverUpdatesExcluded"; TxtBadge="TxtBadge_DriverUpdatesExcluded" },
-        @{ Key="StoreAutoUpdates"; Title="Disable Store Auto-Updates"; Category="Privacy"; Apply={ Disable-WindowsStoreAutoUpdates }; Rollback={ Restore-StoreAutoUpdates }; ApplyBtn="BtnApply_StoreAutoUpdates"; RollbackBtn="BtnRollback_StoreAutoUpdates"; Badge="Badge_StoreAutoUpdates"; TxtBadge="TxtBadge_StoreAutoUpdates" },
-        @{ Key="SmartScreen"; Title="Disable SmartScreen Filter"; Category="Privacy"; Apply={ Disable-SmartScreenProtection }; Rollback={ Restore-SmartScreenFilter }; ApplyBtn="BtnApply_SmartScreen"; RollbackBtn="BtnRollback_SmartScreen"; Badge="Badge_SmartScreen"; TxtBadge="TxtBadge_SmartScreen" },
-        @{ Key="CrashDumps"; Title="Disable Crash Dumps"; Category="Privacy"; Apply={ Disable-SystemCrashDumps }; Rollback={ Restore-CrashDumps }; ApplyBtn="BtnApply_CrashDumps"; RollbackBtn="BtnRollback_CrashDumps"; Badge="Badge_CrashDumps"; TxtBadge="TxtBadge_CrashDumps" },
-        @{ Key="SystemTimeouts"; Title="Optimize System Timeouts"; Category="Privacy"; Apply={ Optimize-SystemTimeouts }; Rollback={ Restore-SystemTimeouts }; ApplyBtn="BtnApply_SystemTimeouts"; RollbackBtn="BtnRollback_SystemTimeouts"; Badge="Badge_SystemTimeouts"; TxtBadge="TxtBadge_SystemTimeouts" }
-    )
-
-    # Thread-Safe Live Audit & Score Gauge Updater
+    # 7. Live Audit & Score Gauge Synchronizer
     $script:UpdateGuiAuditStatus = {
         try {
             $audit = Get-SystemAuditState
             $scorePct = [int]$audit.ScorePercent
             $scorePctText = "$scorePct%"
             $gradeText    = "$($audit.ScoreGrade)"
-            $ratioText    = "[Active: $($audit.ScoreApplied) / $($audit.ScoreTotal)]"
+            $ratioText    = "Active: $($audit.ScoreApplied) / $($audit.ScoreTotal)"
 
-            $brushGauge = if ($scorePct -ge 80) { $brushOptimalBorder } elseif ($scorePct -ge 50) { $brushNeededText } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700") }
+            $brushGauge = if ($scorePct -ge 80) { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88") } elseif ($scorePct -ge 50) { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF") } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#FF7700") }
 
             if ($txtScorePercent) {
                 $txtScorePercent.Text = $scorePctText
                 $txtScorePercent.Foreground = $brushGauge
             }
-            if ($txtScoreGrade)   { $txtScoreGrade.Text   = $gradeText }
+            if ($txtScoreGrade)       { $txtScoreGrade.Text = $gradeText }
             if ($txtActiveTweakRatio) { $txtActiveTweakRatio.Text = $ratioText }
-
-            $borderGauge = $window.FindName("BorderScoreGauge")
-            if ($borderGauge) {
-                $borderGauge.BorderBrush = $brushGauge
-            }
-
-            if ($txtScorePercentTab4) {
-                $txtScorePercentTab4.Text = $scorePctText
-                $txtScorePercentTab4.Foreground = $brushGauge
-            }
-            if ($txtScoreGradeTab4)   { $txtScoreGradeTab4.Text   = $gradeText }
-            if ($txtActiveTweakRatioTab4) { $txtActiveTweakRatioTab4.Text = $ratioText }
-
-            $borderGaugeTab4 = $window.FindName("BorderScoreGaugeTab4")
-            if ($borderGaugeTab4) {
-                $borderGaugeTab4.BorderBrush = $brushGauge
-            }
+            if ($borderScoreGauge)    { $borderScoreGauge.BorderBrush = $brushGauge }
 
             foreach ($tw in $script:TweakDefinitions) {
-                $isApplied = ($audit.State[$tw.Key] -eq $true)
-                if ($tw.Badge) {
-                    $b = $window.FindName($tw.Badge)
-                    $tb = $window.FindName($tw.TxtBadge)
-                    if ($b -and $tb) {
-                        if ($isApplied) {
-                            $b.Background = $brushOptimalBg
-                            $b.BorderBrush = $brushOptimalBorder
-                            $tb.Text = "Applied [v]"
-                            $tb.Foreground = $brushOptimalText
-                        } else {
-                            $b.Background = $brushNeededBg
-                            $b.BorderBrush = $brushNeededBorder
-                            $tb.Text = "Needed"
-                            $tb.Foreground = $brushNeededText
-                        }
-                    }
-                }
-
-                if ($tw.ApplyBtn) {
-                    $btnApp = $window.FindName($tw.ApplyBtn)
-                    if ($btnApp) {
-                        if ($isApplied) {
-                            $btnApp.Content = "Applied [v]"
-                            $btnApp.Opacity = 0.75
-                            $btnApp.ToolTip = "Already applied. Click to re-apply if desired."
-                        } else {
-                            $btnApp.Content = "Apply"
-                            $btnApp.Opacity = 1.0
-                            $btnApp.ToolTip = "Click to apply this optimization."
-                        }
-                    }
-                }
-
-                if ($tw.RollbackBtn) {
-                    $btnRoll = $window.FindName($tw.RollbackBtn)
-                    if ($btnRoll) {
-                        if ($isApplied) {
-                            $btnRoll.IsEnabled = $true
-                            $btnRoll.Opacity = 1.0
-                            $btnRoll.ToolTip = "Click to rollback this tweak to Windows default."
-                        } else {
-                            $btnRoll.Opacity = 0.5
-                            $btnRoll.ToolTip = "Tweak is not currently applied."
-                        }
-                    }
+                if ($tw.Toggle) {
+                    $isApplied = ($audit.State[$tw.Key] -eq $true)
+                    $tw.Toggle.IsChecked = $isApplied
                 }
             }
-        } catch {
-            Write-Verbose "Audit UI update failed: $($_.Exception.Message)"
+        } catch {}
+    }
+
+    # Re-Scan Audit Button Handler
+    if ($btnScanSystemStateBanner) {
+        $btnScanSystemStateBanner.Add_Click({
+            & $script:LogToGui "[*] Re-scanning live Windows registry and service state..."
+            & $script:UpdateGuiAuditStatus
+            & $script:LogToGui "[+] System audit re-scan complete."
+        })
+    }
+
+    # 8. Sequential Step-by-Step Execution Engine
+    $script:InvokeSequentialTweakAction = {
+        param(
+            [array]$Tweaks,
+            [string]$Action # "Apply" or "Rollback"
+        )
+
+        & $script:ExpandLogDrawer
+        $total = $Tweaks.Count
+        if ($total -eq 0) {
+            & $script:LogToGui "[!] No tweaks selected for this action."
+            return
         }
-    }
 
-    # Register individual Apply and Rollback buttons dynamically
-    foreach ($tw in $script:TweakDefinitions) {
-        $def = $tw
-        if ($def.ApplyBtn) {
-            $btnApp = $window.FindName($def.ApplyBtn)
-            if ($btnApp) {
-                $btnApp.Add_Click({
-                    & $script:LogToGui "[*] Applying $($def.Title)..."
-                    & $script:SetProgress 40
-                    & $def.Apply
-                    & $script:SetProgress 100
-                    & $script:UpdateGuiAuditStatus
-                    & $script:LogToGui "[+] $($def.Title) applied successfully!"
-                    Start-Sleep -Milliseconds 150
-                    & $script:SetProgress 0
-                })
-            }
-        }
-        if ($def.RollbackBtn) {
-            $btnRoll = $window.FindName($def.RollbackBtn)
-            if ($btnRoll) {
-                $btnRoll.Add_Click({
-                    & $script:LogToGui "[*] Rolling back $($def.Title) to Windows default..."
-                    & $script:SetProgress 40
-                    & $def.Rollback
-                    & $script:SetProgress 100
-                    & $script:UpdateGuiAuditStatus
-                    & $script:LogToGui "[+] $($def.Title) rolled back successfully!"
-                    Start-Sleep -Milliseconds 150
-                    & $script:SetProgress 0
-                })
-            }
-        }
-    }
+        & $script:LogToGui "=== STARTING SEQUENTIAL $($Action.ToUpper()) ACTION ($total Tweaks) ==="
+        for ($i = 0; $i -lt $total; $i++) {
+            $tw = $Tweaks[$i]
+            $pct = [int]((($i + 1) / $total) * 100)
+            & $script:SetProgress $pct
 
-    # Standalone Special Tool Buttons
-    $btnApplyDeepCache = $window.FindName("BtnApply_DeepCache")
-    if ($btnApplyDeepCache) {
-        $btnApplyDeepCache.Add_Click({
-            & $script:LogToGui "[*] Running Deep Cache, Prefetch & Event Cleaner..."
-            & $script:SetProgress 40
-            Invoke-DeepCacheCleaner
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Deep Cache & Event Cleaner completed successfully!"
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-    $btnApplyShaderCache = $window.FindName("BtnApply_ShaderCache")
-    if ($btnApplyShaderCache) {
-        $btnApplyShaderCache.Add_Click({
-            & $script:LogToGui "[*] Purging GPU Shader & Browser Caches..."
-            & $script:SetProgress 40
-            Invoke-ShaderAndBrowserCacheCleaner
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Shader & Browser Cache purge completed!"
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-    $btnResetDns = $window.FindName("BtnResetDns")
-    if ($btnResetDns) {
-        $btnResetDns.Add_Click({
-            & $script:LogToGui "[*] Resetting DNS servers to automatic DHCP..."
-            Reset-DnsToAutomatic
-            & $script:LogToGui "[+] Network DNS restored to DHCP defaults."
-        })
-    }
-
-    $btnApplyRecycle = $window.FindName("BtnApply_RecycleBinIcon")
-    if ($btnApplyRecycle) {
-        $btnApplyRecycle.Add_Click({
-            & $script:LogToGui "[*] Applying Pop Cat Recycle Bin custom icon..."
-            Set-RecycleBinCustomIcon
-            & $script:LogToGui "[+] Pop Cat Recycle Bin active!"
-        })
-    }
-
-    $btnResetRecycle = $window.FindName("BtnReset_RecycleBinIcon")
-    if ($btnResetRecycle) {
-        $btnResetRecycle.Add_Click({
-            & $script:LogToGui "[*] Restoring default Windows Recycle Bin icon..."
-            Restore-RecycleBinDefaultIcon
-            & $script:LogToGui "[+] Default Recycle Bin icon restored."
-        })
-    }
-
-    # Equicord Quick-Action Handlers
-    $btnInstallEquicord = $window.FindName("BtnInstallEquicord")
-    if ($btnInstallEquicord) {
-        $btnInstallEquicord.Add_Click({
-            & $script:LogToGui "[*] Installing Equicord client via WinGet (Equicord.Equilotl)..."
-            & $script:SetProgress 30
-            Install-WinGetPackage -PackageId "Equicord.Equilotl" -LogCallback { param($m) & $script:LogToGui $m }
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-    $btnOpenEquicordSite = $window.FindName("BtnOpenEquicordSite")
-    if ($btnOpenEquicordSite) {
-        $btnOpenEquicordSite.Add_Click({
-            & $script:LogToGui "[*] Opening Equicord download page: https://equicord.org/download"
-            Start-Process "https://equicord.org/download"
-        })
-    }
-
-    # --------------------------------------------------------------------------
-    # Custom Gaming Cursors Controller
-    # --------------------------------------------------------------------------
-    $cmbCursors = $window.FindName("CmbCursorSchemes")
-    $btnInstallCursor = $window.FindName("BtnInstallCursor")
-    $btnRestoreCursor = $window.FindName("BtnRestoreCursor")
-    $txtActiveCursor = $window.FindName("TxtActiveCursorScheme")
-
-    if ($cmbCursors) {
-        try {
-            $cursorSchemes = Get-AvailableCursorSchemes
-            $cmbCursors.ItemsSource = $cursorSchemes
-            $cmbCursors.DisplayMemberPath = "Name"
-            $cmbCursors.SelectedValuePath = "FolderPath"
-            if ($cursorSchemes.Count -gt 0) {
-                $cmbCursors.SelectedIndex = 0
-            }
-
-            $currentScheme = Get-ActiveCursorSchemeName
-            if ($txtActiveCursor) {
-                $txtActiveCursor.Text = "Active: $currentScheme"
-            }
-        } catch {
-            Write-Verbose "Cursor initialization failed: $($_.Exception.Message)"
-        }
-    }
-
-    if ($btnInstallCursor -and $cmbCursors) {
-        $btnInstallCursor.Add_Click({
-            $selected = $cmbCursors.SelectedItem
-            if (-not $selected) {
-                & $script:LogToGui "[-] Please select a cursor scheme from the dropdown list." "WARN"
-                return
-            }
-            & $script:LogToGui "[*] Installing custom cursor scheme: $($selected.Name)..."
-            & $script:SetProgress 40
-            $success = Install-CursorScheme -SchemeName $selected.Name
-            & $script:SetProgress 100
-            if ($success) {
-                & $script:LogToGui "[+] Successfully applied cursor scheme: $($selected.Name)!"
-                if ($txtActiveCursor) {
-                    $txtActiveCursor.Text = "Active: $($selected.Name)"
+            if ($Action -eq "Apply") {
+                & $script:LogToGui "[$($i+1)/$total] Applying $($tw.Title)..."
+                try {
+                    & $tw.Apply
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $true }
+                    & $script:LogToGui "  [+] $($tw.Title): OK"
+                } catch {
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $false }
+                    & $script:LogToGui "  [-] $($tw.Title) FAILED: $($_.Exception.Message)" "ERROR"
                 }
             } else {
-                & $script:LogToGui "[-] Failed to apply cursor scheme: $($selected.Name)." "WARN"
-            }
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnRestoreCursor) {
-        $btnRestoreCursor.Add_Click({
-            & $script:LogToGui "[*] Restoring Windows default cursor scheme..."
-            & $script:SetProgress 40
-            Restore-DefaultCursors
-            & $script:SetProgress 100
-            & $script:LogToGui "[+] Windows default cursors restored successfully!"
-            if ($txtActiveCursor) {
-                $txtActiveCursor.Text = "Active: Windows Default"
-            }
-            Start-Sleep -Milliseconds 200
-            & $script:SetProgress 0
-        })
-    }
-
-
-    # Action Dashboard Banners: Live Audit Scanner
-    $scanAction = {
-        & $script:LogToGui "[*] Scanning system optimization state across all 75+ parameters..."
-        & $script:SetProgress 30
-        & $script:UpdateGuiAuditStatus
-        $audit = Get-SystemAuditState
-        & $script:SetProgress 100
-        & $script:LogToGui "[+] System Audit Complete: $($audit.ScoreApplied)/$($audit.ScoreTotal) tweaks active (Score: $($audit.ScoreGrade))"
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnScanSystemStateBanner) { $btnScanSystemStateBanner.Add_Click($scanAction) }
-    if ($btnScanSystemStateTab4Banner) { $btnScanSystemStateTab4Banner.Add_Click($scanAction) }
-    if ($btnScanSystemStateTab4) { $btnScanSystemStateTab4.Add_Click($scanAction) }
-
-    # Action Dashboard Banners: Apply Unapplied Gaming Tweaks
-    $applyUnappliedGaming = {
-        & $script:LogToGui "=== APPLYING ALL UNAPPLIED GAMING TWEAKS ==="
-        $audit = Get-SystemAuditState
-        $unapplied = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" -and (-not $audit.State[$_.Key]) }
-        $total = $unapplied.Count
-        if ($total -eq 0) {
-            & $script:LogToGui "[+] All gaming tweaks are already active and optimal!"
-            return
-        }
-        $i = 0
-        foreach ($tw in $unapplied) {
-            $i++
-            $pct = [math]::Round(($i / $total) * 100)
-            & $script:SetProgress $pct
-            & $script:LogToGui "[$i/$total] Applying $($tw.Title)..."
-            & $tw.Apply
-        }
-        & $script:UpdateGuiAuditStatus
-        & $script:LogToGui "[OK] All unapplied gaming tweaks successfully applied!"
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnApplyUnappliedBanner) { $btnApplyUnappliedBanner.Add_Click($applyUnappliedGaming) }
-    if ($btnApplyUnappliedTab2)   { $btnApplyUnappliedTab2.Add_Click($applyUnappliedGaming) }
-
-    # Action Dashboard Banners: Apply Unapplied Hardening & Privacy Tweaks
-    $applyUnappliedHardening = {
-        & $script:LogToGui "=== APPLYING ALL UNAPPLIED HARDENING & PRIVACY TWEAKS ==="
-        $audit = Get-SystemAuditState
-        $unapplied = $script:TweakDefinitions | Where-Object { ($_.Category -in "Shell","Hardening","Privacy") -and (-not $audit.State[$_.Key]) }
-        $total = $unapplied.Count
-        if ($total -eq 0) {
-            & $script:LogToGui "[+] All hardening and privacy tweaks are already active and optimal!"
-            return
-        }
-        $i = 0
-        foreach ($tw in $unapplied) {
-            $i++
-            $pct = [math]::Round(($i / $total) * 100)
-            & $script:SetProgress $pct
-            & $script:LogToGui "[$i/$total] Applying $($tw.Title)..."
-            & $tw.Apply
-        }
-        & $script:UpdateGuiAuditStatus
-        & $script:LogToGui "[OK] All unapplied hardening and privacy tweaks successfully applied!"
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnApplyUnappliedHardening) { $btnApplyUnappliedHardening.Add_Click($applyUnappliedHardening) }
-    if ($btnApplyUnappliedHardeningBanner) { $btnApplyUnappliedHardeningBanner.Add_Click($applyUnappliedHardening) }
-
-    # Action Dashboard Banners: Revert All Tweaks to Defaults
-    $revertAllAction = {
-        & $script:LogToGui "[*] Reverting all system tweaks to Windows defaults..."
-        & $script:SetProgress 30
-        Restore-Defaults
-        & $script:SetProgress 90
-        & $script:UpdateGuiAuditStatus
-        & $script:SetProgress 100
-        & $script:LogToGui "[+] Windows default parameters restored. System audit refreshed."
-        Start-Sleep -Milliseconds 200
-        & $script:SetProgress 0
-    }
-    if ($btnRevertDefaultsBanner) { $btnRevertDefaultsBanner.Add_Click($revertAllAction) }
-    if ($btnRevertDefaultsTab4)   { $btnRevertDefaultsTab4.Add_Click($revertAllAction) }
-
-    # Hardware MSI & Interrupt Audit Report
-    $btnReportInterrupts = $window.FindName("BtnReport_Interrupts")
-    if ($btnReportInterrupts) {
-        $btnReportInterrupts.Add_Click({
-            & $script:LogToGui "`n=== HARDWARE MSI & INTERRUPT AUDIT REPORT ==="
-            try {
-                $report = Get-HardwareInterruptReport
-                & $script:LogToGui ("{0,-12} | {1,-5} | {2,-10} | {3}" -f "CATEGORY", "MSI", "PRIORITY", "CONTROLLER")
-                & $script:LogToGui ("----------------------------------------------------------------------")
-                foreach ($r in $report) {
-                    $msiStr = if ($r.MSISupported) { "YES" } else { "NO" }
-                    & $script:LogToGui ("{0,-12} | {1,-5} | {2,-10} | {3}" -f $r.Category, $msiStr, $r.Priority, $r.DeviceName)
-                }
-                & $script:LogToGui ("======================================================================")
-                & $script:LogToGui "[OK] Hardware interrupt audit complete. Total controllers inspected: $($report.Count)"
-            } catch {
-                & $script:LogToGui "[!] Interrupt report error: $($_.Exception.Message)"
-            }
-        })
-    }
-
-    # Gaming DNS Benchmark & Auto-Apply Winner
-    $btnBenchmarkDns = $window.FindName("BtnBenchmarkDns")
-    if ($btnBenchmarkDns) {
-        $btnBenchmarkDns.Add_Click({
-            $btnBenchmarkDns.IsEnabled = $false
-            & $script:LogToGui "[*] Starting Gaming DNS Benchmark across top providers..."
-            & $script:SetProgress 20
-            [System.Threading.ThreadPool]::QueueUserWorkItem({
+                & $script:LogToGui "[$($i+1)/$total] Restoring $($tw.Title) to defaults..."
                 try {
-                    $results = Test-GamingDnsBenchmark
-                    $window.Dispatcher.Invoke([action]{
-                        & $script:SetProgress 70
-                        if ($results -and $results.Count -gt 0) {
-                            $fastest = $results[0]
-                            & $script:LogToGui "`n--- DNS BENCHMARK LEADERBOARD ---"
-                            foreach ($r in $results) {
-                                $pingStr = if ($r.AvgPingMs -lt 999) { "$($r.AvgPingMs) ms" } else { "TIMEOUT" }
-                                & $script:LogToGui "  $($r.Name.PadRight(12)): $pingStr ($($r.Primary))"
-                            }
-                            & $script:LogToGui "[+] Fastest Provider: $($fastest.Name) ($($fastest.AvgPingMs) ms)"
-                            & $script:LogToGui "[*] Auto-applying $($fastest.Name) DNS to active network adapters..."
-                            Set-GamingDnsProvider -PrimaryDns $fastest.Primary -SecondaryDns $fastest.Secondary -ProviderName $fastest.Name
-                            & $script:LogToGui "[+] Gaming DNS successfully configured to $($fastest.Name)!"
-                        } else {
-                            & $script:LogToGui "[!] No DNS ping responses received. Keeping current settings."
-                        }
-                        & $script:SetProgress 100
-                        Start-Sleep -Milliseconds 200
-                        & $script:SetProgress 0
-                        $btnBenchmarkDns.IsEnabled = $true
-                    })
+                    & $tw.Rollback
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $false }
+                    & $script:LogToGui "  [+] $($tw.Title): Restored"
                 } catch {
-                    $exMsg = $_.Exception.Message
-                    $window.Dispatcher.Invoke([action]{
-                        & $script:LogToGui "[!] DNS benchmark error: $exMsg"
-                        & $script:SetProgress 0
-                        $btnBenchmarkDns.IsEnabled = $true
-                    })
+                    if ($tw.Toggle) { $tw.Toggle.IsChecked = $true }
+                    & $script:LogToGui "  [-] $($tw.Title) FAILED: $($_.Exception.Message)" "ERROR"
                 }
-            })
+            }
+            Start-Sleep -Milliseconds 40
+        }
+
+        & $script:SetProgress 100
+        Start-Sleep -Milliseconds 200
+        & $script:SetProgress 0
+        if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+        & $script:LogToGui "=== SEQUENTIAL $($Action.ToUpper()) ACTION COMPLETED! ==="
+    }
+
+    # 9. Master Controls & Profile Handlers
+    # Profile Buttons on Dashboard
+    if ($btnApplyProfileEsports) {
+        $btnApplyProfileEsports.Add_Click({
+            $esportsTweaks = $script:TweakDefinitions | Where-Object { $_.Tier -eq "Esports" -or ($_.Category -eq "Gaming" -and $_.Tier -eq "Recommended") }
+            & $script:InvokeSequentialTweakAction -Tweaks $esportsTweaks -Action "Apply"
+        })
+    }
+
+    if ($btnApplyProfileRecommended) {
+        $btnApplyProfileRecommended.Add_Click({
+            $recTweaks = $script:TweakDefinitions | Where-Object { $_.Tier -eq "Recommended" }
+            & $script:InvokeSequentialTweakAction -Tweaks $recTweaks -Action "Apply"
+        })
+    }
+
+    if ($btnApplyProfilePrivacy) {
+        $btnApplyProfilePrivacy.Add_Click({
+            $privTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" }
+            & $script:InvokeSequentialTweakAction -Tweaks $privTweaks -Action "Apply"
+        })
+    }
+
+    if ($btnRevertDefaults) {
+        $btnRevertDefaults.Add_Click({
+            $result = [System.Windows.MessageBox]::Show(
+                "Are you sure you want to restore ALL settings to default Windows values?",
+                "Confirm Rollback",
+                [System.Windows.MessageBoxButton]::YesNo,
+                [System.Windows.MessageBoxImage]::Warning
+            )
+            if ($result -eq [System.Windows.MessageBoxResult]::Yes) {
+                & $script:InvokeSequentialTweakAction -Tweaks $script:TweakDefinitions -Action "Rollback"
+            }
+        })
+    }
+
+    # Gaming Category Master Buttons
+    if ($btnGamingApplyAll) {
+        $btnGamingApplyAll.Add_Click({
+            $gamingTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" }
+            & $script:InvokeSequentialTweakAction -Tweaks $gamingTweaks -Action "Apply"
+        })
+    }
+    if ($btnGamingRollbackAll) {
+        $btnGamingRollbackAll.Add_Click({
+            $gamingTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Gaming" }
+            & $script:InvokeSequentialTweakAction -Tweaks $gamingTweaks -Action "Rollback"
+        })
+    }
+
+    # Privacy Category Master Buttons
+    if ($btnPrivacyApplyAll) {
+        $btnPrivacyApplyAll.Add_Click({
+            $privacyTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" }
+            & $script:InvokeSequentialTweakAction -Tweaks $privacyTweaks -Action "Apply"
+        })
+    }
+    if ($btnPrivacyRollbackAll) {
+        $btnPrivacyRollbackAll.Add_Click({
+            $privacyTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "Privacy" }
+            & $script:InvokeSequentialTweakAction -Tweaks $privacyTweaks -Action "Rollback"
+        })
+    }
+
+    # System Category Master Buttons
+    if ($btnSystemApplyAll) {
+        $btnSystemApplyAll.Add_Click({
+            $systemTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "System" }
+            & $script:InvokeSequentialTweakAction -Tweaks $systemTweaks -Action "Apply"
+        })
+    }
+    if ($btnSystemRollbackAll) {
+        $btnSystemRollbackAll.Add_Click({
+            $systemTweaks = $script:TweakDefinitions | Where-Object { $_.Category -eq "System" }
+            & $script:InvokeSequentialTweakAction -Tweaks $systemTweaks -Action "Rollback"
+        })
+    }
+
+    # 10. Filter Chips Handlers
+    $script:FilterCards = {
+        param([string]$Category, [string]$TierFilter, [switch]$ActiveOnly)
+        $audit = Get-SystemAuditState
+        foreach ($tw in $script:TweakDefinitions) {
+            if ($tw.Category -eq $Category -and $tw.Card) {
+                $isMatch = $true
+                if ($TierFilter -and $TierFilter -ne "All") {
+                    if ($tw.Tier -ne $TierFilter) { $isMatch = $false }
+                }
+                if ($ActiveOnly) {
+                    if ($audit.State[$tw.Key] -ne $true) { $isMatch = $false }
+                }
+                $tw.Card.Visibility = if ($isMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+            }
+        }
+    }
+
+    # Gaming Chips
+    if ($chipGamingAll)         { $chipGamingAll.Add_Click({ & $script:FilterCards "Gaming" "All" }) }
+    if ($chipGamingRecommended) { $chipGamingRecommended.Add_Click({ & $script:FilterCards "Gaming" "Recommended" }) }
+    if ($chipGamingEsports)     { $chipGamingEsports.Add_Click({ & $script:FilterCards "Gaming" "Esports" }) }
+    if ($chipGamingActive)      { $chipGamingActive.Add_Click({ & $script:FilterCards "Gaming" "" -ActiveOnly }) }
+
+    # Privacy Chips
+    if ($chipPrivacyAll)    { $chipPrivacyAll.Add_Click({ & $script:FilterCards "Privacy" "All" }) }
+    if ($chipPrivacyActive) { $chipPrivacyActive.Add_Click({ & $script:FilterCards "Privacy" "" -ActiveOnly }) }
+
+    # System Chips
+    if ($chipSystemAll)    { $chipSystemAll.Add_Click({ & $script:FilterCards "System" "All" }) }
+    if ($chipSystemActive) { $chipSystemActive.Add_Click({ & $script:FilterCards "System" "" -ActiveOnly }) }
+
+    # 11. Universal Instant Search Filter
+    if ($txtSearch) {
+        $txtSearch.Add_TextChanged({
+            $q = $txtSearch.Text.Trim().ToLower()
+            # Filter Tweak Cards
+            foreach ($tw in $script:TweakDefinitions) {
+                if ($tw.Card) {
+                    if ([string]::IsNullOrWhiteSpace($q)) {
+                        $tw.Card.Visibility = [System.Windows.Visibility]::Visible
+                    } else {
+                        $titleMatch = ($tw.Title -and $tw.Title.ToLower().Contains($q))
+                        $descMatch  = ($tw.Description -and $tw.Description.ToLower().Contains($q))
+                        $tw.Card.Visibility = if ($titleMatch -or $descMatch) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+                    }
+                }
+            }
+
+            # Filter App Cards if in Software Downloader
+            if ($script:AllAppCards) {
+                foreach ($item in $script:AllAppCards) {
+                    if ($item.Border) {
+                        if ([string]::IsNullOrWhiteSpace($q)) {
+                            $item.Border.Visibility = [System.Windows.Visibility]::Visible
+                        } else {
+                            $match = ($item.Name.ToLower().Contains($q) -or $item.Desc.ToLower().Contains($q))
+                            $item.Border.Visibility = if ($match) { [System.Windows.Visibility]::Visible } else { [System.Windows.Visibility]::Collapsed }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    if ($btnClearSearch) {
+        $btnClearSearch.Add_Click({
+            if ($txtSearch) { $txtSearch.Text = "" }
+        })
+    }
+
+    # 12. Top Action Buttons (Beast Mode, Restore Point, MAS)
+    if ($btnBeastMode) {
+        $btnBeastMode.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "=== ENGAGING MAXIMUM BEAST MODE (LOW LATENCY + ANTI-LAG) ==="
+            & $script:SetProgress 20
+            try { Optimize-KernelAndCpu } catch {}
+            & $script:SetProgress 40
+            try { Optimize-InputLatency } catch {}
+            & $script:SetProgress 60
+            try { Optimize-Network } catch {}
+            & $script:SetProgress 80
+            try { Optimize-GpuAuto } catch {}
+            & $script:SetProgress 100
+            Start-Sleep -Milliseconds 200
+            & $script:SetProgress 0
+            if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+            & $script:LogToGui "[+] BEAST MODE ENGAGED: Max FPS, lowest DPC latency & flat ping active!"
         })
     }
 
@@ -1237,328 +714,359 @@ function Start-PumpkiNGui {
         & $script:LogToGui "[*] Launching Microsoft Activation Scripts (MAS) in elevated terminal..."
         Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://get.activated.win | iex`"" -Verb RunAs
     }
-    $btnMasActivate.Add_Click($masAction)
-    $btnMasActivateTop.Add_Click($masAction)
+    if ($btnMasActivateTop) { $btnMasActivateTop.Add_Click($masAction) }
 
     $restoreAction = {
         & $script:LogToGui "[*] Creating Windows System Restore Point..."
-        Create-RestorePoint
-        & $script:LogToGui "[+] Restore point creation process completed."
-    }
-    $btnRestorePoint.Add_Click($restoreAction)
-    $btnRestorePointTop.Add_Click($restoreAction)
-
-    $btnRunDiagnostics.Add_Click({
-        & $script:LogToGui "[*] Running System Diagnostics..."
-        Run-Diagnostics
-    })
-
-    if ($btnInstallTrafficMonitor) {
-        $btnInstallTrafficMonitor.Add_Click({
-            & $script:LogToGui "[*] Starting TrafficMonitor (Latest x64) Download & Installation..."
-            & $script:SetProgress 20
-            [void](Install-TrafficMonitorLatest -LogCallback $script:LogToGui)
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnInstallMiSansFonts) {
-        $btnInstallMiSansFonts.Add_Click({
-            & $script:LogToGui "[*] Starting MiSans Fonts Installation..."
-            & $script:SetProgress 20
-            [void](Install-MiSansFonts -LogCallback $script:LogToGui)
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnApplyTrafficMonitorConfig) {
-        $btnApplyTrafficMonitorConfig.Add_Click({
-            & $script:LogToGui "[*] Applying Custom TrafficMonitor config.ini..."
-            & $script:SetProgress 20
-            [void](Apply-TrafficMonitorConfig -LogCallback $script:LogToGui)
-            & $script:SetProgress 100
-            Start-Sleep -Milliseconds 300
-            & $script:SetProgress 0
-        })
-    }
-
-    if ($btnLaunchTrafficMonitor) {
-        $btnLaunchTrafficMonitor.Add_Click({
-            [void](Start-TrafficMonitorApp -LogCallback $script:LogToGui)
-        })
-    }
-
-    # --------------------------------------------------------------------------
-    # TAB 5: DEVICE SPECIFICATIONS & COPY ACTIONS
-    # --------------------------------------------------------------------------
-    $script:UpdateDeviceSpecsView = {
-        param([switch]$Force)
         try {
-            $p = Get-DeviceDetailProfile -ForceRefresh:$Force
-            if (-not $p) { return }
+            New-SystemRestorePointSafe
+            & $script:LogToGui "[+] Windows System Restore Point created successfully."
+        } catch {
+            & $script:LogToGui "[-] Restore point creation failed: $($_.Exception.Message)" "ERROR"
+        }
+    }
+    if ($btnRestorePointTop) { $btnRestorePointTop.Add_Click($restoreAction) }
 
-            $txtDevCompName = $window.FindName("TxtDev_CompName")
-            $txtDevSubTitle = $window.FindName("TxtDev_SubTitle")
-            if ($txtDevCompName) { $txtDevCompName.Text = $p.DeviceName }
-            if ($txtDevSubTitle) { $txtDevSubTitle.Text = $p.HeaderSummary }
-
-            # OS
-            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $p.OsName }
-            $t = $window.FindName("TxtDev_OsVersion"); if ($t) { $t.Text = $p.OsVersion }
-            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $p.OsBuildNumber }
-            $t = $window.FindName("TxtDev_OsArch"); if ($t) { $t.Text = $p.OsArchitecture }
-            $t = $window.FindName("TxtDev_OsInstallDate"); if ($t) { $t.Text = $p.OsInstallDate }
-            $t = $window.FindName("TxtDev_OsUser"); if ($t) { $t.Text = $p.OsRegisteredUser }
-            $t = $window.FindName("TxtDev_OsWinDir"); if ($t) { $t.Text = $p.OsWindowsDir }
-            $t = $window.FindName("TxtDev_OsSysDir"); if ($t) { $t.Text = $p.OsSystemDir }
-            $t = $window.FindName("TxtDev_OsBootTime"); if ($t) { $t.Text = $p.OsLastBootTime }
-
-            # CPU
-            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $p.CpuName }
-            $t = $window.FindName("TxtDev_CpuManufacturer"); if ($t) { $t.Text = $p.CpuManufacturer }
-            $t = $window.FindName("TxtDev_CpuArchitecture"); if ($t) { $t.Text = $p.CpuArchitecture }
-            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = $p.CpuCores }
-            $t = $window.FindName("TxtDev_CpuLogical"); if ($t) { $t.Text = $p.CpuLogical }
-            $t = $window.FindName("TxtDev_CpuMaxSpeed"); if ($t) { $t.Text = $p.CpuMaxSpeed }
-            $t = $window.FindName("TxtDev_CpuSocket"); if ($t) { $t.Text = $p.CpuSocket }
-            $t = $window.FindName("TxtDev_CpuL2"); if ($t) { $t.Text = $p.CpuL2Cache }
-            $t = $window.FindName("TxtDev_CpuL3"); if ($t) { $t.Text = $p.CpuL3Cache }
-
-            # GPU
-            if ($p.PrimaryGpu) {
-                $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $p.PrimaryGpu.Name }
-                $t = $window.FindName("TxtDev_GpuManufacturer"); if ($t) { $t.Text = $p.PrimaryGpu.Manufacturer }
-                $t = $window.FindName("TxtDev_GpuDriverVersion"); if ($t) { $t.Text = $p.PrimaryGpu.DriverVersion }
-                $t = $window.FindName("TxtDev_GpuDriverDate"); if ($t) { $t.Text = $p.PrimaryGpu.DriverDate }
-                $t = $window.FindName("TxtDev_GpuVram"); if ($t) { $t.Text = $p.PrimaryGpu.Vram }
-                $t = $window.FindName("TxtDev_GpuResolution"); if ($t) { $t.Text = $p.PrimaryGpu.Resolution }
-                $t = $window.FindName("TxtDev_GpuRefreshRate"); if ($t) { $t.Text = $p.PrimaryGpu.RefreshRate }
+    # Smart Game Booster & Memory Purger
+    if ($btnPurgeStandby) {
+        $btnPurgeStandby.Add_Click({
+            & $script:LogToGui "[*] Purging Windows memory standby list cache..."
+            try {
+                Invoke-MatchBooster
+                & $script:LogToGui "[+] Standby memory list purged successfully!"
+            } catch {
+                & $script:LogToGui "[-] Memory purge failed: $($_.Exception.Message)" "ERROR"
             }
+        })
+    }
 
-            # RAM
-            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = $p.RamTotal }
-            $t = $window.FindName("TxtDev_RamUsable"); if ($t) { $t.Text = $p.RamUsable }
-            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = $p.RamSpeed }
-            $t = $window.FindName("TxtDev_RamManufacturer"); if ($t) { $t.Text = $p.RamManufacturer }
-            $t = $window.FindName("TxtDev_RamPartNumber"); if ($t) { $t.Text = $p.RamPartNumber }
-            $t = $window.FindName("TxtDev_RamSlots"); if ($t) { $t.Text = $p.RamSlots }
+    if ($btnStartGameBooster) {
+        $btnStartGameBooster.Add_Click({
+            & $script:LogToGui "[*] Starting Smart Game Booster Daemon..."
+            try {
+                $ok = Start-SmartGameBoosterDaemon
+                if ($ok) {
+                    & $script:LogToGui "[+] Smart Game Booster Daemon is ACTIVE: Monitoring 20+ competitive games!"
+                }
+            } catch {}
+        })
+    }
 
-            # Storage
-            $t = $window.FindName("TxtDev_StorageDisks"); if ($t) { $t.Text = ($p.Disks -join ' | ') }
-            $t = $window.FindName("TxtDev_StorageVolumes"); if ($t) { $t.Text = ($p.Volumes -join ' | ') }
+    # 13. Dynamic WinGet Software Catalog Construction
+    $script:AllAppCards = [System.Collections.Generic.List[PSCustomObject]]::new()
+    $brushNormalBg     = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#121824")
+    $brushHoverBg      = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1A2234")
+    $brushNormalBorder = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#1F293D")
+    $brushHoverBorder  = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+    $brushCyan         = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00D2FF")
+    $thick1  = [System.Windows.Thickness]::new(1)
+    $thick5  = [System.Windows.Thickness]::new(5)
+    $thick10 = [System.Windows.Thickness]::new(10)
+    $corn6   = [System.Windows.CornerRadius]::new(6)
+    $starGrid = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+    $autoGrid = [System.Windows.GridLength]::Auto
 
-            # Network
-            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $p.NetAdapterName }
-            $t = $window.FindName("TxtDev_NetDesc"); if ($t) { $t.Text = $p.NetDescription }
-            $t = $window.FindName("TxtDev_NetMac"); if ($t) { $t.Text = $p.NetMacAddress }
-            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $p.NetLinkSpeed }
-            $t = $window.FindName("TxtDev_NetIp"); if ($t) { $t.Text = $p.NetIpAddress }
-            $t = $window.FindName("TxtDev_NetStatus"); if ($t) { $t.Text = $p.NetStatus }
+    if (Get-Command Get-AppCatalog -ErrorAction SilentlyContinue) {
+        $catalog = Get-AppCatalog
+        foreach ($app in $catalog) {
+            $card = [System.Windows.Controls.Border]::new()
+            $card.Width = 275
+            $card.Height = 110
+            $card.Background = $brushNormalBg
+            $card.BorderBrush = $brushNormalBorder
+            $card.BorderThickness = $thick1
+            $card.CornerRadius = $corn6
+            $card.Margin = $thick5
+            $card.Padding = $thick10
+            $card.Cursor = [System.Windows.Input.Cursors]::Hand
 
-            # Battery
-            $t = $window.FindName("TxtDev_BatteryStatus"); if ($t) { $t.Text = $p.BatteryStatus }
-            $t = $window.FindName("TxtDev_BatteryName"); if ($t) { $t.Text = $p.BatteryName }
-            $t = $window.FindName("TxtDev_BatteryPercent"); if ($t) { $t.Text = $p.BatteryPercent }
+            $grid = [System.Windows.Controls.Grid]::new()
+            $col0 = [System.Windows.Controls.ColumnDefinition]::new(); $col0.Width = $autoGrid
+            $col1 = [System.Windows.Controls.ColumnDefinition]::new(); $col1.Width = $starGrid
+            [void]$grid.ColumnDefinitions.Add($col0)
+            [void]$grid.ColumnDefinitions.Add($col1)
+
+            $chk = [System.Windows.Controls.CheckBox]::new()
+            $chk.Margin = [System.Windows.Thickness]::new(0, 4, 10, 0)
+            $chk.Tag = $app.Id
+            $chk.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
+            [System.Windows.Controls.Grid]::SetColumn($chk, 0)
+            [void]$grid.Children.Add($chk)
+
+            $sp = [System.Windows.Controls.StackPanel]::new()
+            [System.Windows.Controls.Grid]::SetColumn($sp, 1)
+
+            $topRow = [System.Windows.Controls.Grid]::new()
+            $trCol0 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol0.Width = $starGrid
+            $trCol1 = [System.Windows.Controls.ColumnDefinition]::new(); $trCol1.Width = $autoGrid
+            [void]$topRow.ColumnDefinitions.Add($trCol0)
+            [void]$topRow.ColumnDefinitions.Add($trCol1)
+
+            $txtTitle = [System.Windows.Controls.TextBlock]::new()
+            $txtTitle.Text = $app.Name
+            $txtTitle.FontWeight = [System.Windows.FontWeights]::Bold
+            $txtTitle.FontSize = 12
+            $txtTitle.Foreground = [System.Windows.Media.Brushes]::White
+            $txtTitle.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+            [System.Windows.Controls.Grid]::SetColumn($txtTitle, 0)
+            [void]$topRow.Children.Add($txtTitle)
+
+            $badge = [System.Windows.Controls.Border]::new()
+            $badge.Background = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#182233")
+            $badge.CornerRadius = [System.Windows.CornerRadius]::new(3)
+            $badge.Padding = [System.Windows.Thickness]::new(4, 1, 4, 1)
+            $badge.Margin = [System.Windows.Thickness]::new(4, 0, 0, 0)
+            $txtBadge = [System.Windows.Controls.TextBlock]::new()
+            $txtBadge.Text = $app.Category
+            $txtBadge.FontSize = 9
+            $txtBadge.Foreground = $brushCyan
+            $badge.Child = $txtBadge
+            [System.Windows.Controls.Grid]::SetColumn($badge, 1)
+            [void]$topRow.Children.Add($badge)
+
+            [void]$sp.Children.Add($topRow)
+
+            $txtDesc = [System.Windows.Controls.TextBlock]::new()
+            $txtDesc.Text = $app.Description
+            $txtDesc.FontSize = 10
+            $txtDesc.Foreground = $brushTextDim
+            $txtDesc.TextWrapping = [System.Windows.TextWrapping]::Wrap
+            $txtDesc.Margin = [System.Windows.Thickness]::new(0, 3, 0, 0)
+            $txtDesc.MaxHeight = 42
+            $txtDesc.TextTrimming = [System.Windows.TextTrimming]::CharacterEllipsis
+            [void]$sp.Children.Add($txtDesc)
+
+            [void]$grid.Children.Add($sp)
+            $card.Child = $grid
+
+            $card.Add_MouseEnter({
+                $this.Background = $brushHoverBg
+                $this.BorderBrush = $brushHoverBorder
+            })
+            $card.Add_MouseLeave({
+                $this.Background = $brushNormalBg
+                $this.BorderBrush = $brushNormalBorder
+            })
+
+            $card.Add_MouseLeftButtonUp({
+                param($s, $e)
+                if ($e.OriginalSource -isnot [System.Windows.Controls.CheckBox]) {
+                    $c = $s.Child.Children[0]
+                    $c.IsChecked = -not $c.IsChecked
+                }
+                & $script:UpdateSelectedCount
+            })
+
+            $chk.Add_Checked({ & $script:UpdateSelectedCount })
+            $chk.Add_Unchecked({ & $script:UpdateSelectedCount })
+
+            if ($wrapPackages) { [void]$wrapPackages.Children.Add($card) }
+
+            $script:AllAppCards.Add([PSCustomObject]@{
+                Border   = $card
+                CheckBox = $chk
+                Category = $app.Category
+                Name     = $app.Name
+                Desc     = $app.Description
+                Id       = $app.Id
+            })
+        }
+    }
+
+    $script:UpdateSelectedCount = {
+        $count = ($script:AllAppCards | Where-Object { $_.CheckBox.IsChecked -eq $true }).Count
+        if ($txtSelectedCount) {
+            $txtSelectedCount.Text = "$count apps selected"
+        }
+    }
+
+    if ($btnSelectAll) {
+        $btnSelectAll.Add_Click({
+            foreach ($card in $script:AllAppCards) {
+                if ($card.Border.Visibility -eq [System.Windows.Visibility]::Visible) {
+                    $card.CheckBox.IsChecked = $true
+                }
+            }
+            & $script:UpdateSelectedCount
+        })
+    }
+
+    if ($btnClearAll) {
+        $btnClearAll.Add_Click({
+            foreach ($card in $script:AllAppCards) {
+                $card.CheckBox.IsChecked = $false
+            }
+            & $script:UpdateSelectedCount
+        })
+    }
+
+    # Software Category Filter Chips
+    $categoryMap = @{
+        "ChipCatAll"      = "All"
+        "ChipCatBrowsers" = "Browsers"
+        "ChipCatComms"    = "Communication"
+        "ChipCatDev"      = "Dev & Tools"
+        "ChipCatDoc"      = "Productivity"
+        "ChipCatGames"    = "Gaming"
+        "ChipCatMs"       = "Utilities & System"
+        "ChipCatMedia"    = "Media & Creative"
+        "ChipCatPro"      = "Security & Privacy"
+        "ChipCatSelf"     = "Runtimes & Drivers"
+        "ChipCatUtil"     = "Emulators & Gaming Tools"
+    }
+
+    foreach ($chipName in $categoryMap.Keys) {
+        $btnChip = $window.FindName($chipName)
+        if ($btnChip) {
+            $catFilter = $categoryMap[$chipName]
+            $btnChip.Add_Click({
+                param($s, $e)
+                $selectedCat = $s.Tag
+                foreach ($appCard in $script:AllAppCards) {
+                    if ($selectedCat -eq "All" -or $appCard.Category -like "*$selectedCat*") {
+                        $appCard.Border.Visibility = [System.Windows.Visibility]::Visible
+                    } else {
+                        $appCard.Border.Visibility = [System.Windows.Visibility]::Collapsed
+                    }
+                }
+            })
+            $btnChip.Tag = $catFilter
+        }
+    }
+
+    # Equicord Installers
+    if ($btnInstallEquicord) {
+        $btnInstallEquicord.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Starting Equicord / Equilotl automated installation..."
+            Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command `"irm https://raw.githubusercontent.com/Equicord/Equilotl/main/install.ps1 | iex`"" -Verb RunAs
+        })
+    }
+    if ($btnOpenEquicordSite) {
+        $btnOpenEquicordSite.Add_Click({
+            Start-Process "https://equicord.org"
+        })
+    }
+
+    # 14. Device Hardware Specs Populator
+    $script:UpdateDeviceSpecsView = {
+        try {
+            $hw = Get-HardwareProfile
+            if (-not $hw) { return }
+
+            $t = $window.FindName("TxtDev_CpuName"); if ($t) { $t.Text = $hw.CpuName }
+            $t = $window.FindName("TxtDev_CpuCores"); if ($t) { $t.Text = "$($hw.CpuCores) Cores / $($hw.CpuThreads) Threads" }
+            $t = $window.FindName("TxtDev_CpuClock"); if ($t) { $t.Text = "$($hw.CpuBaseClock) GHz" }
+
+            $t = $window.FindName("TxtDev_GpuName"); if ($t) { $t.Text = $hw.GpuPrimary }
+            $t = $window.FindName("TxtDev_GpuDriver"); if ($t) { $t.Text = $hw.GpuDriverVersion }
+            $t = $window.FindName("TxtDev_GpuRam"); if ($t) { $t.Text = "$($hw.GpuMemoryGb) GB" }
+
+            $t = $window.FindName("TxtDev_RamTotal"); if ($t) { $t.Text = "$($hw.TotalRamGb) GB" }
+            $t = $window.FindName("TxtDev_RamSpeed"); if ($t) { $t.Text = "$($hw.RamSpeedMhz) MHz" }
+
+            $t = $window.FindName("TxtDev_OsName"); if ($t) { $t.Text = $hw.OsName }
+            $t = $window.FindName("TxtDev_OsBuild"); if ($t) { $t.Text = $hw.OsBuild }
+
+            $t = $window.FindName("TxtDev_NetName"); if ($t) { $t.Text = $hw.ActiveAdapterName }
+            $t = $window.FindName("TxtDev_NetSpeed"); if ($t) { $t.Text = $hw.ActiveAdapterSpeed }
         } catch {}
     }
 
-    # Wire expand/collapse toggles
-    $categories = @('Os', 'Cpu', 'Gpu', 'Ram', 'Storage', 'Net', 'Battery')
-    foreach ($cat in $categories) {
+    # Device spec copy buttons
+    $copyBtnMap = @{
+        "BtnCopy_DevCpu" = "TxtDev_CpuName"
+        "BtnCopy_DevGpu" = "TxtDev_GpuName"
+        "BtnCopy_DevRam" = "TxtDev_RamTotal"
+        "BtnCopy_DevOs"  = "TxtDev_OsName"
+        "BtnCopy_DevNet" = "TxtDev_NetName"
+    }
+    foreach ($btnName in $copyBtnMap.Keys) {
+        $b = $window.FindName($btnName)
+        if ($b) {
+            $txtElName = $copyBtnMap[$btnName]
+            $b.Add_Click({
+                param($s, $e)
+                $txtEl = $window.FindName($s.Tag)
+                if ($txtEl -and $txtEl.Text) {
+                    [System.Windows.Clipboard]::SetText($txtEl.Text)
+                    & $script:LogToGui "[+] Copied: $($txtEl.Text)"
+                    $s.Content = "Copied!"
+                    $timer = [System.Windows.Threading.DispatcherTimer]::new()
+                    $timer.Interval = [TimeSpan]::FromMilliseconds(1200)
+                    $timer.Add_Tick({ param($ts, $te) $s.Content = "Copy"; $ts.Stop() })
+                    $timer.Start()
+                }
+            })
+            $b.Tag = $txtElName
+        }
+    }
+
+    # Expand/collapse for device spec cards
+    $devCats = @('Cpu', 'Gpu', 'Ram', 'Os', 'Net')
+    foreach ($cat in $devCats) {
         $btnToggle = $window.FindName("BtnToggle_Dev$cat")
-        $panel = $window.FindName("Panel_Dev$cat")
+        $panel     = $window.FindName("Panel_Dev$cat")
         if ($btnToggle -and $panel) {
             $btnToggle.Tag = $panel
             $btnToggle.Add_Click({
                 param($s, $e)
-                $targetPanel = $s.Tag
-                if ($targetPanel.Visibility -eq [System.Windows.Visibility]::Visible) {
-                    $targetPanel.Visibility = [System.Windows.Visibility]::Collapsed
+                $target = $s.Tag
+                if ($target.Visibility -eq [System.Windows.Visibility]::Visible) {
+                    $target.Visibility = [System.Windows.Visibility]::Collapsed
                     $s.Content = "v"
                 } else {
-                    $targetPanel.Visibility = [System.Windows.Visibility]::Visible
+                    $target.Visibility = [System.Windows.Visibility]::Visible
                     $s.Content = "^"
                 }
             })
         }
     }
 
-    # Wire copy buttons for individual categories
-    $copyActions = @{
-        'BtnCopy_DevOs' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Operating System`r`n  OS Name: $($p.OsName)`r`n  Version: $($p.OsVersion)`r`n  Build: $($p.OsBuildNumber)`r`n  Arch: $($p.OsArchitecture)`r`n  Install Date: $($p.OsInstallDate)`r`n  User: $($p.OsRegisteredUser)`r`n  WinDir: $($p.OsWindowsDir)`r`n  SysDir: $($p.OsSystemDir)`r`n  Last Boot: $($p.OsLastBootTime)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Operating System details copied to clipboard."
-        }
-        'BtnCopy_DevCpu' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Processor`r`n  Name: $($p.CpuName)`r`n  Manufacturer: $($p.CpuManufacturer)`r`n  Arch: $($p.CpuArchitecture)`r`n  Cores/Threads: $($p.CpuCores) / $($p.CpuLogical)`r`n  Max Speed: $($p.CpuMaxSpeed)`r`n  Socket: $($p.CpuSocket)`r`n  L2 Cache: $($p.CpuL2Cache)`r`n  L3 Cache: $($p.CpuL3Cache)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Processor details copied to clipboard."
-        }
-        'BtnCopy_DevGpu' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Graphics`r`n  Name: $($p.PrimaryGpu.Name)`r`n  Manufacturer: $($p.PrimaryGpu.Manufacturer)`r`n  Driver Version: $($p.PrimaryGpu.DriverVersion)`r`n  Driver Date: $($p.PrimaryGpu.DriverDate)`r`n  VRAM: $($p.PrimaryGpu.Vram)`r`n  Resolution: $($p.PrimaryGpu.Resolution) @ $($p.PrimaryGpu.RefreshRate)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Graphics details copied to clipboard."
-        }
-        'BtnCopy_DevRam' = {
-            $p = Get-DeviceDetailProfile
-            $text = "RAM`r`n  Total Installed: $($p.RamTotal)`r`n  Usable: $($p.RamUsable)`r`n  Speed: $($p.RamSpeed)`r`n  Manufacturer: $($p.RamManufacturer)`r`n  Part Number: $($p.RamPartNumber)`r`n  Slots: $($p.RamSlots)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] RAM details copied to clipboard."
-        }
-        'BtnCopy_DevStorage' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Storage`r`n  Physical Disks: $($p.Disks -join ' | ')`r`n  Volumes: $($p.Volumes -join ' | ')"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Storage details copied to clipboard."
-        }
-        'BtnCopy_DevNet' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Network`r`n  Adapter: $($p.NetAdapterName)`r`n  Description: $($p.NetDescription)`r`n  MAC Address: $($p.NetMacAddress)`r`n  Speed: $($p.NetLinkSpeed)`r`n  IPv4: $($p.NetIpAddress)`r`n  Status: $($p.NetStatus)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Network details copied to clipboard."
-        }
-        'BtnCopy_DevBattery' = {
-            $p = Get-DeviceDetailProfile
-            $text = "Battery / Power`r`n  Status: $($p.BatteryStatus)`r`n  Device: $($p.BatteryName)`r`n  Level: $($p.BatteryPercent)"
-            [System.Windows.Clipboard]::SetText($text)
-            & $script:LogToGui "[+] Battery / Power details copied to clipboard."
-        }
-    }
-
-    foreach ($btnName in $copyActions.Keys) {
-        $btn = $window.FindName($btnName)
-        if ($btn) {
-            $action = $copyActions[$btnName]
-            $btn.Add_Click({
-                param($s, $e)
-                try {
-                    & $action
-                    $s.Content = "Copied!"
-                    $timer = [System.Windows.Threading.DispatcherTimer]::new()
-                    $timer.Interval = [TimeSpan]::FromMilliseconds(1500)
-                    $timer.Add_Tick({
-                        param($ts, $te)
-                        $s.Content = "Copy"
-                        $ts.Stop()
-                    })
-                    $timer.Start()
-                } catch {}
-            })
-        }
-    }
-
-    # Wire Refresh and Copy All Specs
-    $btnRefreshSpecs = $window.FindName("BtnRefreshDeviceSpecs")
-    if ($btnRefreshSpecs) {
-        $btnRefreshSpecs.Add_Click({
-            & $script:UpdateDeviceSpecsView -Force
-            & $script:LogToGui "[+] Device hardware specifications refreshed."
-        })
-    }
-
-    $btnCopyAllSpecs = $window.FindName("BtnCopyAllDeviceSpecs")
-    if ($btnCopyAllSpecs) {
-        $btnCopyAllSpecs.Add_Click({
-            param($s, $e)
+    # Cursor schemes manager button
+    $btnRestoreDefaultCursors = $window.FindName("BtnRestoreDefaultCursors")
+    if ($btnRestoreDefaultCursors) {
+        $btnRestoreDefaultCursors.Add_Click({
+            & $script:LogToGui "[*] Restoring default Windows cursor schemes..."
             try {
-                $p = Get-DeviceDetailProfile
-                $sb = [System.Text.StringBuilder]::new()
-                [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("                    DEVICE HARDWARE & OPERATING SYSTEM REPORT                   ")
-                [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("Device Name:       $($p.DeviceName)")
-                [void]$sb.AppendLine("System Summary:    $($p.HeaderSummary)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Operating System]")
-                [void]$sb.AppendLine("  OS Name:         $($p.OsName)")
-                [void]$sb.AppendLine("  Version:         $($p.OsVersion)")
-                [void]$sb.AppendLine("  Build Number:    $($p.OsBuildNumber)")
-                [void]$sb.AppendLine("  Architecture:    $($p.OsArchitecture)")
-                [void]$sb.AppendLine("  Install Date:    $($p.OsInstallDate)")
-                [void]$sb.AppendLine("  Registered User: $($p.OsRegisteredUser)")
-                [void]$sb.AppendLine("  Windows Dir:     $($p.OsWindowsDir)")
-                [void]$sb.AppendLine("  System Dir:      $($p.OsSystemDir)")
-                [void]$sb.AppendLine("  Last Boot Up:    $($p.OsLastBootTime)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Processor]")
-                [void]$sb.AppendLine("  Name:            $($p.CpuName)")
-                [void]$sb.AppendLine("  Manufacturer:    $($p.CpuManufacturer)")
-                [void]$sb.AppendLine("  Architecture:    $($p.CpuArchitecture)")
-                [void]$sb.AppendLine("  Cores / Threads: $($p.CpuCores) Cores / $($p.CpuLogical) Logical Processors")
-                [void]$sb.AppendLine("  Max Speed:       $($p.CpuMaxSpeed)")
-                [void]$sb.AppendLine("  Socket:          $($p.CpuSocket)")
-                [void]$sb.AppendLine("  L2 Cache:        $($p.CpuL2Cache)")
-                [void]$sb.AppendLine("  L3 Cache:        $($p.CpuL3Cache)")
-                [void]$sb.AppendLine()
-                if ($p.PrimaryGpu) {
-                    [void]$sb.AppendLine("[Graphics]")
-                    [void]$sb.AppendLine("  Name:            $($p.PrimaryGpu.Name)")
-                    [void]$sb.AppendLine("  Manufacturer:    $($p.PrimaryGpu.Manufacturer)")
-                    [void]$sb.AppendLine("  Driver Version:  $($p.PrimaryGpu.DriverVersion)")
-                    [void]$sb.AppendLine("  Driver Date:     $($p.PrimaryGpu.DriverDate)")
-                    [void]$sb.AppendLine("  VRAM:            $($p.PrimaryGpu.Vram)")
-                    [void]$sb.AppendLine("  Resolution:      $($p.PrimaryGpu.Resolution) @ $($p.PrimaryGpu.RefreshRate)")
-                    [void]$sb.AppendLine()
-                }
-                [void]$sb.AppendLine("[RAM]")
-                [void]$sb.AppendLine("  Total Installed: $($p.RamTotal) (Usable: $($p.RamUsable))")
-                [void]$sb.AppendLine("  Speed:           $($p.RamSpeed)")
-                [void]$sb.AppendLine("  Manufacturer:    $($p.RamManufacturer)")
-                [void]$sb.AppendLine("  Part Number:     $($p.RamPartNumber)")
-                [void]$sb.AppendLine("  Slots:           $($p.RamSlots)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Storage]")
-                [void]$sb.AppendLine("  Physical Disks:  $($p.Disks -join ' | ')")
-                [void]$sb.AppendLine("  Volumes:         $($p.Volumes -join ' | ')")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Network]")
-                [void]$sb.AppendLine("  Adapter Name:    $($p.NetAdapterName)")
-                [void]$sb.AppendLine("  Description:     $($p.NetDescription)")
-                [void]$sb.AppendLine("  MAC Address:     $($p.NetMacAddress)")
-                [void]$sb.AppendLine("  Link Speed:      $($p.NetLinkSpeed)")
-                [void]$sb.AppendLine("  IPv4 Address:    $($p.NetIpAddress)")
-                [void]$sb.AppendLine("  Status:          $($p.NetStatus)")
-                [void]$sb.AppendLine()
-                [void]$sb.AppendLine("[Battery / Power]")
-                [void]$sb.AppendLine("  Power Status:    $($p.BatteryStatus)")
-                [void]$sb.AppendLine("  Battery Device:  $($p.BatteryName)")
-                [void]$sb.AppendLine("  Charge Level:    $($p.BatteryPercent)")
-                [void]$sb.AppendLine("================================================================================")
-                [void]$sb.AppendLine("Generated by PumpkiN Ultimate Windows Optimizer v5.5.0")
-
-                [System.Windows.Clipboard]::SetText($sb.ToString())
-                & $script:LogToGui "[+] Complete Device Specifications report copied to clipboard!"
-                $s.Content = "Copied!"
-                $timer = [System.Windows.Threading.DispatcherTimer]::new()
-                $timer.Interval = [TimeSpan]::FromMilliseconds(1500)
-                $timer.Add_Tick({
-                    param($ts, $te)
-                    $s.Content = "Copy All Specs"
-                    $ts.Stop()
-                })
-                $timer.Start()
-            } catch {}
+                Restore-DefaultCursors
+                & $script:LogToGui "[+] Default Windows cursors restored successfully!"
+            } catch {
+                & $script:LogToGui "[-] Cursor restore failed: $($_.Exception.Message)" "ERROR"
+            }
         })
     }
 
-    # Trigger initial load of device specs
-    & $script:UpdateDeviceSpecsView
+    # TrafficMonitor Buttons
+    $btnInstallTrafficMonitor = $window.FindName("BtnInstallTrafficMonitor")
+    $btnInstallMiSansFonts    = $window.FindName("BtnInstallMiSansFonts")
+    $btnLaunchTrafficMonitor  = $window.FindName("BtnLaunchTrafficMonitor")
+    if ($btnInstallTrafficMonitor) {
+        $btnInstallTrafficMonitor.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Downloading and installing TrafficMonitor..."
+            try { Install-TrafficMonitorLatest -LogCallback $script:LogToGui } catch {}
+        })
+    }
+    if ($btnInstallMiSansFonts) {
+        $btnInstallMiSansFonts.Add_Click({
+            & $script:ExpandLogDrawer
+            & $script:LogToGui "[*] Installing MiSans fonts..."
+            try { Install-MiSansFonts -LogCallback $script:LogToGui } catch {}
+        })
+    }
+    if ($btnLaunchTrafficMonitor) {
+        $btnLaunchTrafficMonitor.Add_Click({
+            try { Start-TrafficMonitorApp -LogCallback $script:LogToGui } catch {}
+        })
+    }
 
-    # Initial Log Greeting & Status
-    & $updateStandbyStatus
-    $hw = Get-HardwareProfile
-    & $script:LogToGui "PumpkiN Ultimate Gaming Optimizer & Software Suite v5.5.0 initialized."
-    & $script:LogToGui "Hardware detected: $($hw.CpuName) | RAM: $($hw.TotalRamGb) GB"
-    & $script:LogToGui "Select tweaks or software to install, then click the action button."
-    if ($script:UpdateGuiAuditStatus) { & $script:UpdateGuiAuditStatus }
+    # 15. Initial Load & Telemetry Loop
+    & $script:UpdateDeviceSpecsView
+    & $script:UpdateGuiAuditStatus
+
+    & $script:LogToGui "PumpkiN Ultimate Windows Optimizer v5.6.0 initialized."
+    & $script:LogToGui "Live audit complete. Use toggle switches to control individual optimizations."
 
     # Live Hardware Telemetry DispatcherTimer
     $telemetryTimer = [System.Windows.Threading.DispatcherTimer]::new()
@@ -1566,79 +1074,34 @@ function Start-PumpkiNGui {
     $updateTelemetryAction = {
         try {
             $t = Get-LiveHardwareTelemetry
-            if ($txtLiveCpu) { $txtLiveCpu.Text = "$($t.CpuLoad)%" }
-            if ($txtLiveRam) { $txtLiveRam.Text = "$($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%)" }
-            if ($txtLivePing) {
-                $txtLivePing.Text = if ($t.PingMs -ge 0) { "$($t.PingMs) ms" } else { "--" }
-            }
+            if ($txtLiveCpu)  { $txtLiveCpu.Text = "$($t.CpuLoad)%" }
+            if ($txtLiveRam)  { $txtLiveRam.Text = "$($t.UsedRamGb)/$($t.TotalRamGb) GB ($($t.RamPercent)%)" }
+            if ($txtLivePing) { $txtLivePing.Text = if ($t.PingMs -ge 0) { "$($t.PingMs) ms" } else { "--" } }
             if ($txtLiveBooster) {
                 $txtLiveBooster.Text = $t.BoosterStatus
-                if ($t.BoosterStatus -like "BOOST*") {
-                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88")
-                } elseif ($t.BoosterStatus -like "ACTIVE*") {
-                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#A855F7")
-                } else {
-                    $txtLiveBooster.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8")
-                }
+                $txtLiveBooster.Foreground = if ($t.BoosterStatus -like "BOOST*") { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#00FF88") } elseif ($t.BoosterStatus -like "ACTIVE*") { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#A855F7") } else { [System.Windows.Media.BrushConverter]::new().ConvertFromString("#94A3B8") }
             }
-            & $updateDaemonStatusUI
         } catch {}
     }
     $telemetryTimer.Add_Tick($updateTelemetryAction)
     $telemetryTimer.Start()
     & $updateTelemetryAction
 
-    # Complete shutdown and force-close engine (releases 100% of RAM memory)
+    # Exit Handler
     $script:ExitOptimizer = {
-        try {
-            if ($telemetryTimer) { $telemetryTimer.Stop() }
-        } catch {}
-        try {
-            Stop-SmartGameBoosterDaemon
-        } catch {}
-        try {
-            Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-        } catch {}
-        try {
-            if ([System.Windows.Application]::Current) {
-                [System.Windows.Application]::Current.Shutdown(0)
-            }
-        } catch {}
-        try {
-            if ($window -and $window.IsVisible) {
-                $window.Close()
-            }
-        } catch {}
-        try {
-            [System.Diagnostics.Process]::GetCurrentProcess().Kill()
-        } catch {
-            Stop-Process -Id $PID -Force
-        }
+        try { if ($telemetryTimer) { $telemetryTimer.Stop() } } catch {}
+        try { Stop-SmartGameBoosterDaemon } catch {}
+        try { Get-Process -Name "EmptyStandbyList" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue } catch {}
+        try { if ([System.Windows.Application]::Current) { [System.Windows.Application]::Current.Shutdown(0) } } catch {}
+        try { if ($window -and $window.IsVisible) { $window.Close() } } catch {}
+        try { [System.Diagnostics.Process]::GetCurrentProcess().Kill() } catch { Stop-Process -Id $PID -Force }
     }
 
-    if ($btnExitTop) {
-        $btnExitTop.Add_Click({
-            & $script:ExitOptimizer
-        })
-    }
-
-    # Clean shutdown on window close
-    $window.Add_Closing({
-        try {
-            if ($telemetryTimer) { $telemetryTimer.Stop() }
-            Stop-SmartGameBoosterDaemon
-        } catch {}
-    })
-
-    $window.Add_Closed({
-        & $script:ExitOptimizer
-    })
+    if ($btnExitTop) { $btnExitTop.Add_Click({ & $script:ExitOptimizer }) }
+    $window.Add_Closing({ try { if ($telemetryTimer) { $telemetryTimer.Stop() }; Stop-SmartGameBoosterDaemon } catch {} })
+    $window.Add_Closed({ & $script:ExitOptimizer })
 
     # Launch GUI Window
     [void]$window.ShowDialog()
-
-    # Guaranteed force-close fallback once window dialog exits
     & $script:ExitOptimizer
 }
-
-# ==============================================================================
